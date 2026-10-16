@@ -1,6 +1,6 @@
 # radio.sala.company
 
-A web radio that runs entirely in the browser and is hosted on GitHub Pages. It's styled after a 10-band shortwave portable, and it's the radio counterpart of M3U TV (video.sala.company).
+A web radio that runs entirely in the browser, live at **https://radio.sala.company** (GitHub Pages). It's styled after a 10-band shortwave portable, and it's the radio counterpart of M3U TV (video.sala.company).
 
 ## Station sources
 
@@ -9,41 +9,72 @@ A web radio that runs entirely in the browser and is hosted on GitHub Pages. It'
 | **Radio Browser** (radio-browser.info), the default | Live API: top voted, most listened, trending, by country, genre, language or name. Only stations that passed Radio Browser's own check are loaded. |
 | **junguler/m3u-radio-music-playlists** | Genre M3U files read straight from GitHub (the genre menu comes from the GitHub API). |
 | **SomaFM** | Official channel API. |
-| **Mirrored lists** | Lists whose servers block browsers (no CORS) are copied into `lists/` once a day by a GitHub Action. Add more in `lists/sources.json`. |
+| **Mirrored lists** | Lists whose servers block browsers (no CORS) are copied into the published site by the deploy workflow once a day. Add more in `lists/sources.json`. |
 | **Your own** | Any M3U/PLS URL, an uploaded file, or pasted text. `?m3u=<url>` adds a list from a link. |
+
+## Finding stations
+
+- **Search box scope:** *This view* filters what's shown, *All my lists* merges every list you have, and *Radio Browser* searches all of it by name.
+- **Chips:** Near me (from your browser's region), Trending, News, Talk, Jazz, Classical and others browse Radio Browser directly.
+- **Save as list:** puts browse results on the next free band.
 
 ## Stream testing (same approach as M3U TV)
 
-- Each stream is read only briefly: the first ~320 KB or 3 seconds. At most 2 tests run per server at once, and 6 run in total.
-- **Icecast / Shoutcast / MP3 / AAC:** the app reads the real bitrate from the MP3 or AAC frame headers. It then compares how fast the audio arrives with how fast it plays. If it arrives slower than real time, the stream will drop out, so it's marked "Weak".
+- **Sampling:** each stream is read only briefly, the first ~320 KB or 3 seconds. At most 2 tests run per server at once, and 6 in total.
+- **Icecast / Shoutcast / MP3 / AAC:** the real bitrate comes from the frame headers. If audio arrives slower than real time, the stream will drop out, so it's marked **Weak**.
 - **Playlist files** (.pls, .m3u, .asx, .xspf) are followed to the stream they point to.
-- **HLS:** the app checks a live segment's download speed against its bitrate.
-- **Radio-specific step:** browsers play cross-origin audio without CORS. So when a server refuses CORS, the app doesn't mark it blocked straight away. It checks whether a muted `<audio>` element actually starts.
-- Plain-HTTP streams are tried over HTTPS. If that fails, they're marked "Blocked", because browsers refuse plain HTTP audio on an HTTPS page.
-- If other streams on a server were unreachable, the rest of that server is skipped. When a station's link fails, its backup links are tested next.
-- Real plays are recorded too: start time, failures and dropouts. Your own ratings override the test results.
-- Everything is stored in IndexedDB in your browser. Results are re-checked after 6 hours, and lists refresh after 24 hours.
+- **HLS:** a live segment's download speed is checked against its bitrate.
+- **Servers that block web pages (CORS):** they aren't written off. A muted `<audio>` element checks whether audio actually starts, which also catches CDNs that cut off plain reads.
+- **Plain-HTTP streams:** these are tried over HTTPS, and marked **Blocked** if that fails.
+- **Skipping and backups:** dead servers are skipped. When a link fails, the station's backup links are tested next.
+- **Real plays and ratings:** start time, failures and dropouts from real plays are recorded. Your own ratings override test results.
+- **One set of status words everywhere:** On air · Weak · Off air · Blocked · New.
+- **Where results live:** IndexedDB, in your browser only. Results are re-checked after 6 hours, and lists refresh after 24 hours.
+
+## Playback
+
+- **Backup links:** a station's links are tried best first.
+- **Drops:** a stream that drops mid-listen is reconnected quietly up to 3 times, and only then are backup links tried.
+- **Pause / live:** pause keeps your place, a little behind the broadcast, and **● LIVE** jumps back to the live point. After a pause longer than a minute, resuming reconnects at the live point.
+- **Song and show titles:** read from the SomaFM API, HLS ID3 tags, ICY stream metadata, Icecast `status-json.xsl` and Shoutcast `/currentsong`.
+  - They show on the dial, in the phone mini-player and on the lock screen.
+  - **♪ Songs** keeps a history of everything you heard, with YouTube, Spotify and Apple Music search links.
 
 ## Controls
 
 | On the radio | What it does |
 |---|---|
-| BAND knob | Switches between your station lists: FM = 1st, MW = 2nd, SW1–SW8 = the next eight |
-| TUNING knob / scale | Turn it to move through stations. Playback tunes in when you stop turning. Click the scale to jump. |
+| Band strip / BAND knob | Your station lists: FM = 1st, MW = 2nd, SW1–SW8 = the next eight |
+| TUNING knob / scale | Moves through the stations; tunes in when you stop. Click the scale to jump. |
+| ⏮ ⏸ ⏹ ⏭ under the dial | Previous · pause / play · stop · next |
+| 🔊 · ● LIVE · ☆ | Mute · back to live · favorite |
 | VOLUME knob | Volume |
-| POWER switch | Play / stop (live radio reconnects at the live point) |
+| POWER switch | Play / stop |
 | SENS DX / LOCAL | DX shows every station. LOCAL hides stations that are off air or blocked. |
-| ◀ SCAN ▶ | Previous / next station |
-| MEMORY | Favorite |
-| LIGHT | Dial lamp, LCD backlight and effects |
-| TUNE LED | Green = playing, amber = tuning or buffering, red = no signal |
+| MEMORY · SLEEP · LIGHT | Favorite · sleep timer (15 / 30 / 60 / 90 min, fades out) · dial lamp and effects |
+| TUNE light | Green = playing, amber = tuning, buffering or paused, red = no signal |
 
-The knobs respond to dragging, the scroll wheel, and the arrow keys when focused. Keyboard: ↑↓ move the guide, Enter plays, ←→ previous/next, Space power, F memory.
+- **Knobs:** tap the left or right half to step, drag them round, scroll on them, or use the arrow keys when focused.
+- **Keyboard:** ↑↓ move the guide · Enter plays · ←→ previous/next · Space pause · M mute · F favorite.
+- **Phone:** the station guide fills the screen with a mini-player at the bottom. Tap the mini-player to open the radio.
+
+## Code
+
+Plain HTML, CSS and JS, with no build step. The scripts in `js/` share one global scope and load in order:
+
+| File | What's in it |
+|---|---|
+| `core.js` | Storage, helpers, app state |
+| `lists.js` | List sources, parsing, the Add-list dialog |
+| `health.js` | Status badges and the stream tester |
+| `guide.js` | Station guide, filters, search and browsing |
+| `radio.js` | Dial, knobs, display, sleep timer, phone mini-player |
+| `player.js` | Playback, reconnecting, pause / mute / live, lock-screen controls |
+| `nowplaying.js` | Song titles and the songs-heard log |
+| `app.js` | Station details, favorites, backup, settings, wiring, start-up |
+
+hls.js loads from jsDelivr only when an HLS station plays.
 
 ## Deploy
 
-1. Push these files to a GitHub repository.
-2. Go to **Settings → Pages → Deploy from a branch**, pick `main`, then `/ (root)`.
-3. Go to **Actions → Mirror station lists → Run workflow** once, to create `lists/index.json`.
-
-There's no build step: it's plain HTML, CSS and JS. hls.js loads from jsDelivr only when an HLS station plays.
+`.github/workflows/pages.yml` publishes the site on every push to `main` and once a day. The daily run also refreshes the mirrored lists. In the repo's **Settings → Pages**, the source must be **GitHub Actions**. The custom domain comes from the `CNAME` file and the Pages settings.
