@@ -42,6 +42,7 @@ function parseM3U(text, defGroup = '') {
         logo: attrs['tvg-logo'] || '',
         group: attrs['group-title'] || '',
         country: (attrs['tvg-country'] || '').toLowerCase().slice(0, 2),
+        lang: langNames(attrs['tvg-language']),
       };
     } else if (/^#EXTGRP:/i.test(line)) {
       if (cur && !cur.group) cur.group = line.slice(8).trim();
@@ -49,7 +50,7 @@ function parseM3U(text, defGroup = '') {
       const url = line.split('|')[0].trim().replace(/^icy:/i, 'http:');
       if (!isStreamUrl(url)) { cur = null; continue; }
       out.push({ name: cur?.name || url.split('/').pop() || 'Unnamed', logo: cur?.logo || '',
-                 group: (cur?.group || defGroup || 'Ungrouped').replace(/_/g, ' '), country: cur?.country || '', url });
+                 group: (cur?.group || defGroup || 'Ungrouped').replace(/_/g, ' '), country: cur?.country || '', lang: cur?.lang || '', url });
       cur = null;
     }
   }
@@ -68,14 +69,15 @@ function rbEntry(s) {
   const tags = (s.tags || '').split(',').map(t => t.trim().toLowerCase()).filter(t => t && t.length < 30).slice(0, 4);
   return { name: (s.name || '').trim() || 'Unnamed', logo: s.favicon || '', group: tags.join(';') || 'untagged',
            country: (s.countrycode || '').toLowerCase(), url: s.url_resolved || s.url, br: s.bitrate || 0,
-           codec: s.codec && s.codec !== 'UNKNOWN' ? s.codec : '', hls: !!s.hls, uuid: s.stationuuid, rbOk: s.lastcheckok };
+           codec: s.codec && s.codec !== 'UNKNOWN' ? s.codec : '', hls: !!s.hls, uuid: s.stationuuid, rbOk: s.lastcheckok,
+           lang: langNames(s.language) };
 }
 function somaEntries(json) {
   const out = [];
   for (const c of json.channels || []) {
     for (const p of c.playlists || []) {
       out.push({ name: c.title, logo: c.xlimage || c.largeimage || c.image || '', group: (c.genre || '').split('|').join(';'),
-                 country: 'us', url: p.url, codec: (p.format || '').toUpperCase() });
+                 country: 'us', lang: 'English', url: p.url, codec: (p.format || '').toUpperCase() });
     }
   }
   return out;
@@ -83,6 +85,12 @@ function somaEntries(json) {
 
 const groupsOf = st => (st.group || '').split(';').map(g => g.trim()).filter(Boolean);
 const groupLabel = st => groupsOf(st).join(', ');
+// Languages, tidied: "english,GERMAN" -> "English;German" (at most 3).
+function langNames(raw) {
+  return [...new Set(String(raw || '').split(/[,;/|]/).map(l => l.toLowerCase().replace(/[^\p{L}\s-]/gu, '').trim()).filter(l => l.length > 1 && l.length < 30)
+    .map(l => l.replace(/(^|[\s-])\p{L}/gu, c => c.toUpperCase())))].slice(0, 3).join(';');
+}
+const langsOf = st => (st.lang || '').split(';').filter(Boolean);
 const cleanName = n => n.replace(/\([^)]*\)|\[[^\]]*\]/g, ' ').replace(/\s+/g, ' ').trim();
 const stationKey = e => 'n:' + cleanName(e.name).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim() + '|' + (e.country || '');
 function mergeStations(entries) {
@@ -92,13 +100,14 @@ function mergeStations(entries) {
     const key = stationKey(e);
     let st = map.get(key);
     if (!st) {
-      st = { key, name: cleanName(e.name) || e.name, logo: e.logo, group: e.group, country: e.country, sources: [] };
+      st = { key, name: cleanName(e.name) || e.name, logo: e.logo, group: e.group, country: e.country, lang: langNames((e.lang || '').replace(/;/g, ',')), sources: [] };
       map.set(key, st);
     } else {
       if (!st.logo) st.logo = e.logo;
       const groups = new Set(groupsOf(st));
       for (const g of e.group.split(';')) if (g.trim()) groups.add(g.trim());
       st.group = [...groups].slice(0, 6).join(';');
+      if (e.lang) st.lang = langNames([...langsOf(st), ...e.lang.split(';')].join(','));
     }
     if (!st.sources.some(s => s.url === e.url)) {
       const src = { url: e.url, name: e.name };
@@ -204,7 +213,11 @@ async function selectList(id, parsed) {
   S.ui.group = '';
   endBrowse(false);
   saveUi();
-  setStations(!id ? [] : parsed || mergeStations((await DB.get('kv', 'list:' + id)) || []));
+  const saved = !id || parsed ? null : (await DB.get('kv', 'list:' + id)) || [];
+  setStations(!id ? [] : parsed || mergeStations(saved));
+  // Radio Browser lists saved before languages were kept: fetch them again once, quietly.
+  const metaNow = S.lists.find(p => p.id === id);
+  if (metaNow?.kind === 'rb' && saved?.length && !('lang' in saved[0])) refreshList(metaNow, true);
   const meta = S.lists.find(p => p.id === id);
   if (meta && meta.count !== S.stations.length) { meta.count = S.stations.length; DB.put('kv', S.lists, 'lists'); }
   if (S.current) S.current = S.byKey.get(S.current.key) || S.current;

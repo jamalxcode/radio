@@ -214,8 +214,8 @@ const VFD = (() => {
     box.classList.toggle('standby', !st);
     const num = st ? stNum(st) : '---';
     set('vfdNum', typeof num === 'number' ? String(num).padStart(3, '0') : num);
-    set('vfdName', st ? st.name.toUpperCase() : 'PICK A STATION');
-    set('vfdMeta', st ? [countryFlag(st.country) + ' ' + (st.country ? countryName(st.country) : ''), groupLabel(st)].map(x => x.trim()).filter(Boolean).join(' · ')
+    set('vfdName', st ? withFlag(st.country, st.name.toUpperCase()) : 'PICK A STATION');
+    set('vfdMeta', st ? [st.country ? countryName(st.country) : '', langsOf(st).join(', '), groupLabel(st)].map(x => x.trim()).filter(Boolean).join(' · ')
                       : 'Turn TUNING or pick a station from the guide', 'dial-meta');
     const np = NowPlaying.current(st);
     set('vfdTrack', np ? '♪ ' + np.text : '', 'dial-np' + (np ? '' : ' hidden'));
@@ -244,7 +244,7 @@ const VFD = (() => {
     set('vfdSrc', s ? `${s.idx + 1}/${s.order.length}${kind ? ' · ' + kind : ''}` : st ? `${st.sources.length} LINK${st.sources.length > 1 ? 'S' : ''}` : '—');
     set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · SLEEP ${Sleep.left()}m` : ''));
     // Phone mini-player
-    set('miniName', st ? st.name : 'Pick a station');
+    set('miniName', st ? withFlag(st.country, st.name) : 'Pick a station');
     set('miniSub', np ? '♪ ' + np.text : st ? (s ? MINI[Radio.state] || '' : 'Tap play to listen') : 'Tap a station below to play it');
     setImg(el('miniLogo'), st?.logo);
     $('#mini').classList.toggle('live', Radio.state === 'live');

@@ -17,6 +17,8 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 - **Search box scope:** *This view* filters what's shown, *All my lists* merges every list you have, and *Radio Browser* searches all of it by name.
 - **Chips:** Near me (from your browser's region), Trending, News, Talk, Jazz, Classical and others browse Radio Browser directly.
 - **Save as list:** puts browse results on the next free band.
+- **Filters:** country, genre, language (when the list says which languages its stations broadcast in; Radio Browser lists do), on air only, and sort.
+- **Flags:** each station name starts with the flag of the country it broadcasts from (a flags-only font fills in on Windows, which has no flag emoji).
 
 ## Stream testing (same approach as M3U TV)
 

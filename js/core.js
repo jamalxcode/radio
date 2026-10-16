@@ -127,6 +127,9 @@ function countryName(cc) {
   try { return regionNames?.of(iso) || iso; } catch { return iso; }
 }
 const countryFlag = cc => (/^[a-z]{2}$/.test(cc || '') ? [...(cc === 'uk' ? 'gb' : cc).toUpperCase()].map(c => String.fromCodePoint(0x1f1a5 + c.charCodeAt(0))).join('') : '');
+// Flag before a station's name (where it broadcasts from), as on video.sala.company.
+const flagHtml = cc => (countryFlag(cc) ? `<span class="flag" title="${esc(countryName(cc))}">${countryFlag(cc)}</span>` : '');
+const withFlag = (cc, text) => (countryFlag(cc) ? countryFlag(cc) + ' ' : '') + text;
 const userCountry = (navigator.language.match(/-([A-Z]{2})\b/i) || [])[1]?.toUpperCase() || 'US';
 
 /* =========================================================================
@@ -147,7 +150,7 @@ const S = {
   hosts: new Map(),     // server host -> { ok, blocked, dead } from recent tests
   favs: new Map(),
   settings: { ...DEFAULT_SETTINGS },
-  ui: { currentId: null, search: '', scope: 'view', group: '', country: '', status: 'all', sort: '', lastKey: '', volume: 0.8, muted: false, helpSeen: false },
+  ui: { currentId: null, search: '', scope: 'view', group: '', country: '', lang: '', status: 'all', sort: '', lastKey: '', volume: 0.8, muted: false, helpSeen: false },
   recent: [],
   cursor: -1,
   lit: new Map(),

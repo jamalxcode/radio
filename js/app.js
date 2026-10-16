@@ -197,6 +197,7 @@ function wire() {
   });
   $('#groupFilter').addEventListener('change', e => { S.ui.group = e.target.value; saveUi(); applyFilters(); });
   $('#countryFilter').addEventListener('change', e => { S.ui.country = e.target.value; saveUi(); applyFilters(); });
+  $('#langFilter').addEventListener('change', e => { S.ui.lang = e.target.value; saveUi(); applyFilters(); });
   $('#statusFilter').addEventListener('change', e => { S.ui.status = e.target.value; saveUi(); Radio.syncDx(); rebuildGroups(); applyFilters(); });
   $('#sortSel').addEventListener('change', e => { S.ui.sort = e.target.value; saveUi(); applyFilters(); });
   onClick('#testBtn', () => {

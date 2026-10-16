@@ -48,7 +48,7 @@ function renderList() {
     const fav = S.favs.has(st.key);
     const active = S.current && S.current.key === st.key;
     const fmt = formatOf(orderedSources(st)[0]);
-    const meta = [countryFlag(st.country), groupLabel(st), fmt, st.sources.length > 1 ? `${st.sources.length} links` : ''].filter(Boolean).join(' · ');
+    const meta = [langsOf(st)[0] || '', groupLabel(st), fmt, st.sources.length > 1 ? `${st.sources.length} links` : ''].filter(Boolean).join(' · ');
     const good = ss.cls === 'good';
     const litAgo = good ? Date.now() - (S.lit.get(st.key) || 0) : Infinity;
     const lit = litAgo < 1200 ? ' lit' : '';
@@ -63,7 +63,7 @@ function renderList() {
       <div class="ch-body">
         <div class="logo">${st.logo ? `<img src="${esc(st.logo)}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.remove()">` : '♪'}</div>
         <div class="info">
-          <div class="name">${esc(st.name)}</div>
+          <div class="name">${flagHtml(st.country)}${esc(st.name)}</div>
           <div class="meta">${badge}<span class="grp">${esc(meta)}</span></div>
         </div>
         <button class="star${fav ? ' on' : ''}" data-star="${i}" tabindex="-1" title="${fav ? 'Remove from' : 'Add to'} favorites" aria-label="${fav ? 'Remove from' : 'Add to'} favorites">${fav ? '★' : '☆'}</button>
@@ -87,10 +87,20 @@ function rebuildGroups() {
   const src = sourceStations();
   const counts = new Map();
   const countries = new Map();
+  const langs = new Map();
   for (const c of src) {
     for (const g of groupsOf(c)) counts.set(g, (counts.get(g) || 0) + 1);
     if (c.country) countries.set(c.country, (countries.get(c.country) || 0) + 1);
+    for (const l of langsOf(c)) langs.set(l, (langs.get(l) || 0) + 1);
   }
+  // Language menu: only when the list says which languages its stations speak (Radio Browser does; most M3U lists don't).
+  // Languages only one station claims are mostly typos and tags ("#japan"), so list those used at least twice.
+  const langList = [...langs.entries()].filter(([l, n]) => n > 1 || l === S.ui.lang).sort((a, b) => b[1] - a[1]).slice(0, 150).map(([l]) => l).sort((a, b) => a.localeCompare(b));
+  if (!langs.has(S.ui.lang)) S.ui.lang = '';
+  const lsel = $('#langFilter');
+  lsel.classList.toggle('hidden', langList.length < 2);
+  lsel.innerHTML = `<option value="">Language: all</option>` +
+    langList.map(l => `<option value="${esc(l)}"${l === S.ui.lang ? ' selected' : ''}>${esc(l)} (${langs.get(l)})</option>`).join('');
   // Radio Browser has thousands of tags: offer the 200 most common, alphabetically.
   const groups = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 200).map(([g]) => g).sort((a, b) => a.localeCompare(b));
   if (!groups.includes(S.ui.group)) S.ui.group = '';
@@ -109,13 +119,14 @@ let scrollIdle, hoverTimer;
 function applyFilters(keepScroll = false) {
   // In "Radio Browser" search the server already matched the name; elsewhere the box filters what's shown.
   const q = S.ui.scope === 'rb' ? '' : S.ui.search.toLowerCase().trim();
-  const g = S.ui.group, cc = S.ui.country, f = S.ui.status;
+  const g = S.ui.group, cc = S.ui.country, lang = S.ui.lang, f = S.ui.status;
   const needStatus = ['good', 'hideBad', 'untested'].includes(f) || S.ui.sort === 'best';
   const rows = [];
   for (const st of sourceStations()) {
-    if (q && !st.name.toLowerCase().includes(q) && !(st.group || '').toLowerCase().includes(q)) continue;
+    if (q && !st.name.toLowerCase().includes(q) && !(st.group || '').toLowerCase().includes(q) && !(st.lang || '').toLowerCase().includes(q)) continue;
     if (g && !groupsOf(st).includes(g)) continue;
     if (cc && st.country !== cc) continue;
+    if (lang && !langsOf(st).includes(lang)) continue;
     const cls = needStatus ? stationStatus(st).cls : '';
     if (!passFilter(cls, f)) continue;
     rows.push({ st, r: RANK[cls] ?? 0 });
