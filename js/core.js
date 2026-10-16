@@ -7,6 +7,7 @@
      radio.js      the radio itself: dial, needle, knobs, display, sleep timer, phone mini-player
      player.js     playback: engines, backup links, reconnecting, pause / mute, lock-screen controls
      nowplaying.js song / show titles and the "songs heard" log
+     car.js        small phones: the push-button car radio and the station-picker screen
      app.js        station details, favorites, backup, settings, help, wiring, start-up */
 
 /* =========================================================================

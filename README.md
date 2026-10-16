@@ -57,7 +57,8 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 
 - **Knobs:** tap the left or right half to step, drag them round, scroll on them, or use the arrow keys when focused.
 - **Keyboard:** ↑↓ move the guide · Enter plays · ←→ previous/next · Space pause · M mute · F favorite.
-- **Phone:** the station guide fills the screen with a mini-player at the bottom. Tap the mini-player to open the radio.
+- **Small phones (under 600 px, e.g. a folded Galaxy Z Fold):** the radio becomes a 1950s push-button car radio. A chrome dial shows station names under a red needle (tap one, or swipe), an LCD shows the station, song and sleep countdown, and five piano keys are presets (tap an empty key to store the station that's on, hold a key to replace it). Below: previous · play/pause · next · SLEEP · mute · favorite, then VOL · STATIONS · TUNE. STATIONS opens a full-screen picker with search, chips, filters and the list; picking a station takes you back to the radio.
+- **Phones and small tablets (600–820 px):** the station guide fills the screen with a mini-player at the bottom (with sleep timer). Tap or swipe up the mini-player to open the radio.
 
 ## Code
 
@@ -72,6 +73,7 @@ Plain HTML, CSS and JS, with no build step. The scripts in `js/` share one globa
 | `radio.js` | Dial, knobs, display, sleep timer, phone mini-player |
 | `player.js` | Playback, reconnecting, pause / mute / live, lock-screen controls |
 | `nowplaying.js` | Song titles and the songs-heard log |
+| `car.js` | Small phones: the push-button car radio and the station picker |
 | `app.js` | Station details, favorites, backup, settings, wiring, start-up |
 
 hls.js loads from jsDelivr only when an HLS station plays.

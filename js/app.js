@@ -76,7 +76,7 @@ function copyLink() {
 async function exportData() {
   const data = {
     app: 'm3u-radio', version: 2, exportedAt: new Date().toISOString(),
-    settings: S.settings, favs: [...S.favs.values()], health: [...S.health.values()], recent: S.recent, songs: Songs.all(), lists: [],
+    settings: S.settings, favs: [...S.favs.values()], health: [...S.health.values()], recent: S.recent, songs: Songs.all(), presets: Car.presets(), lists: [],
   };
   for (const p of S.lists) data.lists.push({ ...p, entries: await DB.get('kv', 'list:' + p.id) });
   const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
@@ -99,6 +99,7 @@ async function importData(file) {
       await DB.put('kv', S.recent, 'recent');
     }
     if (data.songs?.length) Songs.merge(data.songs);
+    if (data.presets?.length) Car.importPresets(data.presets);
     for (const p of data.lists || []) {
       if (S.lists.some(x => x.id === p.id) || !p.entries) continue;
       const { entries, ...meta } = p;
@@ -164,7 +165,11 @@ function wire() {
     const star = e.target.closest('[data-star]');
     if (star) { e.stopPropagation(); return toggleFav(S.filtered[+star.dataset.star]); }
     const row = e.target.closest('.ch');
-    if (row) { $('#list').focus({ preventScroll: true }); playStation(S.filtered[+row.dataset.i]); }
+    if (row) {
+      $('#list').focus({ preventScroll: true });
+      playStation(S.filtered[+row.dataset.i]);
+      if (isCar() && Picker.isOpen()) Picker.close(); // car radio: picking a station takes you back to it
+    }
   });
   $('#listInner').addEventListener('pointerover', e => {
     const row = e.target.closest('.ch');
@@ -339,7 +344,7 @@ function wire() {
     else if (k === 'Enter' && !onButton && S.cursor >= 0 && S.filtered[S.cursor]) { handled(); playStation(S.filtered[S.cursor]); }
     else if (['ArrowRight', 'n', 'MediaTrackNext'].includes(k)) { handled(); step(1); }
     else if (['ArrowLeft', 'p', 'MediaTrackPrevious'].includes(k)) { handled(); step(-1); }
-    else if (k === 'Escape') { if (document.body.classList.contains('sheet-open')) Sheet.close(); S.cursor = S.current ? S.filtered.findIndex(c => c.key === S.current.key) : -1; scrollToCurrent(); scheduleRender(); }
+    else if (k === 'Escape') { if (Picker.isOpen()) Picker.close(); if (document.body.classList.contains('sheet-open')) Sheet.close(); S.cursor = S.current ? S.filtered.findIndex(c => c.key === S.current.key) : -1; scrollToCurrent(); scheduleRender(); }
     else if (k === 'f' || k === 'F') { toggleFav(S.filtered[S.cursor] || S.current); }
     else if (k === 'm' || k === 'M') { setMuted(!audio.muted); }
     else if ((k === ' ' && !onButton) || k === 'MediaPlayPause') { handled(); togglePause(); }
@@ -355,7 +360,7 @@ function wire() {
 async function init() {
   wire();
   const [lists, settings, ui, health, favs, recentList] = await Promise.all([
-    DB.get('kv', 'lists'), DB.get('kv', 'settings'), DB.get('kv', 'ui'), DB.all('health'), DB.all('favs'), DB.get('kv', 'recent'), Songs.load(),
+    DB.get('kv', 'lists'), DB.get('kv', 'settings'), DB.get('kv', 'ui'), DB.all('health'), DB.all('favs'), DB.get('kv', 'recent'), Songs.load(), Car.load(),
   ]);
   S.recent = recentList || [];
   S.lists = lists || [];
@@ -374,6 +379,7 @@ async function init() {
   Radio.refreshFx();
   Radio.setState('standby');
   Sheet.sync();
+  Picker.sync();
 
   const startId = S.lists.some(p => p.id === S.ui.currentId) ? S.ui.currentId : S.lists[0]?.id || null;
   await selectList(startId);

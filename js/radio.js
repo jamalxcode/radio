@@ -26,7 +26,7 @@ const Radio = (() => {
       $('#playBtn').setAttribute('aria-pressed', on);
       $('#powerLed').classList.toggle('on', on);
       $('#tuneLed').className = 'led ' + ({ live: 'good', buffering: 'warn', tuning: 'warn', paused: 'warn', nosignal: 'bad' }[s] || '');
-      for (const b of [$('#tPause'), $('#miniPlay')]) {
+      for (const b of [$('#tPause'), $('#miniPlay'), $('#carPlay')]) {
         b.textContent = playing ? '⏸' : '▶';
         b.setAttribute('aria-label', playing ? 'Pause' : 'Play');
         b.title = playing ? 'Pause (Space)' : 'Play (Space)';
@@ -57,12 +57,13 @@ const Radio = (() => {
       $('#bandKnob').setAttribute('aria-valuetext', active < 0 ? 'none' : `${bandLabel(active)}: ${S.lists[active].name}`);
     },
     volume(v) {
-      $('#volKnob').style.setProperty('--rot', `${-135 + v * 270}deg`);
+      for (const k of [$('#volKnob'), $('#carVol')]) k.style.setProperty('--rot', `${-135 + v * 270}deg`);
+      $('#carVol').setAttribute('aria-valuenow', Math.round(v * 100));
       $('#volKnob').setAttribute('aria-valuenow', Math.round(v * 100));
       $('#volVal').textContent = audio.muted ? 'MUTE' : Math.round(v * 100);
     },
     muted(m) {
-      for (const b of [$('#tMute'), $('#miniMute')]) {
+      for (const b of [$('#tMute'), $('#miniMute'), $('#carMute')]) {
         b.textContent = m ? '🔇' : '🔊';
         b.classList.toggle('on', m);
         b.setAttribute('aria-pressed', m);
@@ -77,6 +78,9 @@ const Radio = (() => {
       $('#tFav').textContent = on ? '★' : '☆';
       $('#tFav').classList.toggle('on', on);
       $('#tFav').setAttribute('aria-pressed', on);
+      $('#carFav').textContent = on ? '★' : '☆';
+      $('#carFav').classList.toggle('on', on);
+      $('#carFav').setAttribute('aria-pressed', on);
     },
     refreshFx() {
       document.body.classList.toggle('fx', S.settings.fx);
@@ -136,10 +140,11 @@ function turnTuning(s) {
   const n = S.filtered.length;
   if (!n) return;
   tuneRot += s * 18;
-  $('#tuneKnob').style.setProperty('--rot', tuneRot + 'deg');
+  for (const k of [$('#tuneKnob'), $('#carTune')]) k.style.setProperty('--rot', tuneRot + 'deg');
   const c = cursorStart();
   moveCursor(c < 0 ? 0 : (c + s + n) % n);
   Radio.needle(S.cursor);
+  Car.render();
   clearTimeout(tuneTimer);
   tuneTimer = setTimeout(() => {
     const st = S.filtered[S.cursor];
@@ -237,12 +242,13 @@ const VFD = (() => {
     set('vfdTime', s?.liveAt && Radio.state !== 'stopped' ? since(Date.now() - s.liveAt) + (s.behindMs > 1500 ? ` −${Math.round(s.behindMs / 1000)}s` : '') : '--:--');
     const kind = { hls: 'HLS', native: 'DIRECT' }[engine] || '';
     set('vfdSrc', s ? `${s.idx + 1}/${s.order.length}${kind ? ' · ' + kind : ''}` : st ? `${st.sources.length} LINK${st.sources.length > 1 ? 'S' : ''}` : '—');
-    set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · ☾${Sleep.left()}m` : ''));
+    set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · SLEEP ${Sleep.left()}m` : ''));
     // Phone mini-player
     set('miniName', st ? st.name : 'Pick a station');
     set('miniSub', np ? '♪ ' + np.text : st ? (s ? MINI[Radio.state] || '' : 'Tap play to listen') : 'Tap a station below to play it');
     setImg(el('miniLogo'), st?.logo);
     $('#mini').classList.toggle('live', Radio.state === 'live');
+    Car.render();
   }
   setInterval(() => { if (!document.hidden) update(); }, 1000);
   return { update };
@@ -273,12 +279,14 @@ const Sleep = (() => {
     $('#miniSleepBox').classList.toggle('on', on);
     if (on) left.textContent = api.fading ? 'fading…' : clock(msLeft());
     $('#miniSleepLeft').textContent = on ? (api.fading ? '…' : short(msLeft())) : '';
+    $('#carSleepLeft').textContent = on ? 'SLEEP ' + (api.fading ? 'fading…' : clock(msLeft())) : '';
+    $('#carSleepBox').classList.toggle('on', on);
     $('#miniSleepBox').title = on ? `Sleep timer: radio off in ${clock(msLeft())}` : 'Sleep timer';
-    if (!on) for (const s of [$('#sleepSel'), $('#miniSleepSel')]) if (s.value !== '0') s.value = '0';
+    if (!on) for (const s of [$('#sleepSel'), $('#miniSleepSel'), $('#carSleepSel')]) if (s.value !== '0') s.value = '0';
   }
   api.set = minutes => {
     api.at = minutes > 0 ? Date.now() + minutes * 60000 : 0;
-    for (const s of [$('#sleepSel'), $('#miniSleepSel')]) s.value = String(minutes > 0 ? minutes : 0);
+    for (const s of [$('#sleepSel'), $('#miniSleepSel'), $('#carSleepSel')]) s.value = String(minutes > 0 ? minutes : 0);
     render();
     toast(minutes > 0 ? `Sleep timer: the radio turns off in ${clock(minutes * 60000)}` : 'Sleep timer off');
   };
@@ -314,7 +322,8 @@ const Sleep = (() => {
 /* Phone: the radio is a sheet that slides up over the station guide. */
 const Sheet = (() => {
   const phone = matchMedia('(max-width: 820px)');
-  const sync = () => { $('#stage').inert = phone.matches && !document.body.classList.contains('sheet-open'); };
+  // On small phones the car radio is the main screen, so the stage is never hidden there.
+  const sync = () => { $('#stage').inert = phone.matches && !CAR.matches && !document.body.classList.contains('sheet-open'); };
   phone.addEventListener('change', sync);
   return {
     open() { document.body.classList.add('sheet-open'); sync(); $('#sheetClose').focus({ preventScroll: true }); },

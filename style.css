@@ -550,3 +550,116 @@ dialog.wide { width: min(680px, calc(100vw - 32px)); }
   .brand-text { display: none; }
   .brand-icon { width: 30px; height: 30px; }
 }
+
+/* ---------- small phones: 1950s push-button car radio + a separate station picker ---------- */
+.car, .picker-head { display: none; }
+@media (max-width: 600px) {
+  body { height: 100dvh; overflow: hidden; }
+  /* header: one row — icon, list (band) menu, songs, help, settings. List tools live in the picker. */
+  .topbar { flex-wrap: nowrap; }
+  .brand { flex: none; }
+  #listSelect { order: 0; flex: 1 1 auto; min-width: 0; }
+  #addListBtn, #refreshListBtn, #deleteListBtn, .topbar .spacer { display: none; }
+
+  .layout { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .stage {
+    position: static; transform: none; visibility: visible; flex: 1; min-height: 0;
+    overflow-y: auto; padding: 0 0 16px; gap: 12px; background: var(--guide-deep);
+  }
+  .sheet-close, .radio, .mini { display: none !important; }
+  .details { margin: 0 10px; }
+
+  /* the station picker: the whole guide as its own screen */
+  .guide {
+    position: fixed; inset: 0; z-index: 40; flex: none; margin: 0;
+    transform: translateY(100%); visibility: hidden; transition: transform .22s ease-out, visibility 0s .22s;
+  }
+  body.picker-open .guide { transform: none; visibility: visible; transition: transform .22s ease-out; }
+  .picker-head {
+    display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 10px 8px;
+    background: var(--guide-deep); border-bottom: 2px solid var(--hi);
+  }
+  .picker-head b { flex: 1; font: 700 15px/1 var(--print-font); letter-spacing: .04em; text-align: center; }
+  .picker-back { display: inline-flex; align-items: center; gap: 2px; padding: 6px 10px 6px 4px; color: var(--hi); font-weight: 700; }
+  .picker-back svg { width: 20px; height: 20px; }
+  .guide .list { flex: 1; height: auto; }
+
+  /* the car radio: painted dashboard with a chrome-ringed cream dial */
+  .car {
+    display: flex; flex-direction: column; gap: 12px; margin: 10px 10px 0; padding: 14px 12px 16px; border-radius: 18px;
+    background: linear-gradient(#2e2f32, #1d1e20);
+    box-shadow: inset 0 0 0 2px #0a0a0b, inset 0 0 0 5px #8e9196, inset 0 0 0 7px #0a0a0b, 0 14px 24px -14px #000;
+  }
+  .car-dial {
+    position: relative; height: 72px; border-radius: 10px; overflow: hidden; touch-action: pan-y; cursor: pointer;
+    background: linear-gradient(#f3e6c4, #dcc390);
+    box-shadow: inset 0 0 0 3px #d9dadc, inset 0 0 0 5px #6f7176, inset 0 6px 12px rgba(0,0,0,.35);
+  }
+  body.fx .car-dial { background: linear-gradient(#fff0c8, #f0c97a); box-shadow: inset 0 0 0 3px #d9dadc, inset 0 0 0 5px #6f7176, inset 0 0 24px rgba(255,170,40,.6); }
+  .car-names { position: absolute; left: 8px; right: 8px; top: 10px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
+  .car-slot {
+    border: none; background: none; padding: 2px 0; min-width: 0; height: 28px;
+    font: 700 10px/1.1 var(--print-font); letter-spacing: .02em; color: #6a5440; text-align: center;
+    overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow-wrap: anywhere;
+  }
+  .car-slot.on { color: #1e140b; font-size: 11px; background: none; border: none; }
+  .car-slot:disabled { opacity: 0; }
+  .car-ticks {
+    position: absolute; left: 12px; right: 12px; bottom: 10px; height: 14px;
+    background: repeating-linear-gradient(90deg, #2b1d12 0 2px, transparent 2px 10%) bottom / 100% 14px no-repeat,
+                repeating-linear-gradient(90deg, rgba(43,29,18,.55) 0 1px, transparent 1px 2.5%) bottom / 100% 7px no-repeat;
+  }
+  .car-needle { position: absolute; left: 50%; top: 6px; bottom: 6px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: #d8251b; box-shadow: 0 0 6px rgba(216,37,27,.7); pointer-events: none; }
+
+  .car-lcd {
+    display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 6px; min-width: 0;
+    background: #0b0b0c; box-shadow: inset 0 0 0 2px #000, inset 0 2px 8px rgba(0,0,0,.8);
+  }
+  .car-name { font: 24px/1 var(--pixel); color: var(--hi); font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.fx .car-name { text-shadow: 0 0 8px rgba(255,138,31,.5); }
+  .car-track { font-size: 13px; color: var(--print); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .car-status { display: flex; align-items: center; gap: 6px; font: 700 11px/1 var(--print-font); letter-spacing: .1em; color: rgba(233,230,220,.6); }
+  .car-status .led { width: 9px; height: 9px; box-shadow: none; }
+  .car-sleep-left { margin-left: auto; color: var(--hi); }
+  .car-lcd.standby .car-name { opacity: .6; }
+
+  /* five chrome piano keys = presets */
+  .car-keys { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .car-key {
+    height: 58px; padding: 4px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 0;
+    border: 1px solid #000; border-radius: 4px 4px 9px 9px; color: #22180f;
+    background: linear-gradient(#f4f4f2, #c3c5c9 60%, #9fa2a7); box-shadow: 0 5px 0 #4a4b4f, 0 6px 6px rgba(0,0,0,.5);
+    -webkit-touch-callout: none; user-select: none;
+  }
+  .car-key b { font: 700 15px/1 var(--print-font); }
+  .car-key span { font: 700 9px/1.1 var(--print-font); letter-spacing: .02em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .car-key.empty span { font-size: 15px; color: #6c6f75; }
+  .car-key:active, .car-key.on { transform: translateY(4px); box-shadow: 0 1px 0 #4a4b4f; }
+  .car-key.on { background: linear-gradient(#ffb15a, #ff8a1f); color: #1a0d00; }
+
+  /* controls row */
+  .car-transport { display: flex; gap: 6px; align-items: stretch; }
+  .car-transport > button, .car-sleep {
+    height: 44px; min-width: 44px; flex: 1; padding: 0 6px; display: grid; place-items: center;
+    font-size: 17px; color: var(--print); background: linear-gradient(#3a3b3f, #232427); border: 1px solid #000; border-radius: 7px; box-shadow: 0 2px 0 #000;
+  }
+  .car-transport .car-main { flex: 1.4; color: #1a0d00; background: linear-gradient(#ffa34d, #e2700f); font-size: 20px; }
+  .car-transport > button.on { color: var(--hi); }
+  .car-sleep { position: relative; flex: 1.6; display: flex; align-items: center; justify-content: center; gap: 5px; font: 700 11px/1 var(--print-font); letter-spacing: .08em; cursor: pointer; }
+  .car-sleep .moon { width: 16px; height: 16px; }
+  .car-sleep select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+  .car-sleep.on { color: var(--hi); border-color: var(--hi); }
+
+  /* VOL knob · STATIONS · TUNE knob */
+  .car-bottom { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+  .car-knob-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .car-knob-wrap small { font: 700 10px/1 var(--print-font); letter-spacing: .16em; color: var(--print); }
+  .car-knob { width: 62px; height: 62px; }
+  .car-stations {
+    height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px;
+    font: 700 15px/1 var(--print-font); letter-spacing: .12em; color: #22180f;
+    background: linear-gradient(#f3e6c4, #d9bf86); border: 1px solid #000; box-shadow: 0 3px 0 #4a3a22;
+  }
+  .car-stations svg { width: 22px; height: 22px; }
+  .car-stations:active { transform: translateY(2px); box-shadow: 0 1px 0 #4a3a22; }
+}

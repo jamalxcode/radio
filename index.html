@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=14">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -34,6 +34,60 @@
   <!-- On a phone this whole column is a sheet that slides up from the mini-player. -->
   <section class="stage" id="stage" aria-label="Radio">
     <button id="sheetClose" class="sheet-close" aria-label="Back to stations">▾ Stations</button>
+
+    <!-- Small phones (folded): a 1950s push-button car radio instead of the shortwave receiver.
+         Dial with station names · LCD · five preset keys · controls with sleep · VOL / STATIONS / TUNE. -->
+    <section class="car" id="car" aria-label="Car radio">
+      <div class="car-dial" id="carDial" title="Tap a station name to tune to it, or swipe the dial">
+        <div class="car-names" id="carNames"></div>
+        <div class="car-ticks" aria-hidden="true"></div>
+        <div class="car-needle" aria-hidden="true"></div>
+      </div>
+
+      <div class="car-lcd" id="carLcd">
+        <b class="car-name" id="carName">PICK A STATION</b>
+        <span class="car-track" id="carTrack">Tap STATIONS to choose one</span>
+        <span class="car-status"><i class="led" id="carLed"></i><span id="carState">STANDBY</span><span class="car-sleep-left" id="carSleepLeft"></span></span>
+      </div>
+
+      <div class="car-keys" id="carKeys" role="group" aria-label="Preset buttons: tap to play, tap an empty one to store the station that's on, hold to replace"></div>
+
+      <div class="car-transport" role="group" aria-label="Station controls">
+        <button id="carPrev" aria-label="Previous station">⏮</button>
+        <button id="carPlay" class="car-main" aria-label="Play">▶</button>
+        <button id="carNext" aria-label="Next station">⏭</button>
+        <label class="car-sleep" id="carSleepBox" title="Sleep timer">
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
+          <span>SLEEP</span>
+          <select id="carSleepSel" aria-label="Sleep timer">
+            <option value="0">Sleep off</option>
+            <option value="30">30 minutes</option>
+            <option value="60">1 hour</option>
+            <option value="90">1½ hours</option>
+            <option value="120">2 hours</option>
+            <option value="150">2½ hours</option>
+            <option value="180">3 hours</option>
+          </select>
+        </label>
+        <button id="carMute" aria-label="Mute">🔊</button>
+        <button id="carFav" aria-label="Favorite" aria-pressed="false">☆</button>
+      </div>
+
+      <div class="car-bottom">
+        <div class="car-knob-wrap">
+          <div class="knob car-knob" id="carVol" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" title="Volume: tap left / right half, or turn"><i></i></div>
+          <small>VOL</small>
+        </div>
+        <button class="car-stations" id="carStations" title="Search and filter all stations">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          STATIONS
+        </button>
+        <div class="car-knob-wrap">
+          <div class="knob car-knob tuning" id="carTune" role="slider" tabindex="0" aria-label="Tuning" title="Tuning: tap left / right half, or turn"><i></i></div>
+          <small>TUNE</small>
+        </div>
+      </div>
+    </section>
     <!-- A 10-band shortwave portable. BAND = your station lists, TUNING = move through the list,
          POWER = play/stop, SENS DX/LOCAL = all stations / hide off-air ones, LIGHT = dial lamp + effects. -->
     <div class="radio" id="radio">
@@ -156,7 +210,16 @@
     </section>
   </section>
 
-  <aside class="sidebar guide">
+  <aside class="sidebar guide" id="guide">
+    <!-- Small phones: the guide is the station-picker screen, opened from the car radio's STATIONS button -->
+    <div class="picker-head">
+      <button id="pickerClose" class="picker-back" aria-label="Back to the radio">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Radio
+      </button>
+      <b>Pick a station</b>
+      <button id="pickerAdd" class="primary">+ List</button>
+    </div>
     <div class="guide-head">
       <span>STATION GUIDE <span class="help" tabindex="0" title="Keyboard: ↑↓ move · Enter play · ←→ prev/next station · PgUp/PgDn page · Space pause · M mute · F favorite · Esc back to the playing station" aria-label="Keyboard shortcuts: up and down arrows move through the guide, Enter plays, left and right change station, Page Up and Page Down jump a page, Space pauses, M mutes, F toggles favorite, Escape returns to the playing station">?</span></span>
       <span id="count" class="count"></span>
@@ -364,6 +427,7 @@
 
     <p>It plays internet radio stations and checks, in your browser, which ones are actually on air.</p>
     <dl class="help-grid">
+      <dt>On a small phone</dt><dd>The radio becomes a 1950s push-button car radio. Tap a name on the dial or swipe it to tune, use the five keys as presets (tap an empty key to store the station that’s on, hold a key to replace it), and press STATIONS for search and filters.</dd>
       <dt>Station guide</dt><dd>Tap a station to play it. Rows turn <b class="hl-ok">silver</b> once a station is on air and <b class="hl-off">brown</b> when it’s off air.</dd>
       <dt>Search &amp; chips</dt><dd>Filter the list you have, search all your lists, or search all of Radio Browser (about 50,000 stations). The chips (Near me, Jazz, News…) browse Radio Browser; save what you find as a new list.</dd>
       <dt>BAND</dt><dd>Your station lists: FM is the first, MW the second, SW1–SW8 the next eight. Tap a band on the dial or turn the knob.</dd>
@@ -387,6 +451,7 @@
 <script src="js/radio.js?v=8"></script>
 <script src="js/player.js?v=8"></script>
 <script src="js/nowplaying.js?v=8"></script>
+<script src="js/car.js?v=8"></script>
 <script src="js/app.js?v=8"></script>
 </body>
 </html>

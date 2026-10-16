@@ -251,7 +251,7 @@ audio.addEventListener('playing', () => {
   }
   addRecent(s.st);
   // Folded phone: say once where the full radio (dial, sleep timer, details) is.
-  if (Sheet.phone.matches && !S.ui.miniHint) { S.ui.miniHint = true; saveUi(); toast('Tip: tap the player bar for the full radio, sleep timer and more'); }
+  if (Sheet.phone.matches && !isCar() && !S.ui.miniHint) { S.ui.miniHint = true; saveUi(); toast('Tip: tap the player bar for the full radio, sleep timer and more'); }
   NowPlaying.start(s);
   clearTimeout(startTimer);
   const ms = performance.now() - s.t0;
