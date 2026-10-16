@@ -788,7 +788,7 @@ function renderList() {
       : ts === 'queued' && ss.cls === 'untested'
         ? '<span class="badge queued"><i aria-hidden="true">···</i>Queued</span>'
         : badgeHtml(ss);
-    html += `<div class="ch${active ? ' active' : ''}${i === S.cursor ? ' cursor' : ''}${isBadCls(ss.cls) ? ' dead' : ''}${ts ? ' ' + ts : ''}${lit}" id="ch-${i}" role="option" aria-selected="${i === S.cursor}" data-i="${i}" style="top:${i * ROW}px" title="${esc(st.name + ' — ' + ss.tip)}">
+    html += `<div class="ch${active ? ' active' : ''}${i === S.cursor ? ' cursor' : ''}${isBadCls(ss.cls) ? ' dead' : RANK[ss.cls] <= 1 ? ' ok' : ''}${ts ? ' ' + ts : ''}${lit}" id="ch-${i}" role="option" aria-selected="${i === S.cursor}" data-i="${i}" style="top:${i * ROW}px" title="${esc(st.name + ' — ' + ss.tip)}">
       <span class="ch-num">${stNum(st)}</span>
       <div class="ch-body">
         <div class="logo">${st.logo ? `<img src="${esc(st.logo)}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.remove()">` : '♪'}</div>
@@ -922,17 +922,22 @@ const Radio = (() => {
       $('#tuneLed').className = 'led ' + ({ live: 'good', buffering: 'warn', tuning: 'warn', nosignal: 'bad' }[s] || '');
       VFD.update();
     },
-    // The needle sweeps the band in proportion to the station's place in the guide.
+    // The tuning scale is the guide as it's shown now: numbered 1…n, the needle at the current station.
     needle(i = S.current ? S.filtered.findIndex(c => c.key === S.current.key) : -1) {
       const n = S.filtered.length;
       const frac = i < 0 || n < 2 ? (i < 0 ? 0 : 0.5) : i / (n - 1);
       needleEl.style.setProperty('--f', frac);
+      needleEl.classList.toggle('hidden', i < 0);
+      if (n !== scaleN) {
+        scaleN = n;
+        const marks = n < 2 ? [] : [...new Set([0, 1, 2, 3, 4, 5, 6, 7, 8].map(k => Math.round(1 + k * (n - 1) / 8)))];
+        $('#tuneNums').innerHTML = marks.map(m => `<i style="left:calc(var(--sl) + (100% - var(--sl) - var(--sr)) * ${(m - 1) / (n - 1)})">${m}</i>`).join('');
+      }
     },
-    // Print the 10 band rows; the current list's band is lit.
+    // Band strip: one button per list (FM = first, MW = second, SW1–SW8 = the next eight).
     bands(active = S.lists.findIndex(p => p.id === S.ui.currentId)) {
-      $('#bands').innerHTML = BANDS.map(([b, m, nums, unit], i) =>
-        `<div class="band-row${b.startsWith('SW') ? ' sw' : ''}${i === active ? ' active' : ''}${i >= S.lists.length ? ' unused' : ''}" title="${esc(S.lists[i]?.name || 'No list on this band yet')}">
-          <span class="bl">${b}${m ? `<em>${m}</em>` : ''}</span><span class="bn">${nums.map(x => `<i>${x}</i>`).join('')}</span><span class="bu">${unit}</span></div>`).join('');
+      $('#bands').innerHTML = BANDS.map(([b, m], i) =>
+        `<button type="button" class="band-btn${i === active ? ' active' : ''}" data-band="${i}"${i >= S.lists.length ? ' disabled' : ''} aria-pressed="${i === active}" title="${esc(S.lists[i]?.name || 'No list on this band yet: add one with + List')}">${b}${m ? `<em>${m}</em>` : ''}</button>`).join('');
       $('#bandName').textContent = active < 0 ? '—' : `${bandLabel(active)} · ${S.lists[active].name.replace(/^Radio Browser · |^junguler · /, '')}`;
       $('#bandKnob').style.setProperty('--rot', `${-135 + Math.min(active < 0 ? 0 : active, 9) * 30}deg`);
       $('#bandKnob').setAttribute('aria-valuetext', active < 0 ? 'none' : `${bandLabel(active)}: ${S.lists[active].name}`);
@@ -984,7 +989,7 @@ function knob(el, degPerStep, onSteps, onTap) {
     else if ((e.key === 'Enter' || e.key === ' ') && onTap) { e.preventDefault(); e.stopPropagation(); onTap(); }
   });
 }
-let tuneTimer, bandTimer, tuneRot = 0, bandPending = -1;
+let tuneTimer, bandTimer, tuneRot = 0, bandPending = -1, scaleN = -1;
 // TUNING: the needle and the guide highlight move at once; the radio tunes in when you stop turning.
 function turnTuning(s) {
   const n = S.filtered.length;
@@ -1046,8 +1051,17 @@ const VFD = (() => {
     const s = session && st && session.st.key === st.key ? session : null;
     const [stateText, stateCls] = STATE[Radio.state] || STATE.standby;
     box.classList.toggle('standby', !st);
-    set('vfdNum', st ? String(stNum(st)).padStart(3, '0') : '---');
+    const num = st ? stNum(st) : '---';
+    set('vfdNum', typeof num === 'number' ? String(num).padStart(3, '0') : num); // ★ = not in this list (favorite / recent)
     set('vfdName', st ? st.name.toUpperCase() : 'PICK A STATION');
+    set('vfdMeta', st ? [countryFlag(st.country) + ' ' + (st.country ? countryName(st.country) : ''), groupLabel(st)].map(x => x.trim()).filter(Boolean).join(' · ')
+                      : 'Turn TUNING or pick a station from the guide', 'dial-meta');
+    const logo = el('vfdLogo');
+    if (st?.logo !== logo.dataset.src) {
+      logo.dataset.src = st?.logo || '';
+      logo.classList.toggle('hidden', !st?.logo);
+      if (st?.logo) { logo.onerror = () => logo.classList.add('hidden'); logo.src = st.logo; }
+    }
     set('vfdState', stateText, stateCls);
     if (st) {
       const ss = stationStatus(st);
@@ -1815,6 +1829,11 @@ function wire() {
     const r = dial.getBoundingClientRect();
     const frac = Math.min(1, Math.max(0, (e.clientX - r.left - sl) / (r.width - sl - sr)));
     playStation(S.filtered[Math.round(frac * (n - 1))]);
+  });
+  $('#bands').addEventListener('click', e => {
+    const b = e.target.closest('[data-band]');
+    const id = b && S.lists[+b.dataset.band]?.id;
+    if (id && id !== S.ui.currentId) selectList(id);
   });
   knob($('#tuneKnob'), 18, turnTuning);
   knob($('#bandKnob'), 30, turnBand, () => turnBand(1));

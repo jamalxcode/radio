@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="style.css?v=2">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -30,9 +30,31 @@
          POWER = play/stop, DX/LOCAL = all stations / hide broken ones, LIGHT = dial lamp + effects. -->
     <div class="radio" id="radio">
       <div class="radio-top">
-        <div class="scale-window" id="dial" title="Click the scale to tune across the list">
-          <div class="bands" id="bands" aria-hidden="true"></div>
-          <div class="needle" id="needle" aria-hidden="true"></div>
+        <!-- The dial window: band strip (your lists), what's playing, and the tuning scale (station numbers). -->
+        <div class="scale-window">
+          <div class="band-strip" id="bands" role="group" aria-label="Band: station list"></div>
+          <div class="dial-info" id="vfd">
+            <div class="dial-head">
+              <div class="dial-logo"><img id="vfdLogo" alt="" class="hidden"></div>
+              <div class="dial-title">
+                <b class="dial-name"><span id="vfdNum">---</span> <span id="vfdName">STANDBY</span></b>
+                <span class="dial-meta" id="vfdMeta">Turn TUNING or pick a station from the guide</span>
+              </div>
+            </div>
+            <div class="dial-grid">
+              <div class="vfd-cell"><span class="vfd-k">STATUS</span><b id="vfdState">STANDBY</b></div>
+              <div class="vfd-cell"><span class="vfd-k">SIGNAL</span><b id="vfdSig">····</b></div>
+              <div class="vfd-cell"><span class="vfd-k">FORMAT</span><b id="vfdFmt">—</b></div>
+              <div class="vfd-cell" title="Seconds of audio loaded ahead. Low = about to drop out."><span class="vfd-k">BUFFER</span><b id="vfdBuf">▯▯▯▯▯▯</b></div>
+              <div class="vfd-cell"><span class="vfd-k">ON AIR</span><b id="vfdTime">--:--</b></div>
+              <div class="vfd-cell"><span class="vfd-k">LINK</span><b id="vfdSrc">—</b></div>
+              <div class="vfd-cell"><span class="vfd-k">TIME</span><b id="vfdClock">--:--</b></div>
+            </div>
+          </div>
+          <div class="tune-scale" id="dial" title="Click the scale to tune to that point of the list">
+            <div class="tune-nums" id="tuneNums" aria-hidden="true"></div>
+            <div class="needle" id="needle" aria-hidden="true"></div>
+          </div>
         </div>
         <div class="leds">
           <span class="led-wrap"><i class="led" id="tuneLed"></i><small>TUNE</small></span>
@@ -47,19 +69,6 @@
         </div>
 
         <div class="panel">
-          <div class="lcd" id="vfd">
-            <div class="lcd-main"><span class="vfd-k">STATION</span><b><span id="vfdNum">---</span> <span id="vfdName">STANDBY</span></b></div>
-            <div class="lcd-grid">
-              <div class="vfd-cell"><span class="vfd-k">STATUS</span><b id="vfdState">STANDBY</b></div>
-              <div class="vfd-cell"><span class="vfd-k">SIGNAL</span><b id="vfdSig">····</b></div>
-              <div class="vfd-cell"><span class="vfd-k">FORMAT</span><b id="vfdFmt">—</b></div>
-              <div class="vfd-cell" title="Seconds of audio loaded ahead. Low = about to drop out."><span class="vfd-k">BUFFER</span><b id="vfdBuf">▯▯▯▯▯▯</b></div>
-              <div class="vfd-cell"><span class="vfd-k">ON AIR</span><b id="vfdTime">--:--</b></div>
-              <div class="vfd-cell"><span class="vfd-k">LINK</span><b id="vfdSrc">—</b></div>
-              <div class="vfd-cell"><span class="vfd-k">TIME</span><b id="vfdClock">--:--</b></div>
-            </div>
-          </div>
-
           <div class="knobs">
             <div class="knob-wrap">
               <div class="knob band" id="bandKnob" role="slider" tabindex="0" aria-label="Band: station list" title="BAND: switch station list (click, scroll or drag)"><i></i></div>
@@ -260,6 +269,6 @@
 </dialog>
 
 <div id="toast" class="toast hidden"></div>
-<script src="app.js?v=1"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

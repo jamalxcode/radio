@@ -83,34 +83,59 @@ body.onair .brand-dot { background: var(--bad); box-shadow: 0 0 10px var(--bad);
     linear-gradient(var(--metal1), var(--metal2));
   border-bottom: 3px solid var(--body-edge);
 }
+/* The dial window: band strip on top, what's playing in the middle (printed-on-glass style),
+   tuning scale with the needle along the bottom. Lit warm when LIGHT is on. */
 .scale-window {
-  --sl: 66px; --sr: 50px; /* where the printed scale starts / ends: the needle travels between them */
-  position: relative; flex: 1; min-width: 0; cursor: pointer; padding: 8px 12px 8px 0; border-radius: 4px;
+  position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;
+  padding: 8px 12px 6px; border-radius: 4px; color: var(--print);
   background: #0b0b0c; box-shadow: inset 0 0 0 2px #000, inset 0 3px 10px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.6);
   transition: background .3s;
 }
-body.fx .scale-window { background: radial-gradient(ellipse at 50% 60%, #2a2116, #0f0d0b 75%); }
-.bands { display: flex; flex-direction: column; gap: 1px; }
-.band-row {
-  display: grid; grid-template-columns: 62px minmax(0, 1fr) 34px; align-items: center; height: 15px;
-  font: 600 10px/1 var(--print-font); color: rgba(233, 230, 220, .55); letter-spacing: .02em;
+body.fx .scale-window { background: radial-gradient(ellipse at 50% 55%, #2c2217, #0f0d0b 80%); }
+
+.band-strip { display: flex; gap: 2px; border-bottom: 1px solid rgba(233,230,220,.18); padding-bottom: 5px; }
+.band-btn {
+  flex: 1; min-width: 0; padding: 2px 0; border: none; border-radius: 2px; background: none;
+  font: 700 10px/1.1 var(--print-font); letter-spacing: .04em; color: rgba(233,230,220,.6); white-space: nowrap;
 }
-.band-row .bl { padding-left: 8px; white-space: nowrap; }
-.band-row .bl em { font-style: normal; font-weight: 400; opacity: .75; margin-left: 4px; }
-.band-row .bn {
-  display: flex; justify-content: space-between; height: 100%; align-items: center; padding: 0 4px;
-  background: repeating-linear-gradient(90deg, rgba(233,230,220,.28) 0 1px, transparent 1px 12.5%) bottom / 100% 3px no-repeat;
+.band-btn em { display: block; font-style: normal; font-weight: 400; font-size: 9px; opacity: .7; }
+.band-btn:nth-child(n+3) { color: rgba(232, 195, 90, .75); }
+.band-btn:hover:not(:disabled) { color: var(--print); background: rgba(255,255,255,.06); }
+.band-btn:disabled { opacity: .3; }
+.band-btn.active { color: #1a0d00; background: var(--hi); }
+body.fx .band-btn.active { box-shadow: 0 0 10px rgba(255,138,31,.5); }
+
+.dial-info { display: flex; flex-direction: column; gap: 8px; font-family: var(--pixel); min-width: 0; }
+.dial-head { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.dial-logo { width: 44px; height: 44px; flex: none; border-radius: 4px; display: grid; place-items: center; background: rgba(255,255,255,.04); }
+.dial-logo img { max-width: 40px; max-height: 40px; object-fit: contain; }
+.dial-title { display: flex; flex-direction: column; min-width: 0; }
+.dial-name { font-weight: normal; font-size: 30px; line-height: 1; color: var(--hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#vfdNum { color: rgba(255, 138, 31, .6); }
+.dial-meta { font: 13px/1.3 var(--print-font); color: rgba(233,230,220,.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.fx .dial-name { text-shadow: 0 0 8px rgba(255, 138, 31, .55); }
+.dial-grid { display: grid; gap: 4px 6px; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+.vfd-cell { display: flex; flex-direction: column; min-width: 0; padding: 2px 6px; border-left: 1px solid rgba(233,230,220,.15); }
+.vfd-k { font: 700 9px/1.2 var(--print-font); letter-spacing: .14em; color: rgba(233,230,220,.5); }
+.vfd-cell b { font-weight: normal; font-size: 21px; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--print); }
+body.fx .vfd-cell b { text-shadow: 0 0 6px rgba(255, 220, 160, .35); }
+.dial-info .lvl-good { color: var(--good); }
+.dial-info .lvl-warn { color: var(--warn); }
+.dial-info .lvl-bad { color: var(--bad); }
+.dial-info .lvl-blocked { color: var(--blocked); }
+.dial-info.standby .vfd-cell b, .dial-info.standby .dial-name { opacity: .5; }
+
+/* tuning scale: the current guide numbered 1…n; click to tune there */
+.tune-scale {
+  --sl: 6px; --sr: 6px; /* where the scale starts / ends: the needle travels between them */
+  position: relative; height: 30px; cursor: pointer; border-top: 1px solid rgba(233,230,220,.18);
+  background: repeating-linear-gradient(90deg, rgba(233,230,220,.35) 0 1px, transparent 1px 2.5%) top / 100% 6px no-repeat,
+              repeating-linear-gradient(90deg, rgba(233,230,220,.6) 0 1px, transparent 1px 12.5%) top / 100% 11px no-repeat;
+  background-origin: content-box; padding: 0 var(--sr) 0 var(--sl);
 }
-.band-row .bu { text-align: right; font-weight: 400; opacity: .7; }
-.band-row.sw .bn { background-color: transparent; }
-.band-row.sw .bl { color: #e8c35a; }
-.band-row.unused { opacity: .45; }
-.band-row.active { color: var(--print); }
-.band-row.active .bl { color: var(--hi); }
-body.fx .band-row.active { text-shadow: 0 0 6px rgba(255, 170, 70, .55); }
-.band-row.active .bn { background-image: repeating-linear-gradient(90deg, var(--hi) 0 1px, transparent 1px 12.5%); }
+.tune-nums i { position: absolute; top: 13px; transform: translateX(-50%); font: 600 10px/1 var(--print-font); font-style: normal; color: rgba(233,230,220,.7); }
 .needle {
-  position: absolute; top: 4px; bottom: 4px; width: 3px; margin-left: -1px; border-radius: 2px;
+  position: absolute; top: -3px; bottom: 0; width: 3px; margin-left: -1px; border-radius: 2px;
   left: calc(var(--sl) + (100% - var(--sl) - var(--sr)) * var(--f, 0));
   background: var(--hi); box-shadow: 0 0 6px rgba(255, 138, 31, .8); transition: left .35s cubic-bezier(.3,.7,.2,1);
   pointer-events: none;
@@ -144,24 +169,6 @@ body.fx.playing .holes { animation: thump 0.5s ease-in-out infinite alternate; }
 
 .panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
-/* the info display: grey-green LCD, amber backlight when LIGHT is on */
-.lcd {
-  --ink: var(--lcd-ink);
-  display: flex; flex-direction: column; gap: 4px; padding: 7px 9px; border-radius: 5px;
-  background: linear-gradient(170deg, #b3be9c, var(--lcd)); color: var(--ink);
-  box-shadow: inset 0 0 0 2px #0b0b0c, inset 0 3px 8px rgba(0,0,0,.35);
-  font-family: var(--pixel); transition: background .3s;
-}
-body.fx .lcd { --ink: var(--lcd-lit-ink); background: linear-gradient(170deg, #ffd27a, var(--lcd-lit)); box-shadow: inset 0 0 0 2px #0b0b0c, inset 0 3px 8px rgba(0,0,0,.25), 0 0 18px rgba(255,170,60,.18); }
-.lcd-main, .vfd-cell { display: flex; flex-direction: column; min-width: 0; padding: 1px 4px; }
-.lcd-grid { display: grid; gap: 2px 6px; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
-.vfd-k { font-size: 13px; line-height: 1; letter-spacing: .1em; opacity: .6; }
-.lcd b { font-weight: normal; font-size: 21px; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lcd-main b { font-size: 28px; }
-.lcd.standby b { opacity: .45; }
-/* status words: dark ink shapes, not colors, so they read on the LCD */
-.lcd .lvl-bad, .lcd .lvl-blocked { text-decoration: line-through; text-decoration-thickness: 2px; }
-.lcd .lvl-warn { font-style: italic; }
 
 /* rotary knobs */
 .knobs { display: flex; justify-content: space-around; align-items: flex-end; gap: 10px; }
@@ -314,14 +321,29 @@ body.fx .lcd { --ink: var(--lcd-lit-ink); background: linear-gradient(170deg, #f
 .list:focus { outline: none; }
 .list:focus-visible { box-shadow: inset 0 0 0 2px var(--hi); }
 
-/* off-air / blocked stations: a dead, greyed-out row */
-.ch.dead .ch-num { background: #2c2c2e; color: #8a8a8e; }
-.ch.dead .ch-body { background: #1b1b1d; color: #8a8a8e; }
-.ch.dead:nth-child(even) .ch-body { background: #19191b; }
-.ch.dead:hover .ch-body { background: #252527; }
-.ch.dead .grp { color: #6e6e72; }
-.ch.dead .logo img { filter: grayscale(1); opacity: .5; }
-.ch.dead.cursor:not(.active) .ch-body { background: #2c2c2e; }
+/* Working stations (on air or weak): brushed-silver rows with dark print. Untested stay charcoal. */
+.ch.ok:not(.active) .ch-num { background: linear-gradient(#a9acb1, #8e9196); color: #16171a; }
+.ch.ok:not(.active) .ch-body { background: linear-gradient(#d6d8db, #bfc2c6); color: #16171a; }
+.ch.ok:not(.active):nth-child(even) .ch-body { background: linear-gradient(#cdd0d3, #b6b9bd); }
+.ch.ok:not(.active):hover .ch-body { background: linear-gradient(#e2e4e7, #cbced2); }
+.ch.ok:not(.active).cursor .ch-body { background: linear-gradient(#e2e4e7, #cbced2); }
+.ch.ok:not(.active) .grp { color: #3e4045; }
+.ch.ok:not(.active) .badge.good, .ch.ok:not(.active) .badge.good i { color: #0d7a28; }
+.ch.ok:not(.active) .badge.warn, .ch.ok:not(.active) .badge.warn i { color: #8f5200; }
+.ch.ok:not(.active) .badge.checking { color: #a34a00; }
+.ch.ok:not(.active) .star { color: #5d6066; }
+.ch.ok:not(.active) .star.on { color: #c25600; }
+.ch.ok .logo { background: #1b1c1e; }
+/* Off air / blocked: dark brown rows */
+.ch.dead .ch-num { background: #3a2617; color: #a8896f; }
+.ch.dead .ch-body { background: #2a1b10; color: #a8896f; }
+.ch.dead:nth-child(even) .ch-body { background: #25180e; }
+.ch.dead:hover .ch-body { background: #36241a; }
+.ch.dead .grp { color: #846650; }
+.ch.dead .logo { background: #1a1009; }
+.ch.dead .logo img { filter: sepia(1) brightness(.6); opacity: .6; }
+.ch.dead .star:not(.on) { color: #6e5442; }
+.ch.dead.cursor:not(.active) .ch-body { background: #3a2617; }
 .ch.lit .ch-body, .ch.lit .ch-num { animation: lightup 1.2s ease-out both; }
 @keyframes lightup { 0% { box-shadow: inset 0 0 0 2px var(--good); } 60% { box-shadow: inset 0 0 0 2px var(--good); } }
 .badge.checking { color: var(--hi); }
@@ -389,17 +411,19 @@ dialog textarea { min-height: 80px; font: 12px/1.4 ui-monospace, Consolas, monos
   .stage { display: contents; }
   .radio { border-radius: 0; }
   .radio-top { padding: 8px; gap: 8px; }
-  .scale-window { --sl: 54px; --sr: 16px; }
-  .band-row { grid-template-columns: 50px minmax(0, 1fr) 0; height: 12px; font-size: 8.5px; }
-  .band-row .bl em, .band-row .bu { display: none; }
+  .scale-window { padding: 6px 8px 4px; gap: 6px; }
+  .band-btn { font-size: 9px; }
+  .band-btn em { display: none; }
+  .dial-logo { width: 34px; height: 34px; } .dial-logo img { max-width: 30px; max-height: 30px; }
+  .dial-name { font-size: 24px; }
+  .dial-meta { font-size: 11px; }
+  .dial-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dial-grid .vfd-cell:nth-child(n+4) { display: none; }
+  .vfd-cell b { font-size: 18px; }
   .leds { gap: 8px; }
   .led-wrap small { display: none; }
   .radio-face { padding: 10px; gap: 10px; }
   .speaker { display: none; }
-  .lcd-main b { font-size: 22px; }
-  .lcd-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .lcd-grid .vfd-cell:nth-child(n+4) { display: none; }
-  .lcd b { font-size: 18px; }
   .knob.tuning { width: 74px; height: 74px; }
   .knob.band, .knob.vol { width: 54px; height: 54px; }
   .pills { justify-content: flex-start; }
