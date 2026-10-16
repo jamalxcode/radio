@@ -1056,6 +1056,9 @@ const VFD = (() => {
     set('vfdName', st ? st.name.toUpperCase() : 'PICK A STATION');
     set('vfdMeta', st ? [countryFlag(st.country) + ' ' + (st.country ? countryName(st.country) : ''), groupLabel(st)].map(x => x.trim()).filter(Boolean).join(' · ')
                       : 'Turn TUNING or pick a station from the guide', 'dial-meta');
+    const np = NowPlaying.current(st);
+    set('vfdTrack', np ? '♪ ' + np.text : '', 'dial-np' + (np ? '' : ' hidden'));
+    el('vfdTrack').title = np ? `${np.text}${np.album ? ' · ' + np.album : ''} (from ${np.source})` : '';
     const logo = el('vfdLogo');
     if (st?.logo !== logo.dataset.src) {
       logo.dataset.src = st?.logo || '';
@@ -1090,6 +1093,7 @@ const VFD = (() => {
 })();
 
 function teardown() {
+  NowPlaying.stop();
   if (hls) { hls.destroy(); hls = null; }
   nativeFail = null;
   engine = '';
@@ -1168,6 +1172,7 @@ function nextSource() {
     }
     if (kind === 'hls' && !audio.canPlayType('application/vnd.apple.mpegurl')) await loadLib('hls').catch(() => {});
     if (token !== playToken) return;
+    s.target = target; // the URL actually playing, for the now-playing look-ups
     startEngine(kind, target, token);
   })();
   return true;
@@ -1271,6 +1276,7 @@ audio.addEventListener('playing', () => {
   s.started = true;
   s.liveAt = Date.now();
   addRecent(s.st);
+  NowPlaying.start(s);
   clearTimeout(startTimer);
   const ms = performance.now() - s.t0;
   const h = H(s.url);
@@ -1331,14 +1337,220 @@ function step(dir, skipBad = false) {
   toast('No working stations left in this list');
 }
 
-// Lock-screen / headset controls on phones and laptops.
+/* =========================================================================
+   Now playing: the song or show title, from whichever source the station offers.
+     SomaFM            its song API (artist / title / album)
+     HLS               ID3 tags inside the stream (hls.js / Safari expose them as metadata cues)
+     Icecast/Shoutcast ICY metadata: ask the stream for its StreamTitle (needs the server to allow it)
+     Icecast           the server's /status-json.xsl page
+     Shoutcast v2      /currentsong
+   What works per server is remembered, so a server that blocks all of them isn't asked again for a while.
+   ========================================================================= */
+const NowPlaying = (() => {
+  let run = 0, timer = null, ctl = null;
+  const hostMethod = new Map(); // host -> { m: 'icy' | 'icecast' | 'shoutcast' | 'none', at }
+  const api = { np: null, history: [], key: '', method: '' };
+
+  const tidy = t => String(t || '').replace(/\0/g, '').replace(/\s+/g, ' ').replace(/^[\s\-–—|]+|[\s\-–—|]+$/g, '').trim();
+  function split(text) {
+    const m = text.match(/^(.+?)\s+[-–—]\s+(.+)$/);
+    return m ? { artist: m[1].trim(), title: m[2].trim() } : { artist: '', title: text };
+  }
+  function set(info) {
+    if (!session?.started || session.st.key !== api.key) return;
+    const artist = tidy(info.artist), title = tidy(info.title);
+    const text = tidy(info.text) || [artist, title].filter(Boolean).join(' – ');
+    if (!text || text === api.np?.text) return;
+    if (text.toLowerCase() === session.st.name.toLowerCase()) return; // some stations just repeat their own name
+    if (api.np) api.history = [{ ...api.np }, ...api.history].slice(0, 6);
+    const parts = artist || title ? { artist, title } : split(text);
+    api.np = { text, ...parts, album: tidy(info.album), art: info.art || '', at: Date.now(), source: info.source };
+    VFD.update();
+    renderNow();
+    setMediaSession(session.st);
+  }
+
+  function decode(bytes) {
+    const u8 = Uint8Array.from(bytes);
+    let s = new TextDecoder('utf-8').decode(u8);
+    if (s.includes('�')) s = new TextDecoder('windows-1252').decode(u8);
+    return s;
+  }
+  // Read the stream just until its first metadata block (icy-metaint bytes of audio, then a length byte, then text).
+  async function icyTitle(url) {
+    ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 10000);
+    try {
+      const res = await fetch(url, { headers: { 'Icy-MetaData': '1' }, signal: ctl.signal, cache: 'no-store' });
+      const metaint = +res.headers.get('icy-metaint'); // only readable when the server exposes it
+      if (!res.ok) { ctl.abort(); return null; }
+      const reader = res.body.getReader();
+      if (!metaint) return await icyScan(reader); // header hidden from us: look for the title marker in the bytes
+      let skip = metaint, metaLen = -1, meta = [], blocks = 0;
+      while (blocks < 4) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        let i = 0;
+        while (i < value.length) {
+          if (skip > 0) { const n = Math.min(skip, value.length - i); skip -= n; i += n; continue; }
+          if (metaLen < 0) {
+            metaLen = value[i++] * 16;
+            meta = [];
+            if (metaLen === 0) { blocks++; skip = metaint; metaLen = -1; } // empty block: title unchanged
+            continue;
+          }
+          const n = Math.min(metaLen - meta.length, value.length - i);
+          for (let k = 0; k < n; k++) meta.push(value[i + k]);
+          i += n;
+          if (meta.length === metaLen) {
+            reader.cancel().catch(() => {});
+            const m = decode(meta).match(/StreamTitle='(.*?)';/s);
+            return m ? m[1] : '';
+          }
+        }
+      }
+      reader.cancel().catch(() => {});
+      return '';
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(t);
+    }
+  }
+  // Some servers send ICY metadata but don't let web pages read the icy-metaint header.
+  // The metadata block starts with "StreamTitle='", so find that in the first ~96 KB instead.
+  const MARK = [...'StreamTitle=\''].map(c => c.charCodeAt(0));
+  async function icyScan(reader) {
+    const buf = [];
+    let from = 1; // where the next search starts
+    try {
+      while (buf.length < 96 * 1024) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        for (const b of value) buf.push(b);
+        let i = from;
+        for (; i + MARK.length < buf.length; i++) {
+          if (buf[i] !== 0x53 || !MARK.every((c, k) => buf[i + k] === c)) continue;
+          const len = buf[i - 1] * 16; // the length byte right before the block
+          if (len && i + len > buf.length) break; // block not complete yet: wait for more bytes
+          const m = decode(buf.slice(i, len ? i + len : i + 512)).match(/StreamTitle='(.*?)';/s);
+          if (m) return m[1];
+        }
+        from = Math.max(1, i);
+      }
+      return null; // no ICY metadata in this stream
+    } finally {
+      reader.cancel().catch(() => {});
+    }
+  }
+  async function icecastTitle(url) {
+    const u = new URL(url);
+    const r = await timed(u.origin + '/status-json.xsl', 6000);
+    const j = await r.res.json();
+    r.abort();
+    let src = j?.icestats?.source;
+    src = Array.isArray(src) ? src : src ? [src] : [];
+    const mount = src.find(x => { try { return new URL(x.listenurl).pathname === u.pathname; } catch { return false; } }) ||
+                  (src.length === 1 ? src[0] : null);
+    if (!mount) return null;
+    return mount.artist ? `${mount.artist} - ${mount.title || ''}` : mount.title || '';
+  }
+  async function shoutcastTitle(url) {
+    const r = await timed(new URL(url).origin + '/currentsong?sid=1', 6000);
+    if (!r.res.ok) { r.abort(); return null; }
+    const text = (await r.res.text()).trim();
+    r.abort();
+    return text.length < 300 && !text.includes('<') ? text : null;
+  }
+  const somaId = url => (url.match(/ice\d*\.somafm\.com\/(\w+)-\d+-\w+/i) || url.match(/somafm\.com\/(\w+?)(?:130|256|64|32)?\.pls/i) || [])[1];
+
+  // One look-up. Returns { info, next } or null when this station has no usable source.
+  async function lookup(url) {
+    const soma = somaId(url);
+    if (soma) {
+      const r = await timed(`https://api.somafm.com/songs/${soma}.json`, 8000);
+      const s = (await r.res.json())?.songs?.[0];
+      r.abort();
+      api.method = 'somafm';
+      return { info: s ? { artist: s.artist, title: s.title, album: s.album, art: s.albumArt, source: 'SomaFM' } : {}, next: 30000 };
+    }
+    const host = hostOf(url);
+    const known = hostMethod.get(host);
+    const order = known && Date.now() - known.at < 30 * 60e3 ? [known.m] : ['icy', 'icecast', 'shoutcast'];
+    for (const m of order) {
+      if (m === 'none') break;
+      let t = null;
+      try { t = m === 'icy' ? await icyTitle(url) : m === 'icecast' ? await icecastTitle(url) : await shoutcastTitle(url); } catch { t = null; }
+      if (t !== null) {
+        hostMethod.set(host, { m, at: Date.now() });
+        api.method = m;
+        return { info: { text: t, source: { icy: 'stream metadata', icecast: 'Icecast status', shoutcast: 'Shoutcast status' }[m] }, next: 20000 };
+      }
+    }
+    hostMethod.set(host, { m: 'none', at: Date.now() });
+    api.method = 'none';
+    return null;
+  }
+
+  api.start = s => {
+    api.stop();
+    if (api.key !== s.st.key) { api.key = s.st.key; api.np = null; api.history = []; }
+    const my = ++run;
+    const url = s.target || effectiveUrl(s.url);
+    if (engine === 'hls' || kindOf(url) === 'hls') { api.method = 'hls'; return; } // titles arrive as metadata cues
+    const tick = async () => {
+      if (my !== run) return;
+      let res = null;
+      try { res = await lookup(url); } catch { res = { next: 30000 }; }
+      if (my !== run) return;
+      if (res?.info) set(res.info);
+      if (res) timer = setTimeout(tick, res.next);
+      else renderNow();
+    };
+    tick();
+  };
+  api.stop = () => {
+    run++;
+    clearTimeout(timer);
+    ctl?.abort();
+    api.method = '';
+  };
+  // Song changes reached the station's own metadata track (HLS ID3 tags).
+  api.cues = track => {
+    if (!track.activeCues) return;
+    const f = {};
+    for (const cue of track.activeCues) {
+      const v = cue.value;
+      if (!v?.key) continue;
+      const data = typeof v.data === 'string' ? v.data : '';
+      const kv = data.match(/title="([^"]*)".*?artist="([^"]*)"/i); // iHeart-style: title="…",artist="…"
+      if (kv) { f.TIT2 = kv[1]; f.TPE1 = kv[2]; continue; }
+      const st = data.match(/StreamTitle='(.*?)';/s);
+      if (st) { f.text = st[1]; continue; }
+      if (['TIT2', 'TPE1', 'TALB'].includes(v.key)) f[v.key] = data;
+    }
+    if (f.text || f.TIT2) set({ text: f.text, artist: f.TPE1, title: f.TIT2, album: f.TALB, source: 'stream tags' });
+  };
+  api.current = st => (st && api.np && api.key === st.key && session?.started && session.st.key === st.key ? api.np : null);
+  return api;
+})();
+audio.textTracks.addEventListener('addtrack', e => {
+  const tr = e.track;
+  if (tr.kind !== 'metadata') return;
+  tr.mode = 'hidden';
+  tr.addEventListener('cuechange', () => NowPlaying.cues(tr));
+});
+
+// Lock-screen / headset controls on phones and laptops: the song when we know it, else the station.
 function setMediaSession(st) {
   if (!('mediaSession' in navigator)) return;
+  const np = NowPlaying.current(st);
+  const art = np?.art || st.logo;
   try {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: st.name, artist: [countryName(st.country || ''), groupLabel(st)].filter(x => x && x.length > 1).join(' · '), album: 'radio.sala.company',
-      artwork: st.logo ? [{ src: st.logo, sizes: '256x256' }] : [],
-    });
+    navigator.mediaSession.metadata = new MediaMetadata(np
+      ? { title: np.title || np.text, artist: np.artist || st.name, album: np.artist ? st.name : 'radio.sala.company', artwork: art ? [{ src: art, sizes: '256x256' }] : [] }
+      : { title: st.name, artist: [countryName(st.country || ''), groupLabel(st)].filter(x => x && x.length > 1).join(' · '), album: 'radio.sala.company',
+          artwork: st.logo ? [{ src: st.logo, sizes: '256x256' }] : [] });
   } catch { /* old browser */ }
 }
 if ('mediaSession' in navigator) {
@@ -1372,6 +1584,11 @@ function renderNow() {
   const ss = stationStatus(st);
   const h = S.health.get(src.url);
   $('#nowName').textContent = st.name;
+  const np = NowPlaying.current(st);
+  const track = $('#nowTrack');
+  track.classList.toggle('hidden', !np);
+  track.innerHTML = '';
+  if (np) track.innerHTML = `<span class="np-k">NOW</span> ${np.artist ? `<b>${esc(np.title)}</b> <span class="muted">by</span> ${esc(np.artist)}` : `<b>${esc(np.text)}</b>`}${np.album ? ` <span class="muted">· ${esc(np.album)}</span>` : ''}`;
   const cc = st.country;
   $('#nowMeta').innerHTML = `No. ${stNum(st)} · ${cc ? `${countryFlag(cc)} ${esc(countryName(cc))} · ` : ''}${esc(groupLabel(st))} · ${badgeHtml(ss, 'Untested')}`;
   const logo = $('#nowLogo');
@@ -1400,6 +1617,13 @@ function renderNow() {
   if (h?.probe) lines.push(`Test ${ago(h.probe.at)}: ${fromProbe(h.probe).label}${h.probe.note ? ' · ' + h.probe.note : ''}`);
   if (src.rbOk === 0) lines.push('Radio Browser’s own check failed for this link last time.');
   if (isMixed(src.url)) lines.push('Plain-HTTP stream: playing the HTTPS version, because browsers block plain HTTP on this page.');
+  if (np && NowPlaying.history.length) {
+    const t = d => new Date(d).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    lines.push('Earlier: ' + NowPlaying.history.map(h => `${t(h.at)} ${h.text}`).join(' · '));
+  }
+  if (session?.started && session.st.key === st.key && NowPlaying.method === 'none') {
+    lines.push('No song or show titles: this station’s server doesn’t share them with web pages.');
+  }
   if (lines.length < 2 && !h) lines.push('No history yet.');
   $('#nowStats').innerHTML = lines.map(l => `<div>${esc(l)}</div>`).join('');
 }

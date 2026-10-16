@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -38,6 +38,7 @@
               <div class="dial-logo"><img id="vfdLogo" alt="" class="hidden"></div>
               <div class="dial-title">
                 <b class="dial-name"><span id="vfdNum">---</span> <span id="vfdName">STANDBY</span></b>
+                <span class="dial-np hidden" id="vfdTrack" aria-live="polite"></span>
                 <span class="dial-meta" id="vfdMeta">Turn TUNING or pick a station from the guide</span>
               </div>
             </div>
@@ -108,6 +109,7 @@
       <div class="now-logo"><img id="nowLogo" alt="" class="hidden"></div>
       <div class="now-text">
         <div id="nowName">Pick a station</div>
+        <div id="nowTrack" class="now-track hidden"></div>
         <div id="nowMeta" class="muted"></div>
         <select id="sourceSel" class="hidden" title="This station has several stream links; pick one" aria-label="Stream link"></select>
       </div>
@@ -269,6 +271,6 @@
 </dialog>
 
 <div id="toast" class="toast hidden"></div>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
