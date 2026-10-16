@@ -7,15 +7,19 @@
 <!-- Some stream servers (e.g. SomaFM) refuse requests from unknown sites; send no Referer to players or testers. -->
 <meta name="referrer" content="no-referrer">
 <title>radio.sala.company</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
 <header class="topbar">
-  <div class="brand"><span class="brand-dot" aria-hidden="true"></span>radio.sala.company</div>
+  <div class="brand"><span class="brand-dot" aria-hidden="true"></span><img class="brand-icon" src="favicon.svg" width="26" height="26" alt="">radio.sala.company</div>
   <select id="listSelect" title="Your station lists (also on the BAND knob)" aria-label="Station list"></select>
   <button id="addListBtn" class="primary">+ List</button>
   <button id="refreshListBtn" title="Reload this list from its source" aria-label="Reload list">⟳</button>

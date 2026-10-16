@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="3 5 94 94">
+  <!-- An old-style pocket transistor radio: leather strap, red body, cream face,
+       slotted speaker grille, round tuning dial with an orange needle, thumbwheel. -->
+  <defs>
+    <clipPath id="spk"><circle cx="36" cy="62" r="17"/></clipPath>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e0573a"/>
+      <stop offset="1" stop-color="#b23a22"/>
+    </linearGradient>
+  </defs>
+  <path d="M26 32C26 6 74 6 74 32" fill="none" stroke="#6b4426" stroke-width="7" stroke-linecap="round"/>
+  <rect x="7" y="27" width="86" height="68" rx="15" fill="url(#body)" stroke="#6e1f12" stroke-width="3"/>
+  <rect x="14" y="35" width="72" height="53" rx="9" fill="#f4e7c8" stroke="#c9b48a" stroke-width="2"/>
+  <circle cx="36" cy="62" r="17" fill="#3b2a1d"/>
+  <g clip-path="url(#spk)" fill="#c9b48a">
+    <rect x="18" y="48" width="36" height="3"/>
+    <rect x="18" y="54" width="36" height="3"/>
+    <rect x="18" y="60" width="36" height="3"/>
+    <rect x="18" y="66" width="36" height="3"/>
+    <rect x="18" y="72" width="36" height="3"/>
+  </g>
+  <circle cx="68" cy="53" r="12" fill="#fffaf0" stroke="#3b2a1d" stroke-width="3"/>
+  <path d="M60 53h16M68 45v4M61.5 47.5l2.5 2.5M74.5 47.5l-2.5 2.5" stroke="#3b2a1d" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M68 53l6-7" stroke="#ff7a12" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="68" cy="77" r="6" fill="#6e1f12"/>
+  <path d="M65 77h6" stroke="#f4e7c8" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

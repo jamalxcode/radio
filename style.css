@@ -58,6 +58,7 @@ button.on { background: var(--hi); border-color: var(--hi); color: #1a0d00; }
   background: var(--guide-deep); border-bottom: 3px solid var(--hi);
 }
 .brand { font: 700 20px/1 var(--print-font); color: var(--print); letter-spacing: .06em; white-space: nowrap; display: flex; align-items: center; gap: 10px; margin-right: 6px; }
+.brand-icon { width: 26px; height: 26px; flex: none; }
 .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: #4a1a12; box-shadow: inset 0 0 0 2px #200a06; }
 body.onair .brand-dot { background: var(--bad); box-shadow: 0 0 10px var(--bad); }
 #listSelect { min-width: 0; max-width: 320px; flex: 0 1 auto; }
