@@ -51,7 +51,7 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 | VOLUME knob | Volume |
 | POWER switch | Play / stop |
 | SENS DX / LOCAL | DX shows every station. LOCAL hides stations that are off air or blocked. |
-| ⏾ Sleep (with the play controls) | 5 minutes to 3 hours, with a live countdown; at zero the sound fades out and the radio turns off |
+| ⏾ Sleep (with the play controls) | 30 minutes to 3 hours in 30-minute steps, with a live countdown; at zero the sound fades out and the radio turns off |
 | MEMORY · LIGHT | Favorite · dial lamp and effects |
 | TUNE light | Green = playing, amber = tuning, buffering or paused, red = no signal |
 

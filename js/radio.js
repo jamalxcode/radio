@@ -248,7 +248,7 @@ const VFD = (() => {
   return { update };
 })();
 
-/* Sleep timer, next to the play controls: pick 5 minutes to 3 hours, it counts down beside the menu,
+/* Sleep timer, next to the play controls: pick 30 minutes to 3 hours, it counts down beside the menu,
    and at zero the sound fades out over 8 seconds and the radio turns off. */
 const Sleep = (() => {
   const api = { at: 0, fading: false };
