@@ -250,6 +250,8 @@ audio.addEventListener('playing', () => {
     setTimeout(() => { if (session === s && s.token === tok) s.retries = 0; }, 60000); // stayed up a minute: allow fresh retries later
   }
   addRecent(s.st);
+  // Folded phone: say once where the full radio (dial, sleep timer, details) is.
+  if (Sheet.phone.matches && !S.ui.miniHint) { S.ui.miniHint = true; saveUi(); toast('Tip: tap the player bar for the full radio, sleep timer and more'); }
   NowPlaying.start(s);
   clearTimeout(startTimer);
   const ms = performance.now() - s.t0;

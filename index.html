@@ -14,18 +14,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=12">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
 <header class="topbar">
-  <div class="brand"><span class="brand-dot" aria-hidden="true"></span><img class="brand-icon" src="favicon.svg" width="26" height="26" alt="">radio.sala.company</div>
+  <div class="brand"><span class="brand-dot" aria-hidden="true"></span><img class="brand-icon" src="favicon.svg" width="26" height="26" alt=""><span class="brand-text">radio.sala.company</span></div>
   <select id="listSelect" title="Your station lists (also on the BAND knob)" aria-label="Station list"></select>
   <button id="addListBtn" class="primary">+ List</button>
   <button id="refreshListBtn" title="Reload this list from its source" aria-label="Reload list">⟳</button>
   <button id="deleteListBtn" title="Remove this list" aria-label="Remove list">🗑</button>
   <div class="spacer"></div>
-  <button id="songsBtn" title="Songs you heard" aria-label="Songs heard">♪ Songs</button>
+  <button id="songsBtn" title="Songs you heard" aria-label="Songs heard">♪<span class="btn-lbl"> Songs</span></button>
   <button id="helpBtn" title="How this radio works" aria-label="Help">?</button>
   <button id="settingsBtn" title="Settings & backup" aria-label="Settings">⚙</button>
 </header>
@@ -71,7 +71,7 @@
             <button id="tNext" title="Next station (→)" aria-label="Next station">⏭</button>
             <!-- Sleep timer: pick how long, it counts down here and turns the sound off at zero -->
             <label class="t-sleep" id="sleepBox" title="Sleep timer: the radio fades out and turns off when the countdown reaches zero">
-              <span class="t-sleep-ico" aria-hidden="true">⏾</span>
+              <svg class="t-sleep-ico moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
               <select id="sleepSel" aria-label="Sleep timer">
                 <option value="0">Sleep</option>
                 <option value="30">30 m</option>
@@ -224,9 +224,24 @@
     <span class="mini-logo"><img id="miniLogo" alt="" class="hidden"></span>
     <span class="mini-text"><b id="miniName">Pick a station</b><span id="miniSub">Tap a station below to play it</span></span>
   </button>
+  <!-- Sleep timer on the phone bar: the moon opens the same 30 min – 3 h menu; the countdown shows on it -->
+  <label class="mini-btn mini-sleep" id="miniSleepBox" title="Sleep timer">
+    <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
+    <span class="mini-sleep-left" id="miniSleepLeft"></span>
+    <select id="miniSleepSel" aria-label="Sleep timer">
+      <option value="0">Sleep off</option>
+      <option value="30">30 minutes</option>
+      <option value="60">1 hour</option>
+      <option value="90">1½ hours</option>
+      <option value="120">2 hours</option>
+      <option value="150">2½ hours</option>
+      <option value="180">3 hours</option>
+    </select>
+  </label>
   <button class="mini-btn" id="miniMute" aria-label="Mute">🔊</button>
   <button class="mini-btn" id="miniPlay" aria-label="Play or pause">▶</button>
   <button class="mini-btn" id="miniNext" aria-label="Next station">⏭</button>
+  <button class="mini-btn mini-expand" id="miniExpand" aria-label="Open the full radio" title="Open the full radio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
 
 <dialog id="addDlg">
@@ -365,13 +380,13 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=7"></script>
-<script src="js/lists.js?v=7"></script>
-<script src="js/health.js?v=7"></script>
-<script src="js/guide.js?v=7"></script>
-<script src="js/radio.js?v=7"></script>
-<script src="js/player.js?v=7"></script>
-<script src="js/nowplaying.js?v=7"></script>
-<script src="js/app.js?v=7"></script>
+<script src="js/core.js?v=8"></script>
+<script src="js/lists.js?v=8"></script>
+<script src="js/health.js?v=8"></script>
+<script src="js/guide.js?v=8"></script>
+<script src="js/radio.js?v=8"></script>
+<script src="js/player.js?v=8"></script>
+<script src="js/nowplaying.js?v=8"></script>
+<script src="js/app.js?v=8"></script>
 </body>
 </html>

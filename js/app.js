@@ -282,7 +282,7 @@ function wire() {
     toast(S.ui.status === 'hideBad' ? 'LOCAL: hiding stations that are off air or blocked' : 'DX: showing every station');
   });
   onClick('#lightBtn', () => { S.settings.fx = !S.settings.fx; DB.put('kv', S.settings, 'settings'); Radio.refreshFx(); });
-  $('#sleepSel').addEventListener('change', e => Sleep.set(+e.target.value));
+  for (const id of ['#sleepSel', '#miniSleepSel']) $(id).addEventListener('change', e => Sleep.set(+e.target.value));
   onClick('#favBtn', () => toggleFav(S.current));
   onClick('#prevBtn', () => step(-1));
   onClick('#nextBtn', () => step(1));
@@ -296,6 +296,11 @@ function wire() {
   onClick('#tFav', () => toggleFav(S.current));
   // Phone mini-player + sheet
   onClick('#miniOpen', () => Sheet.open());
+  onClick('#miniExpand', () => Sheet.open());
+  // Swipe the player bar up to open the radio (like music apps).
+  let swipeY = null;
+  $('#mini').addEventListener('touchstart', e => { swipeY = e.touches[0].clientY; }, { passive: true });
+  $('#mini').addEventListener('touchend', e => { if (swipeY !== null && swipeY - e.changedTouches[0].clientY > 40) Sheet.open(); swipeY = null; }, { passive: true });
   onClick('#sheetClose', () => Sheet.close());
   onClick('#miniPlay', togglePause);
   onClick('#miniNext', () => step(1));

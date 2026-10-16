@@ -237,7 +237,7 @@ const VFD = (() => {
     set('vfdTime', s?.liveAt && Radio.state !== 'stopped' ? since(Date.now() - s.liveAt) + (s.behindMs > 1500 ? ` −${Math.round(s.behindMs / 1000)}s` : '') : '--:--');
     const kind = { hls: 'HLS', native: 'DIRECT' }[engine] || '';
     set('vfdSrc', s ? `${s.idx + 1}/${s.order.length}${kind ? ' · ' + kind : ''}` : st ? `${st.sources.length} LINK${st.sources.length > 1 ? 'S' : ''}` : '—');
-    set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · ⏾${Sleep.left()}m` : ''));
+    set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · ☾${Sleep.left()}m` : ''));
     // Phone mini-player
     set('miniName', st ? st.name : 'Pick a station');
     set('miniSub', np ? '♪ ' + np.text : st ? (s ? MINI[Radio.state] || '' : 'Tap play to listen') : 'Tap a station below to play it');
@@ -259,16 +259,26 @@ const Sleep = (() => {
     const s = Math.ceil(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60;
     return h ? `${h}:${two(m)}:${two(s % 60)}` : `${m}:${two(s % 60)}`;
   }
+  // Short form for the phone bar's moon button: "59m", "2h59".
+  function short(ms) {
+    const m = Math.ceil(ms / 60000);
+    return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${two(m % 60)}`;
+  }
+  // The dial's control row and the phone bar both have the timer; keep them in step.
   function render() {
-    const left = $('#sleepLeft');
     const on = !!api.at;
+    const left = $('#sleepLeft');
     left.classList.toggle('hidden', !on);
     $('#sleepBox').classList.toggle('on', on);
+    $('#miniSleepBox').classList.toggle('on', on);
     if (on) left.textContent = api.fading ? 'fading…' : clock(msLeft());
-    if (!on && $('#sleepSel').value !== '0') $('#sleepSel').value = '0';
+    $('#miniSleepLeft').textContent = on ? (api.fading ? '…' : short(msLeft())) : '';
+    $('#miniSleepBox').title = on ? `Sleep timer: radio off in ${clock(msLeft())}` : 'Sleep timer';
+    if (!on) for (const s of [$('#sleepSel'), $('#miniSleepSel')]) if (s.value !== '0') s.value = '0';
   }
   api.set = minutes => {
     api.at = minutes > 0 ? Date.now() + minutes * 60000 : 0;
+    for (const s of [$('#sleepSel'), $('#miniSleepSel')]) s.value = String(minutes > 0 ? minutes : 0);
     render();
     toast(minutes > 0 ? `Sleep timer: the radio turns off in ${clock(minutes * 60000)}` : 'Sleep timer off');
   };
