@@ -184,7 +184,7 @@ body.fx .vfd-cell b { text-shadow: 0 0 6px rgba(255, 220, 160, .35); }
 body.fx.playing .holes { animation: thump 0.5s ease-in-out infinite alternate; }
 @keyframes thump { to { transform: scale(1.012); } }
 .nameplate { position: absolute; left: 14px; right: 14px; bottom: 12px; display: flex; flex-direction: column; gap: 3px; }
-.nameplate b { font: 800 18px/1 var(--print-font); letter-spacing: .06em; color: var(--print); }
+.nameplate b { font: 800 15px/1.1 var(--print-font); letter-spacing: .02em; color: var(--print); overflow-wrap: anywhere; }
 .nameplate small { font: 600 9px/1 var(--print-font); letter-spacing: .2em; color: rgba(233,230,220,.7); }
 
 .panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
