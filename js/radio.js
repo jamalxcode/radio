@@ -4,7 +4,7 @@
    buttons, sleep timer, and the phone mini-player. How its controls map to the app:
    BAND = your station lists (FM = first list, MW = second, SW1–SW8 = the next eight),
    TUNING = move through the stations, POWER = play/stop, SENS DX/LOCAL = all / hide off air,
-   MEMORY = favorite, SLEEP = stop later, LIGHT = dial lamp + effects.
+   MEMORY = favorite, LIGHT = dial lamp + effects; the sleep timer sits with the play controls under the dial.
    ========================================================================= */
 const BANDS = [['FM', ''], ['MW', ''], ['SW1', '49m'], ['SW2', '41m'], ['SW3', '31m'], ['SW4', '25m'], ['SW5', '22m'], ['SW6', '19m'], ['SW7', '16m'], ['SW8', '13m']];
 const bandLabel = i => (i < BANDS.length ? BANDS[i][0] : 'EXT' + (i - BANDS.length + 1));
@@ -237,7 +237,7 @@ const VFD = (() => {
     set('vfdTime', s?.liveAt && Radio.state !== 'stopped' ? since(Date.now() - s.liveAt) + (s.behindMs > 1500 ? ` −${Math.round(s.behindMs / 1000)}s` : '') : '--:--');
     const kind = { hls: 'HLS', native: 'DIRECT' }[engine] || '';
     set('vfdSrc', s ? `${s.idx + 1}/${s.order.length}${kind ? ' · ' + kind : ''}` : st ? `${st.sources.length} LINK${st.sources.length > 1 ? 'S' : ''}` : '—');
-    set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · z${Sleep.left()}m` : ''));
+    set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · ⏾${Sleep.left()}m` : ''));
     // Phone mini-player
     set('miniName', st ? st.name : 'Pick a station');
     set('miniSub', np ? '♪ ' + np.text : st ? (s ? MINI[Radio.state] || '' : 'Tap play to listen') : 'Tap a station below to play it');
@@ -248,41 +248,56 @@ const VFD = (() => {
   return { update };
 })();
 
-/* Sleep timer: SLEEP cycles off → 15 → 30 → 60 → 90 minutes; at the end the sound fades out and the radio stops. */
+/* Sleep timer, next to the play controls: pick 5 minutes to 3 hours, it counts down beside the menu,
+   and at zero the sound fades out over 8 seconds and the radio turns off. */
 const Sleep = (() => {
-  const STEPS = [15, 30, 60, 90];
-  const api = { at: 0 };
-  api.left = () => Math.max(0, Math.ceil((api.at - Date.now()) / 60000));
-  function render() {
-    const b = $('#sleepBtn');
-    b.textContent = api.at ? `SLEEP ${api.left()}m` : 'SLEEP';
-    b.classList.toggle('on', !!api.at);
-    b.setAttribute('aria-label', api.at ? `Sleep timer: ${api.left()} minutes left` : 'Sleep timer off');
+  const api = { at: 0, fading: false };
+  const msLeft = () => Math.max(0, api.at - Date.now());
+  api.left = () => Math.ceil(msLeft() / 60000);
+  const two = n => String(n).padStart(2, '0');
+  function clock(ms) {
+    const s = Math.ceil(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60;
+    return h ? `${h}:${two(m)}:${two(s % 60)}` : `${m}:${two(s % 60)}`;
   }
-  api.cycle = () => {
-    const next = api.at ? STEPS.find(m => m > api.left()) : STEPS[0];
-    api.at = next ? Date.now() + next * 60000 : 0;
+  function render() {
+    const left = $('#sleepLeft');
+    const on = !!api.at;
+    left.classList.toggle('hidden', !on);
+    $('#sleepBox').classList.toggle('on', on);
+    if (on) left.textContent = api.fading ? 'fading…' : clock(msLeft());
+    if (!on && $('#sleepSel').value !== '0') $('#sleepSel').value = '0';
+  }
+  api.set = minutes => {
+    api.at = minutes > 0 ? Date.now() + minutes * 60000 : 0;
     render();
-    VFD.update();
-    toast(next ? `Sleep timer: the radio stops in ${next} minutes` : 'Sleep timer off');
+    toast(minutes > 0 ? `Sleep timer: the radio turns off in ${clock(minutes * 60000)}` : 'Sleep timer off');
   };
   async function fadeOut() {
+    api.fading = true;
+    render();
     const v0 = audio.volume;
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 20 && session; i++) {
       audio.volume = v0 * (1 - i / 20);
       await new Promise(r => setTimeout(r, 400));
     }
     stopPlayback();
-    audio.volume = v0;
+    audio.volume = v0; // ready at the usual volume next time
     Radio.volume(v0);
-    toast('Sleep timer: radio stopped. Good night.');
-  }
-  // Its own clock (not the display's), so it also runs while the screen is off.
-  setInterval(() => {
-    if (!api.at) return;
-    if (Date.now() >= api.at) { api.at = 0; render(); if (session) fadeOut(); return; }
+    api.fading = false;
+    api.at = 0;
     render();
-  }, 5000);
+    toast('Sleep timer: radio off. Good night.');
+  }
+  // Its own clock (not the display's), so it keeps counting while the screen is off.
+  setInterval(() => {
+    if (!api.at || api.fading) return;
+    if (Date.now() >= api.at) {
+      if (session) fadeOut();
+      else { api.at = 0; render(); }
+      return;
+    }
+    render();
+  }, 1000);
   return api;
 })();
 

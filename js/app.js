@@ -282,7 +282,7 @@ function wire() {
     toast(S.ui.status === 'hideBad' ? 'LOCAL: hiding stations that are off air or blocked' : 'DX: showing every station');
   });
   onClick('#lightBtn', () => { S.settings.fx = !S.settings.fx; DB.put('kv', S.settings, 'settings'); Radio.refreshFx(); });
-  onClick('#sleepBtn', () => Sleep.cycle());
+  $('#sleepSel').addEventListener('change', e => Sleep.set(+e.target.value));
   onClick('#favBtn', () => toggleFav(S.current));
   onClick('#prevBtn', () => step(-1));
   onClick('#nextBtn', () => step(1));

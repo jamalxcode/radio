@@ -146,7 +146,23 @@ body.fx .vfd-cell b { text-shadow: 0 0 6px rgba(255, 220, 160, .35); }
   pointer-events: none;
 }
 /* station controls under the dial: prev · pause · stop · next | mute · live · favorite */
-.transport { display: flex; align-items: center; gap: 6px; padding-top: 6px; border-top: 1px solid rgba(233,230,220,.18); }
+.transport { display: flex; align-items: center; gap: 6px; padding-top: 6px; border-top: 1px solid rgba(233,230,220,.18); flex-wrap: wrap; }
+/* sleep timer: looks like a transport key; the countdown lights up orange while it runs */
+.t-sleep {
+  height: 34px; display: inline-flex; align-items: center; gap: 4px; padding: 0 4px 0 9px; cursor: pointer;
+  background: linear-gradient(#2c2d30, #1b1c1e); border: 1px solid #000; border-radius: 5px; box-shadow: 0 2px 0 #000, inset 0 1px 0 rgba(255,255,255,.06);
+  color: var(--print); font: 700 13px/1 var(--print-font);
+}
+.t-sleep:hover, .t-sleep:focus-within { border-color: var(--hi); }
+.t-sleep-ico { font-size: 15px; color: rgba(233,230,220,.7); }
+.t-sleep select {
+  border: none; background: transparent; color: inherit; font: inherit; padding: 0 2px; height: 100%; cursor: pointer;
+}
+.t-sleep select:focus-visible { outline: none; }
+.t-sleep-left { font: 20px/1 var(--pixel); color: var(--hi); padding-right: 4px; min-width: 3.2em; text-align: right; font-weight: normal; }
+.t-sleep.on { border-color: rgba(255,138,31,.6); }
+.t-sleep.on .t-sleep-ico { color: var(--hi); }
+body.fx .t-sleep.on .t-sleep-left { text-shadow: 0 0 6px rgba(255,138,31,.55); }
 .transport button {
   min-width: 40px; height: 34px; padding: 0 10px; display: grid; place-items: center;
   font: 700 15px/1 var(--print-font); color: var(--print); letter-spacing: .06em;

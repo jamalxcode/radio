@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -69,6 +69,23 @@
             <button id="tPause" class="t-main" title="Pause / play (Space)" aria-label="Pause">⏸</button>
             <button id="tStop" title="Stop" aria-label="Stop">⏹</button>
             <button id="tNext" title="Next station (→)" aria-label="Next station">⏭</button>
+            <!-- Sleep timer: pick how long, it counts down here and turns the sound off at zero -->
+            <label class="t-sleep" id="sleepBox" title="Sleep timer: the radio fades out and turns off when the countdown reaches zero">
+              <span class="t-sleep-ico" aria-hidden="true">⏾</span>
+              <select id="sleepSel" aria-label="Sleep timer">
+                <option value="0">Sleep</option>
+                <option value="5">5 m</option>
+                <option value="15">15 m</option>
+                <option value="30">30 m</option>
+                <option value="45">45 m</option>
+                <option value="60">1 h</option>
+                <option value="90">1½ h</option>
+                <option value="120">2 h</option>
+                <option value="150">2½ h</option>
+                <option value="180">3 h</option>
+              </select>
+              <b id="sleepLeft" class="t-sleep-left hidden" role="timer" aria-label="Time until the radio turns off"></b>
+            </label>
             <span class="t-sep" aria-hidden="true"></span>
             <button id="tMute" title="Mute (M)" aria-label="Mute" aria-pressed="false">🔊</button>
             <button id="tLive" title="Back to live: reconnect at the live point" aria-label="Back to live">● LIVE</button>
@@ -114,7 +131,6 @@
               <button id="prevBtn" class="pill" title="Previous station (←)" aria-label="Previous station">◀ SCAN</button>
               <button id="nextBtn" class="pill" title="Next station (→)" aria-label="Next station">SCAN ▶</button>
               <button id="favBtn" class="pill" title="Save as a favorite (F)" aria-label="Favorite"><b>☆</b> MEMORY</button>
-              <button id="sleepBtn" class="pill" title="Sleep timer: stop playing after 15 / 30 / 60 / 90 minutes" aria-label="Sleep timer">SLEEP</button>
               <button id="lightBtn" class="pill" title="Dial light and effects" aria-label="Light" aria-pressed="true">LIGHT</button>
             </div>
           </div>
@@ -343,7 +359,8 @@
       <dt>Under the dial</dt><dd>⏮ ⏭ previous / next station · ⏸ pause (Space) · ⏹ stop · 🔊 mute (M) · ● LIVE jumps back to the live broadcast after a pause.</dd>
       <dt>POWER</dt><dd>Play / stop. If a stream drops, the radio reconnects by itself.</dd>
       <dt>SENS DX / LOCAL</dt><dd>DX shows every station; LOCAL hides the ones that are off air or blocked.</dd>
-      <dt>MEMORY · SLEEP · LIGHT</dt><dd>Save a favorite · stop after 15–90 minutes · dial lamp and effects.</dd>
+      <dt>⏾ Sleep</dt><dd>Next to the play controls: pick 5 minutes to 3 hours. It counts down there, then fades the sound out and turns the radio off.</dd>
+      <dt>MEMORY · LIGHT</dt><dd>Save a favorite · dial lamp and effects.</dd>
       <dt>♪ Songs</dt><dd>Song and show titles you heard, with links to find them on YouTube, Spotify or Apple Music.</dd>
     </dl>
     <div class="dlg-acts"><button value="close" class="primary">Got it</button></div>
@@ -351,13 +368,13 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=5"></script>
-<script src="js/lists.js?v=5"></script>
-<script src="js/health.js?v=5"></script>
-<script src="js/guide.js?v=5"></script>
-<script src="js/radio.js?v=5"></script>
-<script src="js/player.js?v=5"></script>
-<script src="js/nowplaying.js?v=5"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/core.js?v=6"></script>
+<script src="js/lists.js?v=6"></script>
+<script src="js/health.js?v=6"></script>
+<script src="js/guide.js?v=6"></script>
+<script src="js/radio.js?v=6"></script>
+<script src="js/player.js?v=6"></script>
+<script src="js/nowplaying.js?v=6"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
