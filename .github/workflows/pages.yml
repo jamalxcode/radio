@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Mirror station lists
         run: node scripts/mirror-lists.mjs
         continue-on-error: true   # a list server being down shouldn't stop the site from deploying
