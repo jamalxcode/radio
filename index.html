@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#151617">
+<!-- Some stream servers (e.g. SomaFM) refuse requests from unknown sites; send no Referer to players or testers. -->
+<meta name="referrer" content="no-referrer">
+<title>M3U Radio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+<link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
+</head>
+<body class="fx">
+<header class="topbar">
+  <div class="brand"><span class="brand-dot" aria-hidden="true"></span>M3U RADIO</div>
+  <select id="listSelect" title="Your station lists" aria-label="Station list"></select>
+  <button id="addListBtn" class="primary">+ List</button>
+  <button id="refreshListBtn" title="Reload this list from its source" aria-label="Reload list">⟳</button>
+  <button id="deleteListBtn" title="Remove this list" aria-label="Remove list">🗑</button>
+  <div class="spacer"></div>
+  <button id="settingsBtn" title="Settings & backup" aria-label="Settings">⚙</button>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <!-- A 10-band shortwave portable. BAND = your station lists, TUNING = move through the list,
+         POWER = play/stop, DX/LOCAL = all stations / hide broken ones, LIGHT = dial lamp + effects. -->
+    <div class="radio" id="radio">
+      <div class="radio-top">
+        <div class="scale-window" id="dial" title="Click the scale to tune across the list">
+          <div class="bands" id="bands" aria-hidden="true"></div>
+          <div class="needle" id="needle" aria-hidden="true"></div>
+        </div>
+        <div class="leds">
+          <span class="led-wrap"><i class="led" id="tuneLed"></i><small>TUNE</small></span>
+          <span class="led-wrap"><i class="led pwr" id="powerLed"></i><small>POWER</small></span>
+        </div>
+      </div>
+
+      <div class="radio-face">
+        <div class="speaker" aria-hidden="true">
+          <div class="holes"></div>
+          <div class="nameplate"><b>M3U RADIO</b><small>FM / MW / SW · 10 BAND RECEIVER</small></div>
+        </div>
+
+        <div class="panel">
+          <div class="lcd" id="vfd">
+            <div class="lcd-main"><span class="vfd-k">STATION</span><b><span id="vfdNum">---</span> <span id="vfdName">STANDBY</span></b></div>
+            <div class="lcd-grid">
+              <div class="vfd-cell"><span class="vfd-k">STATUS</span><b id="vfdState">STANDBY</b></div>
+              <div class="vfd-cell"><span class="vfd-k">SIGNAL</span><b id="vfdSig">····</b></div>
+              <div class="vfd-cell"><span class="vfd-k">FORMAT</span><b id="vfdFmt">—</b></div>
+              <div class="vfd-cell" title="Seconds of audio loaded ahead. Low = about to drop out."><span class="vfd-k">BUFFER</span><b id="vfdBuf">▯▯▯▯▯▯</b></div>
+              <div class="vfd-cell"><span class="vfd-k">ON AIR</span><b id="vfdTime">--:--</b></div>
+              <div class="vfd-cell"><span class="vfd-k">LINK</span><b id="vfdSrc">—</b></div>
+              <div class="vfd-cell"><span class="vfd-k">TIME</span><b id="vfdClock">--:--</b></div>
+            </div>
+          </div>
+
+          <div class="knobs">
+            <div class="knob-wrap">
+              <div class="knob band" id="bandKnob" role="slider" tabindex="0" aria-label="Band: station list" title="BAND: switch station list (click, scroll or drag)"><i></i></div>
+              <small>BAND</small><span class="knob-val" id="bandName">FM</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob tuning" id="tuneKnob" role="slider" tabindex="0" aria-label="Tuning" title="TUNING: turn to move through the stations (scroll or drag)"><i></i></div>
+              <small>TUNING</small><span class="knob-val">◀ ▶</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob vol" id="volKnob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" title="VOLUME (scroll or drag)"><i></i></div>
+              <small>VOLUME</small><span class="knob-val" id="volVal">80</span>
+            </div>
+          </div>
+
+          <div class="switches">
+            <button id="playBtn" class="slide" title="Power: play / stop (Space)" aria-label="Power" aria-pressed="false">
+              <small>POWER</small><span class="track"><i></i></span><span class="pos"><b>OFF</b><b>ON</b></span>
+            </button>
+            <button id="dxBtn" class="slide" title="DX = every station · LOCAL = hide stations that are off air or blocked" aria-label="DX or local" aria-pressed="false">
+              <small>SENS</small><span class="track"><i></i></span><span class="pos"><b>DX</b><b>LOCAL</b></span>
+            </button>
+            <div class="pills">
+              <button id="prevBtn" class="pill" title="Previous station (←)" aria-label="Previous station">◀ SCAN</button>
+              <button id="nextBtn" class="pill" title="Next station (→)" aria-label="Next station">SCAN ▶</button>
+              <button id="favBtn" class="pill" title="Save to memory = favorite (F)" aria-label="Favorite"><b>☆</b> MEMORY</button>
+              <button id="lightBtn" class="pill" title="Dial light and effects" aria-label="Light" aria-pressed="true">LIGHT</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <audio id="audio" preload="none"></audio>
+      <div id="overlay" class="overlay hidden"></div>
+    </div>
+
+    <div class="now">
+      <div class="now-logo"><img id="nowLogo" alt="" class="hidden"></div>
+      <div class="now-text">
+        <div id="nowName">Pick a station</div>
+        <div id="nowMeta" class="muted"></div>
+        <select id="sourceSel" class="hidden" title="This station has several stream links; pick one" aria-label="Stream link"></select>
+      </div>
+    </div>
+    <div class="rate">
+      <span class="rate-lbl">Your rating</span>
+      <button data-rate="good">👍 Clear</button>
+      <button data-rate="buffers">⚠ Drops out</button>
+      <button data-rate="broken">✖ Broken</button>
+      <button data-rate="">Reset</button>
+      <span class="spacer"></span>
+      <button id="testOneBtn">Test this station</button>
+      <button id="copyBtn" title="Copy the stream link, e.g. to open in VLC">Copy link</button>
+    </div>
+    <div id="nowStats" class="stats muted"></div>
+  </section>
+
+  <aside class="sidebar guide">
+    <div class="guide-head">
+      <span>STATION GUIDE <span class="help" tabindex="0" title="Keyboard: ↑↓ move · Enter play · ←→ prev/next station · PgUp/PgDn page · Space play/stop · F favorite · Esc back to the playing station" aria-label="Keyboard shortcuts: up and down arrows move through the guide, Enter plays, left and right change station, Page Up and Page Down jump a page, Space plays or stops, F toggles favorite, Escape returns to the playing station">?</span></span>
+      <span id="count" class="count"></span>
+    </div>
+    <div class="filters">
+      <div class="frow">
+        <input id="search" type="search" placeholder="Search stations…" autocomplete="off" aria-label="Search stations">
+        <button id="testBtn" title="Check the stations in the current view">Test stations</button>
+      </div>
+      <div class="frow frow4">
+        <select id="countryFilter" title="Country" aria-label="Country"></select>
+        <select id="groupFilter" title="Genre / group" aria-label="Genre"></select>
+        <select id="statusFilter" title="Show" aria-label="Show">
+          <option value="all">Show: all</option>
+          <option value="fav">★ Favorites</option>
+          <option value="recent">🕘 Recently played</option>
+          <option value="good">Working only</option>
+          <option value="hideBad">Hide broken</option>
+          <option value="untested">Untested</option>
+        </select>
+        <select id="sortSel" title="Sort order" aria-label="Sort">
+          <option value="">Sort: list order</option>
+          <option value="best">Sort: best first</option>
+          <option value="name">Sort: A–Z</option>
+          <option value="br">Sort: bitrate</option>
+        </select>
+      </div>
+    </div>
+    <div id="scanBar" class="scanbar" title="Checking stations…" aria-hidden="true"></div>
+    <div id="list" class="list" tabindex="0" role="listbox" aria-label="Stations"><div id="listInner"></div></div>
+    <div class="guide-foot">
+      <span id="testProgress"></span>
+      <span class="legend">
+        <span class="badge good" title="Streams fine in this browser"><i>▮▮▮▮</i>Good</span>
+        <span class="badge warn" title="Slow or drops out"><i>▮▮▯▯</i>Slow</span>
+        <span class="badge bad" title="Offline"><i>▯▯▯▯</i>Off</span>
+        <span class="badge blocked" title="Blocked in browsers"><i>✕</i>Blocked</span>
+        <span class="badge untested" title="Not tested yet"><i>····</i>New</span>
+      </span>
+    </div>
+  </aside>
+</main>
+
+<dialog id="addDlg">
+  <form method="dialog" id="addForm">
+    <h3>Add a station list</h3>
+    <label for="srcKind">Source</label>
+    <select id="srcKind">
+      <option value="rb">Radio Browser (radio-browser.info)</option>
+      <option value="jg">junguler/m3u-radio-music-playlists (by genre)</option>
+      <option value="soma">SomaFM (all channels)</option>
+      <option value="mirror" id="mirrorOpt" hidden>Mirrored lists (updated daily by this site)</option>
+      <option value="url">Playlist URL (M3U / PLS)</option>
+      <option value="file">Upload a file</option>
+      <option value="paste">Paste playlist text</option>
+    </select>
+
+    <div class="src" data-src="rb">
+      <label for="rbMode">What to load</label>
+      <select id="rbMode">
+        <option value="top">Top voted worldwide</option>
+        <option value="clicks">Most listened worldwide</option>
+        <option value="trending">Trending now</option>
+        <option value="country">By country…</option>
+        <option value="tag">By genre / tag…</option>
+        <option value="language">By language…</option>
+        <option value="name">Search by name…</option>
+      </select>
+      <select id="rbCountry" class="rbx hidden" aria-label="Country"></select>
+      <select id="rbTag" class="rbx hidden" aria-label="Genre"></select>
+      <select id="rbLang" class="rbx hidden" aria-label="Language"></select>
+      <input id="rbName" class="rbx hidden" type="search" placeholder="Station name" aria-label="Station name">
+      <p class="muted small">Only stations that passed Radio Browser’s own check are loaded. This app then tests them again in your browser.</p>
+    </div>
+
+    <div class="src hidden" data-src="jg">
+      <label for="jgFile">Genre</label>
+      <select id="jgFile"><option value="">Loading genres…</option></select>
+      <p class="muted small">Updated regularly on <a href="https://github.com/junguler/m3u-radio-music-playlists" target="_blank" rel="noopener">GitHub</a>. The “everything” lists are very large (10–40 MB).</p>
+    </div>
+
+    <div class="src hidden" data-src="soma">
+      <p class="muted small">About 40 listener-supported, ad-free channels from <a href="https://somafm.com" target="_blank" rel="noopener">SomaFM</a>.</p>
+    </div>
+
+    <div class="src hidden" data-src="mirror">
+      <label for="mirrorFile">List</label>
+      <select id="mirrorFile"></select>
+      <p class="muted small">Copied into this site by a daily GitHub Action, because the original server doesn’t let browsers load it directly.</p>
+    </div>
+
+    <div class="src hidden" data-src="url">
+      <label for="plUrl">Playlist URL</label>
+      <input id="plUrl" type="url" placeholder="https://example.com/stations.m3u">
+      <p class="muted small">The server must allow browsers to load it (CORS). GitHub raw links work.</p>
+    </div>
+    <div class="src hidden" data-src="file">
+      <label for="plFile">File</label>
+      <input id="plFile" type="file" accept=".m3u,.m3u8,.pls,.txt,audio/x-mpegurl,audio/x-scpls,text/plain">
+    </div>
+    <div class="src hidden" data-src="paste">
+      <label for="plText">Playlist text</label>
+      <textarea id="plText" placeholder="#EXTM3U&#10;#EXTINF:-1 group-title=&quot;Jazz&quot;,Station name&#10;https://…/stream.mp3"></textarea>
+    </div>
+
+    <label for="plName">Name (optional)</label>
+    <input id="plName" type="text" placeholder="Picked automatically">
+    <div id="addErr" class="err"></div>
+    <div class="dlg-acts">
+      <button value="cancel" formnovalidate>Cancel</button>
+      <button id="addSubmit" class="primary" value="ok">Add</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="setDlg">
+  <form method="dialog" id="setForm">
+    <h3>Settings</h3>
+    <label for="sSlow">Count as a "slow start" after (seconds)</label>
+    <input id="sSlow" type="number" min="1" max="60">
+    <label for="sTimeout">Try the next link / warn after (seconds)</label>
+    <input id="sTimeout" type="number" min="3" max="120">
+    <label class="check"><input id="sAutoSkip" type="checkbox"> Skip to the next working station when one fails</label>
+    <label class="check"><input id="sAutoTest" type="checkbox"> Test stations automatically as you scroll</label>
+    <label class="check"><input id="sFx" type="checkbox"> Dial light and retro effects (same as the LIGHT button)</label>
+    <label for="sConc">Stations to test at the same time</label>
+    <input id="sConc" type="number" min="1" max="16">
+    <h3>Your data</h3>
+    <p class="muted small">Lists, favorites, ratings and test results are saved only in this browser. Use a backup to move them to another browser or device.</p>
+    <div class="btns">
+      <button type="button" id="exportBtn">Export backup</button>
+      <label class="filebtn">Import backup<input id="importFile" type="file" accept=".json,application/json" hidden></label>
+      <button type="button" id="clearStatsBtn">Clear test history</button>
+      <button type="button" id="clearAllBtn" class="danger">Erase everything</button>
+    </div>
+    <div class="dlg-acts">
+      <button value="cancel">Close</button>
+      <button class="primary" value="save">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast hidden"></div>
+<script src="app.js?v=1"></script>
+</body>
+</html>
