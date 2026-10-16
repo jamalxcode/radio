@@ -1336,7 +1336,7 @@ function setMediaSession(st) {
   if (!('mediaSession' in navigator)) return;
   try {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: st.name, artist: [countryName(st.country || ''), groupLabel(st)].filter(x => x && x.length > 1).join(' · '), album: 'M3U Radio',
+      title: st.name, artist: [countryName(st.country || ''), groupLabel(st)].filter(x => x && x.length > 1).join(' · '), album: 'radio.sala.company',
       artwork: st.logo ? [{ src: st.logo, sizes: '256x256' }] : [],
     });
   } catch { /* old browser */ }

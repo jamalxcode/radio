@@ -1,4 +1,4 @@
-# M3U Radio
+# radio.sala.company
 
 A web radio that runs entirely in the browser and is hosted on GitHub Pages. It's styled after a 10-band shortwave portable, and it's the radio counterpart of M3U TV (video.sala.company).
 
