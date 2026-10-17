@@ -2,7 +2,7 @@
 /* =========================================================================
    Station guide (virtualized — handles lists with tens of thousands of entries)
    ========================================================================= */
-const ROW = 70;
+const ROW = 48;
 const listHeight = () => $('#list').clientHeight || window.innerHeight || 800;
 let renderPending = false;
 function scheduleRender() {

@@ -318,30 +318,30 @@ body.fx.playing .holes { animation: thump 0.5s ease-in-out infinite alternate; }
 .list { flex: 1; overflow-y: auto; position: relative; scrollbar-color: var(--num) var(--guide-deep); }
 #listInner { position: relative; }
 .ch {
-  position: absolute; left: 0; right: 0; height: 70px;
+  position: absolute; left: 0; right: 0; height: 48px;
   display: flex; align-items: center; cursor: pointer; border-top: 2px solid var(--guide-deep);
   font-family: var(--pixel);
 }
-.ch-num { width: 62px; align-self: stretch; display: grid; place-items: center; background: var(--num); font-size: 22px; flex: none; }
-.ch-body { flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; gap: 10px; padding: 0 6px 0 10px; background: var(--row1); }
+.ch-num { width: 52px; align-self: stretch; display: grid; place-items: center; background: var(--num); font-size: 19px; flex: none; }
+.ch-body { flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 8px; background: var(--row1); }
 .ch:nth-child(even) .ch-body { background: var(--row2); }
 .ch:hover .ch-body { background: #34353a; }
 .ch.active .ch-num, .ch.active .ch-body { background: var(--hi); color: #1a0d00; }
 .ch.active .grp, .ch.active .badge, .ch.active .badge i { color: #1a0d00; }
 .logo {
-  width: 38px; height: 38px; flex: none; border-radius: 4px; overflow: hidden;
-  background: #0b0b0c; display: grid; place-items: center; color: #55565a; font-size: 18px;
+  width: 30px; height: 30px; flex: none; border-radius: 3px; overflow: hidden;
+  background: #0b0b0c; display: grid; place-items: center; color: #55565a; font-size: 15px;
 }
 .logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .info { flex: 1; min-width: 0; }
 .name {
-  font-size: 21px; line-height: .95; text-transform: uppercase; letter-spacing: .02em;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
-  overflow: hidden; overflow-wrap: anywhere;
+  font-size: 19px; line-height: 1; text-transform: uppercase; letter-spacing: .02em;
+  white-space: nowrap; text-overflow: ellipsis;
+  overflow: hidden;
 }
-.meta { display: flex; align-items: center; gap: 8px; margin-top: 3px; min-width: 0; }
+.meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; min-width: 0; }
 .grp { color: var(--muted); font: 12px/1.2 var(--print-font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.star { background: none; border: none; font-size: 20px; padding: 4px 6px; color: var(--untested); font-family: system-ui; }
+.star { background: none; border: none; font-size: 18px; padding: 2px 6px; color: var(--untested); font-family: system-ui; }
 .star:hover { color: var(--hi); }
 .star.on { color: var(--hi); }
 .ch.active .star, .ch.active .star.on { color: #1a0d00; }
@@ -547,7 +547,7 @@ dialog.wide { width: min(680px, calc(100vw - 32px)); }
   .knob.tuning { width: 74px; height: 74px; }
   .knob.band, .knob.vol { width: 54px; height: 54px; }
   .pills { justify-content: flex-start; }
-  .ch-num { width: 50px; font-size: 19px; }
+  .ch-num { width: 44px; font-size: 17px; }
   .frow4 { flex-wrap: wrap; }
   .frow4 select { flex: 1 1 40%; }
   .help-grid { grid-template-columns: 1fr; gap: 2px; }
