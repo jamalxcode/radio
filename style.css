@@ -293,22 +293,22 @@ body.fx.playing .holes { animation: thump 0.5s ease-in-out infinite alternate; }
   display: flex; flex-direction: column; min-height: 0; overflow: hidden;
   background: var(--guide); border-radius: 10px; box-shadow: 0 0 0 5px var(--guide-deep), 0 18px 30px -14px rgba(0,0,0,.7);
 }
-.guide-head { display: flex; justify-content: space-between; align-items: center; padding: 3px 10px; background: var(--hi); color: #1a0d00; font: 24px/1 var(--pixel); letter-spacing: .06em; }
-.guide-head .count { font-size: 19px; }
-.filters { padding: 6px; display: flex; flex-direction: column; gap: 5px; background: var(--guide-deep); }
-.filters input, .filters select, .filters button { padding: 3px 6px; font-size: 13px; }
-.frow { display: flex; gap: 5px; align-items: center; }
+.guide-head { display: flex; justify-content: space-between; align-items: center; padding: 2px 8px; background: var(--hi); color: #1a0d00; font: 19px/1 var(--pixel); letter-spacing: .06em; }
+.guide-head .count { font-size: 16px; }
+.filters { padding: 4px; display: flex; flex-direction: column; gap: 4px; background: var(--guide-deep); }
+.filters input, .filters select, .filters button { height: 26px; padding: 0 5px; font-size: 12px; }
+.frow { display: flex; gap: 4px; align-items: center; }
 .frow select { flex: 1; min-width: 0; }
 /* country · genre · language on one line, show · sort · test on the next */
 .frow4 { flex-wrap: wrap; }
-.frow4 select { flex: 1 1 30%; }
+.frow4 select { flex: 1 1 28%; }
 #search { flex: 1; min-width: 0; }
 #testBtn { white-space: nowrap; flex: none; }
 .filters .scope { flex: 0 0 auto; width: auto; max-width: 140px; }
 /* quick browse chips: one scrolling row */
-.chips { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none; padding-bottom: 1px; }
+.chips { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 1px; }
 .chips::-webkit-scrollbar { display: none; }
-.chips button { flex: none; padding: 3px 10px; font-size: 12px; border-radius: 999px; border-width: 1px; background: var(--row1); }
+.chips button { flex: none; height: 24px; padding: 0 9px; font-size: 12px; border-radius: 999px; border-width: 1px; background: var(--row1); }
 /* "you're browsing results, not your list" */
 .browse-bar { display: flex; gap: 6px; align-items: center; padding: 5px 8px; background: #2b2216; border-top: 1px solid #4a3a22; font-size: 13px; }
 .browse-bar .bb-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
@@ -548,8 +548,6 @@ dialog.wide { width: min(680px, calc(100vw - 32px)); }
   .knob.band, .knob.vol { width: 54px; height: 54px; }
   .pills { justify-content: flex-start; }
   .ch-num { width: 44px; font-size: 17px; }
-  .frow4 { flex-wrap: wrap; }
-  .frow4 select { flex: 1 1 40%; }
   .help-grid { grid-template-columns: 1fr; gap: 2px; }
   .help-grid dd { margin-bottom: 8px; }
   .song { grid-template-columns: 52px minmax(0, 1fr); }
@@ -587,11 +585,11 @@ dialog.wide { width: min(680px, calc(100vw - 32px)); }
   }
   body.picker-open .guide { transform: none; visibility: visible; transition: transform .22s ease-out; }
   .picker-head {
-    display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 10px 8px;
+    display: flex; align-items: center; gap: 8px; padding: calc(4px + env(safe-area-inset-top)) 8px 4px;
     background: var(--guide-deep); border-bottom: 2px solid var(--hi);
   }
   .picker-head b { flex: 1; font: 700 15px/1 var(--print-font); letter-spacing: .04em; text-align: center; }
-  .picker-back { display: inline-flex; align-items: center; gap: 2px; padding: 6px 10px 6px 4px; color: var(--hi); font-weight: 700; }
+  .picker-back { display: inline-flex; align-items: center; gap: 2px; padding: 4px 10px 4px 2px; color: var(--hi); font-weight: 700; }
   .picker-back svg { width: 20px; height: 20px; }
   .guide .list { flex: 1; height: auto; }
 
