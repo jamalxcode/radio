@@ -143,6 +143,7 @@ function openSettings() {
   $('#sAutoTest').checked = s.autoTest;
   $('#sConc').value = s.concurrency;
   $('#sFx').checked = s.fx;
+  $('#sSkin').value = s.skin === 'ipod' ? 'ipod' : 'radio';
   $('#setDlg').showModal();
 }
 function openSongs() {
@@ -247,9 +248,11 @@ function wire() {
       autoTest: $('#sAutoTest').checked,
       concurrency: clamp($('#sConc').value, 1, 16, d.concurrency),
       fx: $('#sFx').checked,
+      skin: $('#sSkin').value === 'ipod' ? 'ipod' : 'radio',
     };
     DB.put('kv', S.settings, 'settings');
     Radio.refreshFx();
+    Ipod.apply();
     toast('Settings saved');
   });
   onClick('#exportBtn', exportData);
@@ -257,6 +260,7 @@ function wire() {
   onClick('#clearStatsBtn', clearStats);
   onClick('#clearAllBtn', eraseAll);
   onClick('#songsBtn', openSongs);
+  onClick('#lookBtn', () => Ipod.setSkin(S.settings.skin === 'ipod' ? 'radio' : 'ipod'));
   $('#songsSearch').addEventListener('input', renderSongs);
   onClick('#songsClear', () => { if (confirm('Clear the list of songs you heard?')) { Songs.clear(); renderSongs(); } });
   onClick('#helpBtn', () => $('#helpDlg').showModal());
@@ -381,6 +385,7 @@ async function init() {
   Radio.setState('standby');
   Sheet.sync();
   Picker.sync();
+  Ipod.apply();
 
   const startId = S.lists.some(p => p.id === S.ui.currentId) ? S.ui.currentId : S.lists[0]?.id || null;
   await selectList(startId);

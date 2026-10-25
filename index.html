@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=18">
+<link rel="stylesheet" href="style.css?v=19">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -25,6 +25,7 @@
   <button id="refreshListBtn" title="Reload this list from its source" aria-label="Reload list">⟳</button>
   <button id="deleteListBtn" title="Remove this list" aria-label="Remove list">🗑</button>
   <div class="spacer"></div>
+  <button id="lookBtn" title="iPod look: a black click-wheel player that fills the screen" aria-label="iPod look" aria-pressed="false">◉<span class="btn-lbl"> iPod</span></button>
   <button id="songsBtn" title="Songs you heard" aria-label="Songs heard">♪<span class="btn-lbl"> Songs</span></button>
   <button id="helpBtn" title="How this radio works" aria-label="Help">?</button>
   <button id="settingsBtn" title="Settings & backup" aria-label="Settings">⚙</button>
@@ -35,6 +36,27 @@
   <section class="stage" id="stage" aria-label="Radio">
     <button id="sheetClose" class="sheet-close" aria-label="Back to stations">▾ Stations</button>
 
+    <!-- The iPod look (Settings → Look): a black click-wheel player that fills the screen. When the screen is wide enough
+         (a fold opened, a tablet, a desktop) the station guide becomes the left page and the iPod the right one. -->
+    <div class="ipod-wrap" id="ipodWrap">
+      <section class="ipod" id="ipod" aria-label="iPod">
+        <div class="ipod-screen">
+          <div class="ipod-bar">
+            <span class="ipod-clock" id="ipodClock">--:--</span>
+            <b class="ipod-title" id="ipodTitle">radio.sala.company</b>
+            <span class="ipod-bar-r"><i class="ipod-pi" id="ipodPlayIco" aria-hidden="true"></i><i class="ipod-batt" id="ipodBatt" aria-hidden="true"><b></b></i></span>
+          </div>
+          <div class="ipod-view" id="ipodView"></div>
+        </div>
+        <div class="ipod-wheel" id="ipodWheel" role="group" aria-label="Click wheel: turn to move, tap MENU, previous, next or play">
+          <span class="w-menu" aria-hidden="true">MENU</span>
+          <svg class="w-prev" viewBox="0 0 24 16" aria-hidden="true"><path d="M2 2v12M12 2L3.5 8 12 14zM22 2L13.5 8 22 14z"/></svg>
+          <svg class="w-next" viewBox="0 0 24 16" aria-hidden="true"><path d="M22 2v12M12 2l8.5 6L12 14zM2 2l8.5 6L2 14z"/></svg>
+          <svg class="w-play" viewBox="0 0 26 16" aria-hidden="true"><path d="M2 1l11 7-11 7zM16 1h3v14h-3zM22 1h3v14h-3z"/></svg>
+          <button type="button" class="ipod-center" id="ipodCenter" aria-label="Select"></button>
+        </div>
+      </section>
+    </div>
     <!-- Small phones (folded): a 1950s push-button car radio instead of the shortwave receiver.
          Dial with station names · LCD · five preset keys · controls with sleep · VOL / STATIONS / TUNE. -->
     <section class="car" id="car" aria-label="Car radio">
@@ -390,6 +412,11 @@
     <label class="check"><input id="sAutoSkip" type="checkbox"> Skip to the next working station when one fails</label>
     <label class="check"><input id="sAutoTest" type="checkbox"> Test stations automatically as you scroll</label>
     <label class="check"><input id="sFx" type="checkbox"> Dial light and retro effects (same as the LIGHT button)</label>
+    <label for="sSkin">Look</label>
+    <select id="sSkin">
+      <option value="radio">Shortwave radio (car radio on small phones)</option>
+      <option value="ipod">iPod — black click-wheel player, fills the screen</option>
+    </select>
     <label for="sConc">Stations to test at the same time</label>
     <input id="sConc" type="number" min="1" max="16">
     <h3>Your data</h3>
@@ -428,6 +455,7 @@
 
     <p>It plays internet radio stations and checks, in your browser, which ones are actually on air.</p>
     <dl class="help-grid">
+      <dt>◉ iPod look</dt><dd>A black click-wheel player that fills the screen (also under Settings → Look). Turn the wheel to move the highlight, press the centre to pick, MENU goes back (hold it for the main menu), ⏮ ⏭ change station, ▶❚❚ plays or pauses. On Now Playing the wheel is the volume. Open a folding phone, or use a tablet or computer, and the station guide sits on the left page with the iPod on the right.</dd>
       <dt>On a small phone</dt><dd>The radio becomes a 1950s push-button car radio. Tap a name on the dial or swipe it to tune, use the five keys as presets (tap an empty key to store the station that’s on, hold a key to replace it), and press STATIONS for search and filters.</dd>
       <dt>Station guide</dt><dd>Tap a station to play it. Rows turn <b class="hl-ok">silver</b> once a station is on air and <b class="hl-off">brown</b> when it’s off air.</dd>
       <dt>Search &amp; chips</dt><dd>Filter the list you have, search all your lists, or search all of Radio Browser (about 50,000 stations). The chips (Near me, Jazz, News…) browse Radio Browser; save what you find as a new list.</dd>
@@ -445,15 +473,16 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=11"></script>
-<script src="js/lists.js?v=11"></script>
-<script src="js/health.js?v=11"></script>
-<script src="js/guide.js?v=11"></script>
-<script src="js/radio.js?v=11"></script>
-<script src="js/player.js?v=11"></script>
-<script src="js/nowplaying.js?v=11"></script>
-<script src="js/car.js?v=11"></script>
-<script src="js/app.js?v=11"></script>
+<script src="js/core.js?v=12"></script>
+<script src="js/lists.js?v=12"></script>
+<script src="js/health.js?v=12"></script>
+<script src="js/guide.js?v=12"></script>
+<script src="js/radio.js?v=12"></script>
+<script src="js/player.js?v=12"></script>
+<script src="js/nowplaying.js?v=12"></script>
+<script src="js/car.js?v=12"></script>
+<script src="js/ipod.js?v=12"></script>
+<script src="js/app.js?v=12"></script>
 <!-- GoatCounter analytics (not loaded on localhost; paths are prefixed with the host so all *.sala.company apps share one dashboard) -->
 <script>
   (function () {

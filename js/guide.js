@@ -8,7 +8,7 @@ let renderPending = false;
 function scheduleRender() {
   if (renderPending) return;
   renderPending = true;
-  const go = () => { if (renderPending) { renderPending = false; renderList(); } };
+  const go = () => { if (renderPending) { renderPending = false; renderList(); Ipod.render(); } };
   requestAnimationFrame(go);
   setTimeout(go, 100); // rAF doesn't fire in background tabs
 }

@@ -249,6 +249,7 @@ const VFD = (() => {
     setImg(el('miniLogo'), st?.logo);
     $('#mini').classList.toggle('live', Radio.state === 'live');
     Car.render();
+    Ipod.render();
   }
   setInterval(() => { if (!document.hidden) update(); }, 1000);
   return { update };
@@ -323,7 +324,7 @@ const Sleep = (() => {
 const Sheet = (() => {
   const phone = matchMedia('(max-width: 820px)');
   // On small phones the car radio is the main screen, so the stage is never hidden there.
-  const sync = () => { $('#stage').inert = phone.matches && !CAR.matches && !document.body.classList.contains('sheet-open'); };
+  const sync = () => { $('#stage').inert = phone.matches && !CAR.matches && !document.body.classList.contains('sheet-open') && !document.body.classList.contains('look-ipod'); };
   phone.addEventListener('change', sync);
   return {
     open() { document.body.classList.add('sheet-open'); sync(); $('#sheetClose').focus({ preventScroll: true }); },

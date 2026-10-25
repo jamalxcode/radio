@@ -8,6 +8,7 @@
      player.js     playback: engines, backup links, reconnecting, pause / mute, lock-screen controls
      nowplaying.js song / show titles and the "songs heard" log
      car.js        small phones: the push-button car radio and the station-picker screen
+     ipod.js       the iPod look: click-wheel player, menus, Now Playing; station guide beside it on wide screens
      app.js        station details, favorites, backup, settings, help, wiring, start-up */
 
 /* =========================================================================
@@ -135,7 +136,7 @@ const userCountry = (navigator.language.match(/-([A-Z]{2})\b/i) || [])[1]?.toUpp
 /* =========================================================================
    State
    ========================================================================= */
-const DEFAULT_SETTINGS = { slowStartSec: 5, timeoutSec: 12, autoSkip: false, autoTest: true, concurrency: 6, fx: true };
+const DEFAULT_SETTINGS = { slowStartSec: 5, timeoutSec: 12, autoSkip: false, autoTest: true, concurrency: 6, fx: true, skin: 'radio' };
 const REFRESH_AFTER = 24 * 3600e3;   // re-download saved lists older than this
 const FRESH_FOR = 6 * 3600e3;        // test/play results newer than this aren't re-tested
 const S = {

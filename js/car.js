@@ -153,6 +153,7 @@ const Car = (() => {
 
   CAR.addEventListener('change', () => {
     if (!isCar()) document.body.classList.remove('picker-open');
+    Ipod.render();
     Picker.sync();
     Sheet.sync();
     dialSig = keysSig = '';
