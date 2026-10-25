@@ -93,7 +93,8 @@ const Car = (() => {
     const np = NowPlaying.current(st);
     const set = (id, t) => { const el = $(id); if (el.textContent !== t) el.textContent = t; };
     set('#carName', st ? withFlag(st.country, st.name.toUpperCase()) : 'PICK A STATION');
-    set('#carTrack', np ? '♪ ' + np.text : st ? [st.country ? countryName(st.country) : '', langsOf(st).join(', '), groupLabel(st)].filter(x => x && x.length > 1).join(' · ') : 'Tap STATIONS to choose one');
+    fitLine($('#carTrack'), np ? '♪ ' + np.text : st ? [st.country ? countryName(st.country) : '', langsOf(st).join(', '), groupLabel(st)].filter(x => x && x.length > 1).join(' · ') : 'Tap STATIONS to choose one');
+    $('#carTrack').classList.toggle('song', !!np);
     set('#carState', STATE[Radio.state] || 'STANDBY');
     $('#carLed').className = 'led ' + ({ live: 'good', buffering: 'warn', tuning: 'warn', paused: 'warn', nosignal: 'bad' }[Radio.state] || '');
     $('#carLcd').classList.toggle('standby', !st);

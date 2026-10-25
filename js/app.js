@@ -147,6 +147,26 @@ function openSettings() {
   $('#sSkin').value = s.skin === 'ipod' ? 'ipod' : 'radio';
   $('#setDlg').showModal();
 }
+/* The song card: the title that's on now, where to find it, and what played before it on this station. */
+const findQ = s => encodeURIComponent(s.artist && s.title ? `${s.artist} ${s.title}` : s.text);
+const findLinks = s => `<a href="https://www.youtube.com/results?search_query=${findQ(s)}" target="_blank" rel="noopener">YouTube</a>
+  <a href="https://open.spotify.com/search/${findQ(s)}" target="_blank" rel="noopener">Spotify</a>
+  <a href="https://music.apple.com/search?term=${findQ(s)}" target="_blank" rel="noopener">Apple Music</a>`;
+function openSongCard(st = S.current) {
+  const np = NowPlaying.current(st);
+  if (!np) return toast(st && session?.started ? 'This station hasn’t sent a song title yet' : 'Play a station first');
+  const hist = NowPlaying.history;
+  $('#songCard').innerHTML = `
+    <div class="sc-now">
+      <b class="sc-title">${esc(np.title || np.text)}</b>
+      ${np.artist ? `<span class="sc-artist">${esc(np.artist)}</span>` : ''}
+      <span class="muted small">${esc([np.album, withFlag(st.country, st.name), hhmm(np.at), 'from ' + np.source].filter(Boolean).join(' · '))}</span>
+      <div class="sc-links">${findLinks(np)}<button type="button" id="songCopy">Copy</button></div>
+    </div>
+    ${hist.length ? `<h4>Earlier on this station</h4>${hist.map(h => `<div class="song"><span class="song-time">${esc(hhmm(h.at))}</span><span class="song-text"><b>${esc(h.text)}</b></span><span class="song-links">${findLinks(h)}</span></div>`).join('')}` : ''}`;
+  $('#songCopy').addEventListener('click', () => navigator.clipboard?.writeText(np.text).then(() => toast('Copied: ' + np.text)));
+  $('#songDlg').showModal();
+}
 function openSongs() {
   $('#songsSearch').value = '';
   renderSongs();
@@ -261,6 +281,11 @@ function wire() {
   onClick('#clearStatsBtn', clearStats);
   onClick('#clearAllBtn', eraseAll);
   onClick('#songsBtn', openSongs);
+  // Tap the song line on any skin to get the song card
+  onClick('#vfdTrack', () => openSongCard());
+  onClick('#songAll', () => { $('#songDlg').close(); openSongs(); });
+  onClick('#carTrack', () => { if (NowPlaying.current(S.current)) openSongCard(); });
+  $('#miniSub').addEventListener('click', e => { if (NowPlaying.current(S.current)) { e.stopPropagation(); openSongCard(); } });
   const flipLook = () => Ipod.setSkin(S.settings.skin === 'ipod' ? 'radio' : 'ipod');
   onClick('#lookBtn', flipLook);
   onClick('#lookBack', flipLook);

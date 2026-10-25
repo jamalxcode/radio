@@ -110,7 +110,7 @@ const Ipod = (() => {
         <div class="np-art${st.logo ? '' : ' noart'}">${art(st)}</div>
         <div class="np-info">
           <b>${withFlag(st.country, esc(st.name))}</b>
-          <span class="np-track">${nowp ? '♪ ' + esc(nowp.text) : esc(meta)}</span>
+          <span class="np-track${nowp ? ' song' : ''}" data-song="${nowp ? '1' : ''}">${nowp ? '♪ ' + esc(nowp.text) : esc(meta)}</span>
           ${nowp ? `<span class="np-meta">${esc(meta)}</span>` : ''}
           <span class="np-state lvl-${{ live: 'good', buffering: 'warn', tuning: 'warn', paused: 'warn', nosignal: 'bad' }[Radio.state] || ''}">${NPSTATE[Radio.state] || ''}${s?.liveAt && Radio.state !== 'stopped' ? ' · ' + since(Date.now() - s.liveAt) : ''}${Sleep.at ? ' · ☾ ' + Sleep.left() + ' min' : ''}</span>
           <span class="np-sig">${BARS[ss.cls]} ${esc(ss.label)}${st.sources.length > 1 ? ` · link ${s ? s.idx + 1 : 1}/${st.sources.length}` : ''}${s?.relay ? ' · via relay' : ''}</span>
@@ -146,7 +146,12 @@ const Ipod = (() => {
       </div>`;
     }
     if (el('ipodTitle').textContent !== title) el('ipodTitle').textContent = title;
-    if (force || html !== lastHtml) { lastHtml = html; el('ipodView').innerHTML = html; }
+    if (force || html !== lastHtml) {
+      lastHtml = html;
+      el('ipodView').innerHTML = html;
+      const tr = el('ipodView').querySelector('.np-track.song');
+      if (tr) { const t = tr.textContent; delete tr.dataset.t; fitLine(tr, t); }
+    }
   }
   api.render = () => render(false);
 
@@ -216,6 +221,7 @@ const Ipod = (() => {
       if (Math.abs(dy) > 24) { for (let k = 0; k < Math.min(ROWS, Math.round(Math.abs(dy) / 24)); k++) stepWheel(dy < 0 ? 1 : -1); return; }
       const row = e.target.closest('[data-i]');
       if (row) { const sc = top(); sc.sel = +row.dataset.i; render(true); sc.act(sc.sel); render(true); }
+      else if (np && e.target.closest('.np-track.song')) openSongCard(S.current);
       else if (np && e.target.closest('.np-art, .np-info')) togglePause();
     });
     v.addEventListener('wheel', e => { e.preventDefault(); stepWheel(e.deltaY > 0 ? 1 : -1); }, { passive: false });

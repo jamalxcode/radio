@@ -78,6 +78,19 @@ function ago(t) {
   if (s < 86400) return Math.round(s / 3600) + ' h ago';
   return Math.round(s / 86400) + ' d ago';
 }
+/* A single line of text that slides sideways when it doesn't fit (song titles on the dial, the LCD, the iPod). */
+function fitLine(el, text) {
+  if (!el || el.dataset.t === text) return;
+  el.dataset.t = text;
+  el.innerHTML = `<span style="display:inline-block;white-space:nowrap">${esc(text)}</span>`;
+  el.classList.remove('scroll');
+  requestAnimationFrame(() => {
+    const sp = el.firstChild;
+    if (!sp) return;
+    const over = Math.max(sp.scrollWidth, Math.ceil(sp.getBoundingClientRect().width)) - el.clientWidth;
+    if (over > 4) { el.style.setProperty('--dx', `-${over + 12}px`); el.style.setProperty('--t', `${Math.max(6, Math.round(over / 22))}s`); el.classList.add('scroll'); }
+  });
+}
 let toastTimer;
 function toast(msg) {
   const el = $('#toast');

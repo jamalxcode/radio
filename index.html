@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=22">
+<link rel="stylesheet" href="style.css?v=23">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -450,6 +450,14 @@
   </form>
 </dialog>
 
+<dialog id="songDlg" class="wide">
+  <form method="dialog">
+    <h3>♪ Now playing</h3>
+    <div id="songCard"></div>
+    <div class="dlg-acts"><button type="button" id="songAll">All songs heard</button><span class="spacer"></span><button value="close" class="primary">Close</button></div>
+  </form>
+</dialog>
+
 <dialog id="helpDlg" class="wide">
   <form method="dialog">
     <h3>How this radio works</h3>
@@ -468,23 +476,23 @@
       <dt>SENS DX / LOCAL</dt><dd>DX shows every station; LOCAL hides the ones that are off air or blocked.</dd>
       <dt>⏾ Sleep</dt><dd>Next to the play controls: pick 30 minutes to 3 hours, in 30-minute steps. It counts down there, then fades the sound out and turns the radio off.</dd>
       <dt>MEMORY · LIGHT</dt><dd>Save a favorite · dial lamp and effects.</dd>
-      <dt>♪ Songs</dt><dd>Song and show titles you heard, with links to find them on YouTube, Spotify or Apple Music.</dd>
+      <dt>♪ Songs</dt><dd>The song playing shows on the dial, the car LCD, the phone bar and the iPod; tap it for the song card with YouTube, Spotify and Apple Music links and what played before it. ♪ Songs in the header lists everything you heard.</dd>
     </dl>
     <div class="dlg-acts"><button value="close" class="primary">Got it</button></div>
   </form>
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=14"></script>
-<script src="js/lists.js?v=14"></script>
-<script src="js/health.js?v=14"></script>
-<script src="js/guide.js?v=14"></script>
-<script src="js/radio.js?v=14"></script>
-<script src="js/player.js?v=14"></script>
-<script src="js/nowplaying.js?v=14"></script>
-<script src="js/car.js?v=14"></script>
-<script src="js/ipod.js?v=14"></script>
-<script src="js/app.js?v=14"></script>
+<script src="js/core.js?v=15"></script>
+<script src="js/lists.js?v=15"></script>
+<script src="js/health.js?v=15"></script>
+<script src="js/guide.js?v=15"></script>
+<script src="js/radio.js?v=15"></script>
+<script src="js/player.js?v=15"></script>
+<script src="js/nowplaying.js?v=15"></script>
+<script src="js/car.js?v=15"></script>
+<script src="js/ipod.js?v=15"></script>
+<script src="js/app.js?v=15"></script>
 <!-- GoatCounter analytics (not loaded on localhost; paths are prefixed with the host so all *.sala.company apps share one dashboard) -->
 <script>
   (function () {

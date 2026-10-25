@@ -218,8 +218,9 @@ const VFD = (() => {
     set('vfdMeta', st ? [st.country ? countryName(st.country) : '', langsOf(st).join(', '), groupLabel(st)].map(x => x.trim()).filter(Boolean).join(' · ')
                       : 'Turn TUNING or pick a station from the guide', 'dial-meta');
     const np = NowPlaying.current(st);
-    set('vfdTrack', np ? '♪ ' + np.text : '', 'dial-np' + (np ? '' : ' hidden'));
-    el('vfdTrack').title = np ? `${np.text}${np.album ? ' · ' + np.album : ''} (from ${np.source})` : '';
+    fitLine(el('vfdTrack'), np ? '♪ ' + np.text : '');
+    el('vfdTrack').classList.toggle('hidden', !np);
+    el('vfdTrack').title = np ? `${np.text}${np.album ? ' · ' + np.album : ''} (from ${np.source}) · tap to find it` : '';
     setImg(el('vfdLogo'), st?.logo);
     set('vfdState', stateText, stateCls);
     if (st) {
@@ -246,6 +247,7 @@ const VFD = (() => {
     // Phone mini-player
     set('miniName', st ? withFlag(st.country, st.name) : 'Pick a station');
     set('miniSub', np ? '♪ ' + np.text : st ? (s ? MINI[Radio.state] || '' : 'Tap play to listen') : 'Tap a station below to play it');
+    $('#mini').classList.toggle('song', !!np);
     setImg(el('miniLogo'), st?.logo);
     $('#mini').classList.toggle('live', Radio.state === 'live');
     Car.render();
