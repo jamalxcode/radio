@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=25">
+<link rel="stylesheet" href="style.css?v=26">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -48,10 +48,10 @@
           <div class="ipod-view" id="ipodView"></div>
         </div>
         <div class="ipod-wheel" id="ipodWheel" role="group" aria-label="Click wheel: turn to move, tap MENU, previous, next or play">
-          <span class="w-menu" aria-hidden="true">MENU</span>
-          <svg class="w-prev" viewBox="0 0 24 16" aria-hidden="true"><path d="M2 2v12M12 2L3.5 8 12 14zM22 2L13.5 8 22 14z"/></svg>
-          <svg class="w-next" viewBox="0 0 24 16" aria-hidden="true"><path d="M22 2v12M12 2l8.5 6L12 14zM2 2l8.5 6L2 14z"/></svg>
-          <svg class="w-play" viewBox="0 0 26 16" aria-hidden="true"><path d="M2 1l11 7-11 7zM16 1h3v14h-3zM22 1h3v14h-3z"/></svg>
+          <button type="button" class="w-btn w-menu" id="ipodMenuBtn" aria-label="Menu: back (hold for the main menu)">MENU</button>
+          <button type="button" class="w-btn w-prev" id="ipodPrevBtn" aria-label="Previous station"><svg viewBox="0 0 24 16" aria-hidden="true"><path d="M2 2v12M12 2L3.5 8 12 14zM22 2L13.5 8 22 14z"/></svg></button>
+          <button type="button" class="w-btn w-next" id="ipodNextBtn" aria-label="Next station"><svg viewBox="0 0 24 16" aria-hidden="true"><path d="M22 2v12M12 2l8.5 6L12 14zM2 2l8.5 6L2 14z"/></svg></button>
+          <button type="button" class="w-btn w-play" id="ipodPlayBtn" aria-label="Play or pause"><svg viewBox="0 0 26 16" aria-hidden="true"><path d="M2 1l11 7-11 7zM16 1h3v14h-3zM22 1h3v14h-3z"/></svg></button>
           <button type="button" class="ipod-center" id="ipodCenter" aria-label="Select"></button>
         </div>
       </section>
@@ -299,7 +299,6 @@
         <span class="badge good" title="Plays in this browser"><i>▮▮▮▮</i>On air</span>
         <span class="badge warn" title="Slow to start or drops out"><i>▮▮▯▯</i>Weak</span>
         <span class="badge bad" title="Not playing right now"><i>▯▯▯▯</i>Off air</span>
-        <span class="badge blocked" title="Browsers can’t play it, even through the relay; apps like VLC may"><i>✕</i>Blocked</span>
         <span class="badge untested" title="Not tested yet"><i>····</i>New</span>
       </span>
     </div>
@@ -486,16 +485,16 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=18"></script>
-<script src="js/lists.js?v=18"></script>
-<script src="js/health.js?v=18"></script>
-<script src="js/guide.js?v=18"></script>
-<script src="js/radio.js?v=18"></script>
-<script src="js/player.js?v=18"></script>
-<script src="js/nowplaying.js?v=18"></script>
-<script src="js/car.js?v=18"></script>
-<script src="js/ipod.js?v=18"></script>
-<script src="js/app.js?v=18"></script>
+<script src="js/core.js?v=19"></script>
+<script src="js/lists.js?v=19"></script>
+<script src="js/health.js?v=19"></script>
+<script src="js/guide.js?v=19"></script>
+<script src="js/radio.js?v=19"></script>
+<script src="js/player.js?v=19"></script>
+<script src="js/nowplaying.js?v=19"></script>
+<script src="js/car.js?v=19"></script>
+<script src="js/ipod.js?v=19"></script>
+<script src="js/app.js?v=19"></script>
 <!-- GoatCounter analytics (not loaded on localhost; paths are prefixed with the host so all *.sala.company apps share one dashboard) -->
 <script>
   (function () {

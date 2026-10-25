@@ -231,6 +231,11 @@ const Ipod = (() => {
     w.addEventListener('pointercancel', () => { clearTimeout(holdTimer); last = null; });
     w.addEventListener('wheel', e => { e.preventDefault(); stepWheel(e.deltaY > 0 ? 1 : -1); }, { passive: false });
     el('ipodCenter').addEventListener('click', select);
+    // the labels as buttons, for keyboards and screen readers (pointer taps are handled by the wheel above)
+    el('ipodMenuBtn').addEventListener('click', pop);
+    el('ipodPrevBtn').addEventListener('click', () => step(-1));
+    el('ipodNextBtn').addEventListener('click', () => step(1));
+    el('ipodPlayBtn').addEventListener('click', playBtn);
     el('ipodTitle').addEventListener('click', openFind);
     const find = el('ipodFind');
     let findTimer;
