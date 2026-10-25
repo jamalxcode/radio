@@ -260,7 +260,9 @@ function wire() {
   onClick('#clearStatsBtn', clearStats);
   onClick('#clearAllBtn', eraseAll);
   onClick('#songsBtn', openSongs);
-  onClick('#lookBtn', () => Ipod.setSkin(S.settings.skin === 'ipod' ? 'radio' : 'ipod'));
+  const flipLook = () => Ipod.setSkin(S.settings.skin === 'ipod' ? 'radio' : 'ipod');
+  onClick('#lookBtn', flipLook);
+  onClick('#lookBack', flipLook);
   $('#songsSearch').addEventListener('input', renderSongs);
   onClick('#songsClear', () => { if (confirm('Clear the list of songs you heard?')) { Songs.clear(); renderSongs(); } });
   onClick('#helpBtn', () => $('#helpDlg').showModal());
