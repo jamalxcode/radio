@@ -69,7 +69,6 @@ button.on { background: var(--hi); border-color: var(--hi); color: #1a0d00; }
 .brand-icon { width: 26px; height: 26px; flex: none; }
 .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: #4a1a12; box-shadow: inset 0 0 0 2px #200a06; }
 body.onair .brand-dot { background: var(--bad); box-shadow: 0 0 10px var(--bad); }
-#listSelect { min-width: 0; max-width: 320px; flex: 0 1 auto; }
 .topbar button { white-space: nowrap; flex: none; }
 
 /* the iPod-look button: a little black apple (fruit) */
@@ -151,10 +150,13 @@ body.fx .band-btn.active { box-shadow: 0 0 10px rgba(255,138,31,.5); }
 body.fx .dial-np { text-shadow: 0 0 6px rgba(255, 220, 160, .45); }
 .dial-meta { font: 13px/1.3 var(--print-font); color: rgba(233,230,220,.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 body.fx .dial-name { text-shadow: 0 0 8px rgba(255, 138, 31, .55); }
-.dial-grid { display: grid; gap: 4px 6px; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+.dial-grid { display: grid; gap: 4px 6px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .vfd-cell { display: flex; flex-direction: column; min-width: 0; padding: 2px 6px; border-left: 1px solid rgba(233,230,220,.15); }
 .vfd-k { font: 700 9px/1.2 var(--print-font); letter-spacing: .14em; color: rgba(233,230,220,.5); }
 .vfd-cell b { font-weight: normal; font-size: 21px; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--print); }
+.det-meta { font: 700 11px/1 var(--print-font); letter-spacing: .08em; color: var(--muted); white-space: nowrap; }
+.det-meta b { font: 16px/1 var(--pixel); color: var(--print); letter-spacing: 0; }
+.det-meta .lvl-good { color: var(--good); } .det-meta .lvl-warn { color: var(--warn); } .det-meta .lvl-bad { color: var(--bad); }
 body.fx .vfd-cell b { text-shadow: 0 0 6px rgba(255, 220, 160, .35); }
 .dial-info .lvl-good { color: var(--good); }
 .dial-info .lvl-warn { color: var(--warn); }
@@ -317,8 +319,13 @@ body.fx.playing .holes { animation: thump 0.5s ease-in-out infinite alternate; }
   display: flex; flex-direction: column; min-height: 0; overflow: hidden;
   background: var(--guide); border-radius: 10px; box-shadow: 0 0 0 5px var(--guide-deep), 0 18px 30px -14px rgba(0,0,0,.7);
 }
-.guide-head { display: flex; justify-content: space-between; align-items: center; padding: 2px 8px; background: var(--hi); color: #1a0d00; font: 19px/1 var(--pixel); letter-spacing: .06em; }
-.guide-head .count { font-size: 16px; }
+.guide-head { display: flex; gap: 4px; align-items: center; padding: 3px 6px; background: var(--hi); color: #1a0d00; font: 19px/1 var(--pixel); letter-spacing: .06em; }
+.guide-head .count { font-size: 16px; margin-left: auto; white-space: nowrap; }
+.guide-head #listSelect { flex: 1 1 auto; min-width: 0; height: 28px; padding: 0 4px; font: 600 13px/1 var(--print-font); background: #1a0d00; color: var(--print); border-color: #1a0d00; }
+.guide-head button { height: 28px; min-width: 30px; padding: 0 7px; font: 700 14px/1 var(--print-font); background: #1a0d00; color: var(--print); border-color: #1a0d00; }
+.guide-head button.primary { background: var(--print); color: #1a0d00; border-color: var(--print); font-size: 17px; }
+.guide-head button:disabled { opacity: .35; }
+.guide-head .help { margin-left: 2px; }
 .filters { padding: 4px; display: flex; flex-direction: column; gap: 4px; background: var(--guide-deep); }
 .filters input, .filters select, .filters button { height: 26px; padding: 0 5px; font-size: 12px; }
 .frow { display: flex; gap: 4px; align-items: center; }
@@ -510,7 +517,6 @@ dialog.wide { width: min(680px, calc(100vw - 32px)); }
   .topbar { padding: 6px 10px; gap: 6px; flex-wrap: wrap; }
   .brand { font-size: 16px; flex: 1; min-width: 0; } .brand-dot { display: none; }
   .brand-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-  #listSelect { order: 9; flex: 1 1 100%; max-width: none; }
   .topbar button { padding: 5px 9px; }
   .btn-lbl { display: none; }
   .layout { display: flex; flex-direction: column; padding: 0; gap: 0; flex: 1; min-height: 0; }
@@ -594,8 +600,7 @@ dialog.wide { width: min(680px, calc(100vw - 32px)); }
   /* header: one row — icon, list (band) menu, songs, help, settings. List tools live in the picker. */
   .topbar { flex-wrap: nowrap; }
   .brand { flex: none; }
-  #listSelect { order: 0; flex: 1 1 auto; min-width: 0; }
-  #addListBtn, #refreshListBtn, #deleteListBtn, .topbar .spacer { display: none; }
+  .topbar .spacer { display: block; }
 
   .layout { display: flex; flex-direction: column; flex: 1; min-height: 0; }
   .stage {
@@ -747,6 +752,10 @@ body.look-ipod .ipod-wrap {
   background: linear-gradient(#f0f0f3, #d6d7db); border-bottom: 0.25cqw solid #b7b8bd; font: 3cqw/1 var(--print-font); color: #2a2a2e;
 }
 .ipod-clock { flex: 1; text-align: left; white-space: nowrap; }
+.ipod-find { display: none; flex: 2; min-width: 0; height: 4.4cqw; padding: 0 1.4cqw; border: 0.25cqw solid #9a9ba1; border-radius: 1cqw; background: #fff; color: #1b1b1f; font: 3cqw/1 var(--print-font); }
+.ipod.finding .ipod-find { display: block; }
+.ipod.finding .ipod-title { display: none; }
+.ipod-title { cursor: pointer; }
 .ipod-title { flex: 2; text-align: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .ipod-bar-r { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 1.2cqw; }
 .ipod-pi { width: 2.6cqw; height: 2.6cqw; display: none; }

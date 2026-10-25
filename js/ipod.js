@@ -48,7 +48,8 @@ const Ipod = (() => {
       { t: 'Settings', r: '›', act: () => push(screens.settings()) },
     ]),
     stations: () => {
-      const s = listScreen('', () => S.filtered, st => { playStation(st); showNp(); }, 'No stations in this list');
+      const s = listScreen('', () => S.filtered, st => { playStation(st); showNp(); }, 'No stations match');
+      stationsScreen = s;
       s.titleFn = () => S.browse?.label || S.lists.find(p => p.id === S.ui.currentId)?.name.replace(/^Radio Browser · |^junguler · /, '') || 'Stations';
       // open with the station that's on under the highlight
       const i = S.current ? S.filtered.findIndex(c => c.key === S.current.key) : -1;
@@ -75,11 +76,30 @@ const Ipod = (() => {
     if (isCar()) Picker.open();
     else $('#search').focus();
   }
+  // Type-to-filter: tap the title bar on a menu screen and the title becomes a filter box for the Stations list.
+  let finding = false;
+  function openFind() {
+    if (finding) return closeFind();
+    if (np || top() !== stationsScreen) { np = false; while (stack.length > 1) stack.pop(); push(screens.stations()); }
+    finding = true;
+    el('ipod').classList.add('finding');
+    const f = el('ipodFind');
+    f.value = S.ui.search || '';
+    f.focus();
+  }
+  function closeFind(clear = true) {
+    if (!finding) return;
+    finding = false;
+    el('ipod').classList.remove('finding');
+    el('ipodFind').blur();
+    if (clear && S.ui.search) { $('#search').value = ''; onSearchInput(''); }
+  }
+  let stationsScreen = null;
   const top = () => stack[stack.length - 1];
   function push(s) { np = false; stack.push(s); render(true); }
-  function pop() { if (np) { np = false; } else if (stack.length > 1) stack.pop(); render(true); }
+  function pop() { if (finding) { closeFind(); render(true); return; } if (np) { np = false; } else if (stack.length > 1) stack.pop(); render(true); }
   function showNp() { if (!S.current) return; np = true; render(true); }
-  function home() { stack = [screens.main()]; np = false; render(true); }
+  function home() { closeFind(); stack = [screens.main()]; np = false; render(true); }
 
   /* ---------- rendering ---------- */
   const art = st => (st?.logo
@@ -211,6 +231,15 @@ const Ipod = (() => {
     w.addEventListener('pointercancel', () => { clearTimeout(holdTimer); last = null; });
     w.addEventListener('wheel', e => { e.preventDefault(); stepWheel(e.deltaY > 0 ? 1 : -1); }, { passive: false });
     el('ipodCenter').addEventListener('click', select);
+    el('ipodTitle').addEventListener('click', openFind);
+    const find = el('ipodFind');
+    let findTimer;
+    find.addEventListener('input', () => { clearTimeout(findTimer); findTimer = setTimeout(() => { $('#search').value = find.value; onSearchInput(find.value); const sc = top(); sc.sel = 0; sc.top = 0; render(true); }, 120); });
+    find.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); find.blur(); select(); }
+      else if (e.key === 'Escape') { e.preventDefault(); closeFind(); render(true); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); stepWheel(e.key === 'ArrowDown' ? 1 : -1); }
+    });
     // the screen itself: tap a row to pick it, swipe or scroll to move
     const v = el('ipodView');
     let sy = null;
@@ -244,9 +273,11 @@ const Ipod = (() => {
     const cs = getComputedStyle(wrap);
     const w = wrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     const h = wrap.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    const width = Math.min(w, h * SHAPE);
+    const CAP = 440; // on a big screen the iPod keeps a sensible size and its own shape
+    const width = Math.min(w, h * SHAPE, CAP);
+    const capped = width === CAP && w > CAP;
     ipod.style.width = width + 'px';
-    ipod.style.height = Math.max(width / SHAPE, Math.min(h, width / TALLEST)) + 'px';
+    ipod.style.height = (capped ? width / SHAPE : Math.max(width / SHAPE, Math.min(h, width / TALLEST))) + 'px';
   }
 
   /* ---------- on / off ---------- */

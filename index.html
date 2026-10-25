@@ -14,16 +14,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=24">
+<link rel="stylesheet" href="style.css?v=25">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
 <header class="topbar">
   <div class="brand"><span class="brand-dot" aria-hidden="true"></span><img class="brand-icon" src="favicon.svg" width="26" height="26" alt=""><span class="brand-text">radio.sala.company</span></div>
-  <select id="listSelect" title="Your station lists (also on the BAND knob)" aria-label="Station list"></select>
-  <button id="addListBtn" class="primary">+ List</button>
-  <button id="refreshListBtn" title="Reload this list from its source" aria-label="Reload list">⟳</button>
-  <button id="deleteListBtn" title="Remove this list" aria-label="Remove list">🗑</button>
   <div class="spacer"></div>
   <button id="lookBtn" class="look-btn" title="Switch to the iPod look (press again on the radio icon to come back)" aria-label="Switch to the iPod look" aria-pressed="false"><svg class="apple-ico" viewBox="0 0 24 24" aria-hidden="true"><path class="leaf" d="M12.6 6.2c.2-2.1 1.7-3.6 4-3.9-.1 2.2-1.6 3.7-4 3.9z"/><path d="M12 8.1c-.9-.7-2-1.1-3.2-1.1C5.7 7 3.4 9.7 3.4 13.5c0 3.9 2.6 8.3 5.6 8.3 1 0 1.7-.6 3-.6s1.9.6 3 .6c3 0 5.6-4.4 5.6-8.3 0-3.8-2.3-6.5-5.4-6.5-1.2 0-2.3.4-3.2 1.1z"/></svg><span class="btn-lbl"> iPod</span></button>
   <button id="songsBtn" title="Songs you heard" aria-label="Songs heard">♪<span class="btn-lbl"> Songs</span></button>
@@ -45,7 +41,8 @@
         <div class="ipod-screen">
           <div class="ipod-bar">
             <span class="ipod-clock" id="ipodClock">--:--</span>
-            <b class="ipod-title" id="ipodTitle">radio.sala.company</b>
+            <b class="ipod-title" id="ipodTitle" title="Tap to filter the stations">radio.sala.company</b>
+            <input class="ipod-find" id="ipodFind" type="search" placeholder="Type to filter…" autocomplete="off" aria-label="Filter stations">
             <span class="ipod-bar-r"><i class="ipod-pi" id="ipodPlayIco" aria-hidden="true"></i><i class="ipod-batt" id="ipodBatt" aria-hidden="true"><b></b></i></span>
           </div>
           <div class="ipod-view" id="ipodView"></div>
@@ -131,9 +128,7 @@
               <div class="vfd-cell"><span class="vfd-k">STATUS</span><b id="vfdState">STANDBY</b></div>
               <div class="vfd-cell"><span class="vfd-k">SIGNAL</span><b id="vfdSig">····</b></div>
               <div class="vfd-cell"><span class="vfd-k">FORMAT</span><b id="vfdFmt">—</b></div>
-              <div class="vfd-cell" title="Seconds of audio loaded ahead. Low = about to drop out."><span class="vfd-k">BUFFER</span><b id="vfdBuf">▯▯▯▯▯▯</b></div>
               <div class="vfd-cell"><span class="vfd-k">ON AIR</span><b id="vfdTime">--:--</b></div>
-              <div class="vfd-cell"><span class="vfd-k">LINK</span><b id="vfdSrc">—</b></div>
               <div class="vfd-cell"><span class="vfd-k">TIME</span><b id="vfdClock">--:--</b></div>
             </div>
           </div>
@@ -219,6 +214,7 @@
     <section class="details" aria-label="Station details">
       <div class="det-row">
         <select id="sourceSel" class="hidden" title="This station has several stream links; pick one" aria-label="Stream link"></select>
+        <span class="det-meta" title="Which link is playing, and how many seconds of audio are loaded ahead (low = about to drop out)">LINK <b id="vfdSrc">—</b> · BUFFER <b id="vfdBuf">▯▯▯▯▯▯</b></span>
         <span class="spacer"></span>
         <button id="testOneBtn" title="Test this station's links now">Test</button>
         <button id="copyBtn" title="Copy the stream link, e.g. to open in VLC">Copy link</button>
@@ -242,10 +238,14 @@
         Radio
       </button>
       <b>Pick a station</b>
-      <button id="pickerAdd" class="primary">+ List</button>
     </div>
+    <!-- The list this guide shows, and the tools for it: pick, add, reload, remove -->
     <div class="guide-head">
-      <span>STATION GUIDE <span class="help" tabindex="0" title="Keyboard: ↑↓ move · Enter play · ←→ prev/next station · PgUp/PgDn page · Space pause · M mute · F favorite · Esc back to the playing station" aria-label="Keyboard shortcuts: up and down arrows move through the guide, Enter plays, left and right change station, Page Up and Page Down jump a page, Space pauses, M mutes, F toggles favorite, Escape returns to the playing station">?</span></span>
+      <select id="listSelect" title="Your station lists (also on the BAND knob)" aria-label="Station list"></select>
+      <button id="addListBtn" class="primary" title="Add a station list" aria-label="Add a list">+</button>
+      <button id="refreshListBtn" title="Reload this list from its source" aria-label="Reload list">⟳</button>
+      <button id="deleteListBtn" title="Remove this list" aria-label="Remove list">🗑</button>
+      <span class="help" tabindex="0" title="Keyboard: ↑↓ move · Enter play · ←→ prev/next station · PgUp/PgDn page · Space pause · M mute · F favorite · Esc back to the playing station" aria-label="Keyboard shortcuts: up and down arrows move through the guide, Enter plays, left and right change station, Page Up and Page Down jump a page, Space pauses, M mutes, F toggles favorite, Escape returns to the playing station">?</span>
       <span id="count" class="count"></span>
     </div>
     <div class="filters">
@@ -472,7 +472,7 @@
       <dt>On a small phone</dt><dd>The radio becomes a 1950s push-button car radio. Tap a name on the dial or swipe it to tune, use the five keys as presets (tap an empty key to store the station that’s on, hold a key to replace it), and press STATIONS for search and filters.</dd>
       <dt>Station guide</dt><dd>Tap a station to play it. Rows turn <b class="hl-ok">silver</b> once a station is on air and <b class="hl-off">brown</b> when it’s off air.</dd>
       <dt>Search &amp; chips</dt><dd>Filter the list you have, search all your lists, or search all of Radio Browser (about 50,000 stations). The chips (Near me, Jazz, News…) browse Radio Browser; save what you find as a new list.</dd>
-      <dt>BAND</dt><dd>Your station lists: FM is the first, MW the second, SW1–SW8 the next eight. Tap a band on the dial or turn the knob.</dd>
+      <dt>Lists</dt><dd>Pick, add (+), reload (⟳) or remove (🗑) a list at the top of the station guide. On the shortwave radio the lists are also the BAND knob: FM is the first, MW the second, SW1–SW8 the next eight. On the iPod, tap the title bar to filter the stations as you type.</dd>
       <dt>TUNING</dt><dd>Moves through the stations. Tap the left or right half of the knob, scroll on it, or drag it round. It tunes in when you stop.</dd>
       <dt>Under the dial</dt><dd>⏮ ⏭ previous / next station · ⏸ pause (Space) · ⏹ stop · 🔊 mute (M) · ● LIVE jumps back to the live broadcast after a pause.</dd>
       <dt>POWER</dt><dd>Play / stop. If a stream drops, the radio reconnects by itself.</dd>
@@ -486,16 +486,16 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=17"></script>
-<script src="js/lists.js?v=17"></script>
-<script src="js/health.js?v=17"></script>
-<script src="js/guide.js?v=17"></script>
-<script src="js/radio.js?v=17"></script>
-<script src="js/player.js?v=17"></script>
-<script src="js/nowplaying.js?v=17"></script>
-<script src="js/car.js?v=17"></script>
-<script src="js/ipod.js?v=17"></script>
-<script src="js/app.js?v=17"></script>
+<script src="js/core.js?v=18"></script>
+<script src="js/lists.js?v=18"></script>
+<script src="js/health.js?v=18"></script>
+<script src="js/guide.js?v=18"></script>
+<script src="js/radio.js?v=18"></script>
+<script src="js/player.js?v=18"></script>
+<script src="js/nowplaying.js?v=18"></script>
+<script src="js/car.js?v=18"></script>
+<script src="js/ipod.js?v=18"></script>
+<script src="js/app.js?v=18"></script>
 <!-- GoatCounter analytics (not loaded on localhost; paths are prefixed with the host so all *.sala.company apps share one dashboard) -->
 <script>
   (function () {

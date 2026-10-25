@@ -150,7 +150,6 @@ const Car = (() => {
   // Station picker
   $('#carStations').addEventListener('click', () => Picker.open());
   $('#pickerClose').addEventListener('click', () => Picker.close());
-  $('#pickerAdd').addEventListener('click', openAddDialog);
 
   CAR.addEventListener('change', () => {
     if (!isCar()) document.body.classList.remove('picker-open');
