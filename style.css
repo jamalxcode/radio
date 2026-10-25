@@ -74,10 +74,10 @@ body.onair .brand-dot { background: var(--bad); box-shadow: 0 0 10px var(--bad);
 
 /* the iPod-look button: a little black apple (fruit) */
 .look-btn { display: inline-flex; align-items: center; gap: 2px; }
-.apple-ico { width: 18px; height: 18px; fill: #0a0a0b; filter: drop-shadow(0 0 1px rgba(233,230,220,.7)); }
+.apple-ico { width: 18px; height: 18px; fill: #e0261c; }
 .apple-ico .leaf { fill: #5cff7a; }
 .look-btn.on { background: var(--hi); border-color: var(--hi); }
-.look-btn.on .apple-ico { filter: none; }
+.look-btn.on .apple-ico { fill: #8f1208; }
 
 /* ---------- layout ---------- */
 .layout { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 430px; gap: 18px; padding: 18px; min-height: 0; }
