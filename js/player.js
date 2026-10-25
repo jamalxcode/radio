@@ -76,15 +76,18 @@ function nextSource() {
   teardown();
   const token = ++playToken;
   const src = s.order[s.idx];
+  if (s.url !== src.url) s.relayTried = false; // a new link gets its own relay attempt
   Object.assign(s, { url: src.url, t0: performance.now(), started: false, failed: false, recorded: false, stalls: 0, token, pausedAt: 0, behindMs: 0 });
   renderNow();
   Radio.setState('tuning');
   showOverlay('<div class="spinner"></div>' + (s.reconnecting ? `Signal lost — reconnecting (${s.retries}/${RETRY_DELAYS.length})…`
-    : s.idx ? `Trying backup link ${s.idx + 1} of ${s.order.length}…` : 'Tuning…'));
+    : s.relayNow ? 'Direct link failed — trying through the relay…' : s.idx ? `Trying backup link ${s.idx + 1} of ${s.order.length}…` : 'Tuning…'));
   clearTimeout(startTimer);
   startTimer = setTimeout(() => onTimeout(token), S.settings.timeoutSec * 1000);
+  const h = S.health.get(src.url);
+  // Through the relay when the test said the browser can't take this link directly, or the direct try just failed.
+  const useRelay = !!RELAY && (s.relayNow || (!s.relayTried && !!h?.relay));
   (async () => {
-    const h = S.health.get(src.url);
     let target = effectiveUrl(h?.probe?.resolved || src.url);
     let kind = h?.kind || (src.hls ? 'hls' : kindOf(target));
     if (kind === 'playlist' || (!h?.probe?.resolved && kindOf(target) === 'playlist')) {
@@ -93,6 +96,9 @@ function nextSource() {
     }
     if (kind === 'hls' && !audio.canPlayType('application/vnd.apple.mpegurl')) await loadLib('hls').catch(() => {});
     if (token !== playToken) return;
+    s.kind = kind;
+    s.relay = useRelay && kind !== 'hls';
+    if (s.relay) target = relayUrl(target);
     s.target = target; // the URL actually playing, for the now-playing look-ups
     startEngine(kind, target, token);
   })();
@@ -137,6 +143,7 @@ function onTimeout(token) {
   const s = session;
   if (token !== playToken || !s || s.started || s.failed) return;
   if (s.reconnecting) return onPlayFail(`didn’t reconnect within ${S.settings.timeoutSec}s`);
+  if (RELAY && !s.relay && !s.relayTried && s.kind !== 'hls') return onPlayFail(`didn’t start within ${S.settings.timeoutSec}s`);
   if (hasBackup()) {
     s.failed = true;
     recordFail(s, `didn’t start within ${S.settings.timeoutSec}s`, true);
@@ -163,6 +170,14 @@ function onPlayFail(msg) {
     showOverlay(`<div class="spinner"></div>Signal lost — reconnecting (${s.retries}/${RETRY_DELAYS.length})…<div class="muted">${esc(msg)}</div>`);
     const tok = s.token;
     setTimeout(() => { if (session === s && s.token === tok) { s.idx--; nextSource(); } }, RETRY_DELAYS[s.retries - 1]);
+    return;
+  }
+  if (!s.started && !s.reconnecting && RELAY && !s.relay && !s.relayTried && s.kind !== 'hls') {
+    s.relayTried = true;
+    s.relayNow = true;
+    s.idx--;
+    nextSource();
+    s.relayNow = false;
     return;
   }
   recordFail(s, msg, !s.started);
@@ -263,8 +278,10 @@ audio.addEventListener('playing', () => {
   h.lastPlay = Date.now();
   if (ms > S.settings.slowStartSec * 1000) { h.slow++; h.lastResult = 'slow'; }
   else { h.ok++; h.lastResult = 'ok'; lightUp(s.st); }
+  h.relay = !!s.relay; // next time, go straight through the relay (or straight to the server) like this time
   s.recorded = true;
   saveH(h);
+  if (s.relay) h.lastNote = 'Plays through the relay';
   // Radio Browser ranks stations by listens; tell it about this one (its API asks clients to).
   const uuid = s.order[s.idx]?.uuid;
   if (uuid && RB.base) fetch(`${RB.base}/json/url/${uuid}`).catch(() => {});

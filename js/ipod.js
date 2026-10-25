@@ -113,7 +113,7 @@ const Ipod = (() => {
           <span class="np-track">${nowp ? '♪ ' + esc(nowp.text) : esc(meta)}</span>
           ${nowp ? `<span class="np-meta">${esc(meta)}</span>` : ''}
           <span class="np-state lvl-${{ live: 'good', buffering: 'warn', tuning: 'warn', paused: 'warn', nosignal: 'bad' }[Radio.state] || ''}">${NPSTATE[Radio.state] || ''}${s?.liveAt && Radio.state !== 'stopped' ? ' · ' + since(Date.now() - s.liveAt) : ''}${Sleep.at ? ' · ☾ ' + Sleep.left() + ' min' : ''}</span>
-          <span class="np-sig">${BARS[ss.cls]} ${esc(ss.label)}${st.sources.length > 1 ? ` · link ${s ? s.idx + 1 : 1}/${st.sources.length}` : ''}</span>
+          <span class="np-sig">${BARS[ss.cls]} ${esc(ss.label)}${st.sources.length > 1 ? ` · link ${s ? s.idx + 1 : 1}/${st.sources.length}` : ''}${s?.relay ? ' · via relay' : ''}</span>
         </div>
         <div class="np-bar${showVol ? ' vol' : ''}">
           <span>${showVol ? '🔈' : S.favs.has(st.key) ? '★' : '☆'}</span>

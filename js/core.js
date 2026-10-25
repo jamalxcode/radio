@@ -61,6 +61,11 @@ const PAGE_HTTPS = location.protocol === 'https:';
 // Browsers refuse plain-http media on an https page, so try the https version instead.
 const isMixed = url => PAGE_HTTPS && /^http:/i.test(url);
 const effectiveUrl = url => (isMixed(url) ? url.replace(/^http:/i, 'https:') : url);
+// The relay (a Cloudflare Worker) passes a stream through when the browser can't take it directly:
+// plain-http streams on this https page, and servers without CORS headers. Tried only after the direct link fails.
+const RELAY = 'https://radio-relay.jamal-akuna-matata.workers.dev/?u=';
+const relayUrl = url => RELAY + encodeURIComponent(url);
+const isRelayed = url => !!RELAY && String(url).startsWith(RELAY);
 const hostOf = url => { try { return new URL(effectiveUrl(url)).host; } catch { return ''; } };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmtS = ms => (ms / 1000).toFixed(1) + 's';

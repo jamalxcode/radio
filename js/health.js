@@ -39,6 +39,7 @@ function sourceStatus(src) {
   if (h?.rating === 'good') return mk('good', LABEL.good + ' ★', 'You marked this as playing fine');
   if (h?.rating === 'buffers') return mk('warn', LABEL.warn + ' ★', 'You marked this as weak');
   if (h?.rating === 'broken') return mk('bad', LABEL.bad + ' ★', 'You marked this as off air');
+  if (h?.relay && h.lastPlay >= (h.probe?.at || 0) && h.lastResult !== 'fail') { const r = fromHistory(h); return { ...r, tip: 'Via relay. ' + r.tip }; }
   const hist = h?.lastPlay ? fromHistory(h) : null;
   const pr = h?.probe ? fromProbe(h.probe) : null;
   if (hist && pr) return h.lastPlay >= h.probe.at ? hist : pr; // newest evidence wins
@@ -187,7 +188,15 @@ async function audioProbe(url, ms = 10000) {
   }
 }
 
+// Test a link directly; if the browser can't reach it, test it through the relay (not for HLS: its pieces load on their own).
 async function probe(url, depth = 0) {
+  const p = await probeDirect(url, depth);
+  if (!RELAY || isRelayed(url) || p.kind === 'hls' || p.noRelay || !(p.status === 'dead' || p.status === 'blocked')) return p;
+  const q = await probeDirect(relayUrl(url), depth);
+  if (q.status === 'ok' || q.status === 'slow') return { ...q, relay: true, scope: undefined, note: 'Via relay · ' + (q.note || '') };
+  return { ...p, note: `${p.note || ''} · relay couldn’t reach it either` };
+}
+async function probeDirect(url, depth = 0) {
   const target = effectiveUrl(url);
   const base = { at: Date.now() };
   const t0 = performance.now();
@@ -220,13 +229,13 @@ async function probe(url, depth = 0) {
       const next = firstStreamIn(text, finalUrl);
       if (!next) return { ...base, status: 'dead', note: 'Playlist file lists no streams' };
       if (depth >= 2) return { ...base, status: 'dead', note: 'Too many nested playlist files' };
-      const p = await probe(next, depth + 1);
+      const p = await probe(isRelayed(target) ? relayUrl(next) : next, depth + 1);
       return { ...p, resolved: p.resolved || next, note: `Via playlist file. ${p.note || ''}`.trim() };
     }
     const au = sniffAudio(first.data);
     const mime = au.mime || (ct.startsWith('audio/') ? ct.split(';')[0] : '');
     const fmt = au.codec || (mime ? mime.replace(/^audio\/(x-)?/, '').toUpperCase() : '');
-    if (mime && !canPlay(mime)) return { ...base, kind: 'native', codec: fmt, status: 'blocked', note: `This browser can’t play ${fmt || mime}` };
+    if (mime && !canPlay(mime)) return { ...base, kind: 'native', codec: fmt, status: 'blocked', noRelay: true, note: `This browser can’t play ${fmt || mime}` };
     if (first.done && first.data.length < 64 * 1024) {
       // Some big CDNs (e.g. StreamTheWorld) cut off plain reads after a short burst but play fine in <audio>.
       const a = await audioProbe(target);
@@ -373,6 +382,7 @@ function recordProbe(url, p) {
   const h = H(url);
   if (p.kind) h.kind = p.kind;
   h.probe = p;
+  if (!p.inferred) h.relay = !!p.relay;
   if (p.status === 'ok') lightUp(S.byUrl.get(url));
   saveH(h);
   if (!p.inferred) noteHost(url, p);

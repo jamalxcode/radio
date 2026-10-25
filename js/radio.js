@@ -240,7 +240,7 @@ const VFD = (() => {
       set('vfdBuf', `${'▮'.repeat(full)}${'▯'.repeat(6 - full)} ${Math.round(sec)}s`, sec < 2 ? 'lvl-bad' : sec < 5 ? 'lvl-warn' : 'lvl-good');
     } else set('vfdBuf', '▯'.repeat(6), '');
     set('vfdTime', s?.liveAt && Radio.state !== 'stopped' ? since(Date.now() - s.liveAt) + (s.behindMs > 1500 ? ` −${Math.round(s.behindMs / 1000)}s` : '') : '--:--');
-    const kind = { hls: 'HLS', native: 'DIRECT' }[engine] || '';
+    const kind = s?.relay ? 'RELAY' : { hls: 'HLS', native: 'DIRECT' }[engine] || '';
     set('vfdSrc', s ? `${s.idx + 1}/${s.order.length}${kind ? ' · ' + kind : ''}` : st ? `${st.sources.length} LINK${st.sources.length > 1 ? 'S' : ''}` : '—');
     set('vfdClock', new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toUpperCase() + (Sleep.at ? ` · SLEEP ${Sleep.left()}m` : ''));
     // Phone mini-player

@@ -32,7 +32,8 @@ function renderNow() {
   if (h?.lastResult === 'fail' && h.lastNote) lines.push(esc(`Last problem: ${h.lastNote}`));
   if (h?.probe) lines.push(esc(`Test ${ago(h.probe.at)}: ${fromProbe(h.probe).label}${h.probe.note ? ' · ' + h.probe.note : ''}`));
   if (src.rbOk === 0) lines.push(esc('Radio Browser’s own check failed for this link last time.'));
-  if (isMixed(src.url)) lines.push(esc('Plain-HTTP stream: playing the HTTPS version, because browsers block plain HTTP on this page.'));
+  if (session?.relay && session.st.key === st.key) lines.push(esc('Playing through the relay: the browser couldn’t take this link directly, so it comes via radio-relay (Cloudflare).'));
+  else if (isMixed(src.url)) lines.push(esc('Plain-HTTP stream: playing the HTTPS version, because browsers block plain HTTP on this page.'));
   if (np && NowPlaying.history.length) lines.push(esc('Earlier: ' + NowPlaying.history.map(x => `${hhmm(x.at)} ${x.text}`).join(' · ')));
   if (session?.started && session.st.key === st.key && NowPlaying.method === 'none') {
     lines.push(esc('No song or show titles: this station’s server doesn’t share them with web pages.'));
