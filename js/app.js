@@ -349,7 +349,7 @@ function wire() {
   onClick('#copyBtn', copyLink);
   onClick('#testOneBtn', () => {
     if (!S.current) return;
-    queueTests(S.current.sources.map(s => s.url), { force: true, front: true });
+    queueTests(S.current.sources.map(s => s.url), { force: true, front: true, show: true });
     toast(S.current.sources.length > 1 ? `Testing all ${S.current.sources.length} links…` : 'Testing…');
   });
 

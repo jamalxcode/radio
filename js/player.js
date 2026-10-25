@@ -9,7 +9,7 @@ const audio = $('#audio');
 let hls = null, engine = '', nativeFail = null;
 let playToken = 0, session = null, startTimer = null, stallTimer = null;
 const RETRY_DELAYS = [1000, 3000, 6000]; // reconnect attempts after a drop, before trying backup links
-const STALL_LIMIT = 20000;               // buffering this long counts as a drop
+const STALL_LIMIT = 8000;                // buffering this long counts as a drop: reconnect rather than sit in silence
 
 function teardown() {
   NowPlaying.stop();
