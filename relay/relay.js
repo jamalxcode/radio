@@ -5,6 +5,22 @@
 
 const AUDIO = /^(audio\/|application\/(ogg|octet-stream|x-mpegurl|vnd\.apple\.mpegurl|pls\+xml|x-scpls)|video\/mp2t|text\/plain)/i;
 const PRIVATE = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|0\.|\[?::1\]?$|169\.254\.)/i;
+// Who may use it: the radio site (and a dev copy on localhost). Browsers send Origin or Referer on fetches;
+// the <audio> element sends neither, so a key in the address covers that case.
+const SITES = /^https?:\/\/(radio\.sala\.company|localhost(:\d+)?|127\.0\.0\.1(:\d+)?)(\/|$)/i;
+const KEY = 'sala-radio';
+// Cheap brake on abuse: new streams per address per minute (per Cloudflare location; good enough for a personal site).
+const LIMIT = 20;
+const hits = new Map();
+function tooMany(ip) {
+  const now = Date.now();
+  const h = hits.get(ip) || [];
+  const recent = h.filter(t => now - t < 60000);
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 5000) hits.clear();
+  return recent.length > LIMIT;
+}
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
@@ -17,8 +33,14 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     if (req.method !== 'GET' && req.method !== 'HEAD') return reply('Only GET', 405);
 
-    const u = new URL(req.url).searchParams.get('u');
+    const qs = new URL(req.url).searchParams;
+    const u = qs.get('u');
     if (!u) return reply('Give a stream address as ?u=', 400);
+    const from = req.headers.get('Origin') || req.headers.get('Referer') || '';
+    if (from && !SITES.test(from)) return reply('Not for this site', 403);
+    if (qs.get('k') !== KEY) return reply('Missing key', 403);
+    const ip = req.headers.get('CF-Connecting-IP') || '';
+    if (ip && tooMany(ip)) return reply('Too many streams from your address, try again in a minute', 429);
     let target;
     try { target = new URL(u); } catch { return reply('Bad address', 400); }
     if (!/^https?:$/.test(target.protocol)) return reply('Only http and https', 400);

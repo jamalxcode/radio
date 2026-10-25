@@ -449,6 +449,9 @@ dialog::backdrop { background: rgba(0, 0, 0, .75); }
 dialog h3 { margin: 4px 0 8px; font: 30px/1 var(--pixel); color: var(--hi); font-weight: normal; letter-spacing: .04em; }
 dialog label { display: block; margin: 12px 0 4px; color: var(--muted); }
 dialog label.check { display: flex; gap: 8px; align-items: flex-start; color: var(--text); }
+dialog .adv { margin: 14px 0 4px; border-top: 1px solid var(--num); padding-top: 6px; }
+dialog .adv summary { cursor: pointer; color: var(--muted); font-weight: 600; padding: 4px 0; }
+dialog .adv summary:hover { color: var(--hi); }
 dialog input[type=text], dialog input[type=url], dialog input[type=search], dialog input[type=number], dialog textarea, dialog select { width: 100%; }
 dialog .rbx { margin-top: 6px; }
 dialog a { color: var(--hi); }

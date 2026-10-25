@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=23">
+<link rel="stylesheet" href="style.css?v=24">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -407,20 +407,23 @@
 <dialog id="setDlg">
   <form method="dialog" id="setForm">
     <h3>Settings</h3>
-    <label for="sSlow">Count as a "slow start" after (seconds)</label>
-    <input id="sSlow" type="number" min="1" max="60">
-    <label for="sTimeout">Try the next link / warn after (seconds)</label>
-    <input id="sTimeout" type="number" min="3" max="120">
-    <label class="check"><input id="sAutoSkip" type="checkbox"> Skip to the next working station when one fails</label>
-    <label class="check"><input id="sAutoTest" type="checkbox"> Test stations automatically as you scroll</label>
-    <label class="check"><input id="sFx" type="checkbox"> Dial light and retro effects (same as the LIGHT button)</label>
     <label for="sSkin">Look</label>
     <select id="sSkin">
       <option value="radio">Shortwave radio (car radio on small phones)</option>
       <option value="ipod">iPod — black click-wheel player, fills the screen</option>
     </select>
-    <label for="sConc">Stations to test at the same time</label>
-    <input id="sConc" type="number" min="1" max="16">
+    <label class="check"><input id="sAutoSkip" type="checkbox"> Skip to the next working station when one fails</label>
+    <label class="check"><input id="sFx" type="checkbox"> Dial light and retro effects (same as the LIGHT button)</label>
+    <details class="adv">
+      <summary>Advanced</summary>
+      <label class="check"><input id="sAutoTest" type="checkbox"> Test stations quietly as you scroll</label>
+      <label for="sSlow">Count as a "slow start" after (seconds)</label>
+      <input id="sSlow" type="number" min="1" max="60">
+      <label for="sTimeout">Try the next link / warn after (seconds)</label>
+      <input id="sTimeout" type="number" min="3" max="120">
+      <label for="sConc">Stations to test at the same time</label>
+      <input id="sConc" type="number" min="1" max="16">
+    </details>
     <h3>Your data</h3>
     <p class="muted small">Lists, favorites, ratings, songs heard and test results are saved only in this browser. Use a backup to move them to another browser or device.</p>
     <div class="btns">
@@ -483,16 +486,16 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=16"></script>
-<script src="js/lists.js?v=16"></script>
-<script src="js/health.js?v=16"></script>
-<script src="js/guide.js?v=16"></script>
-<script src="js/radio.js?v=16"></script>
-<script src="js/player.js?v=16"></script>
-<script src="js/nowplaying.js?v=16"></script>
-<script src="js/car.js?v=16"></script>
-<script src="js/ipod.js?v=16"></script>
-<script src="js/app.js?v=16"></script>
+<script src="js/core.js?v=17"></script>
+<script src="js/lists.js?v=17"></script>
+<script src="js/health.js?v=17"></script>
+<script src="js/guide.js?v=17"></script>
+<script src="js/radio.js?v=17"></script>
+<script src="js/player.js?v=17"></script>
+<script src="js/nowplaying.js?v=17"></script>
+<script src="js/car.js?v=17"></script>
+<script src="js/ipod.js?v=17"></script>
+<script src="js/app.js?v=17"></script>
 <!-- GoatCounter analytics (not loaded on localhost; paths are prefixed with the host so all *.sala.company apps share one dashboard) -->
 <script>
   (function () {
