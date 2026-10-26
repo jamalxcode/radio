@@ -289,8 +289,7 @@ const Ipod = (() => {
   api.setSkin = skin => {
     S.settings.skin = skin;
     DB.put('kv', S.settings, 'settings');
-    api.apply();
-    toast(skin === 'ipod' ? 'iPod look on · turn the wheel, press the centre' : 'Back to the shortwave radio');
+    api.apply(); // no toast: the new look is its own confirmation, and a toast over the wheel reads as "still loading"
   };
   api.apply = () => {
     const ipod = S.settings.skin === 'ipod';
