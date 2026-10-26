@@ -59,6 +59,7 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 
 - **Knobs:** tap the left or right half to step, drag them round, scroll on them, or use the arrow keys when focused.
 - **Keyboard:** ↑↓ move the guide · Enter plays · ←→ previous/next · Space pause · M mute · F favorite.
+- **Share links:** Settings → Share favorites / Share this list makes a link (after the `#`, so nothing is sent to any server) that carries your favorite stations, or a list, to another phone or person; opening it offers to add them. Big lists share their source instead of their contents.
 - **Works offline:** a small service worker (`sw.js`) keeps the app's own files in the browser, so the site opens instantly and still opens with no network, showing your lists, favorites and songs heard (streams need network). The page is fetched fresh whenever the network answers within 4 seconds, so updates arrive normally.
 - **Lists** are managed at the top of the station guide (pick, +, ⟳, 🗑); the header keeps brand, iPod look, songs, help and settings. The dial shows STATUS · SIGNAL · FORMAT · ON AIR · TIME; the link in use and the buffer are in the station details.
 - **Song on every screen:** the title a station sends shows on the shortwave dial, the car LCD, the phone bar and the iPod's Now Playing, sliding sideways when it's too long. Tap it for the song card: title, artist, album, YouTube / Spotify / Apple Music links, Copy, and what played before it on that station.

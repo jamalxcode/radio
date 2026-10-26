@@ -277,6 +277,8 @@ function wire() {
     toast('Settings saved');
   });
   onClick('#exportBtn', exportData);
+  onClick('#shareFavBtn', Share.shareFavorites);
+  onClick('#shareListBtn', Share.shareList);
   $('#importFile').addEventListener('change', e => { if (e.target.files[0]) importData(e.target.files[0]); e.target.value = ''; });
   onClick('#clearStatsBtn', clearStats);
   onClick('#clearAllBtn', eraseAll);
@@ -423,9 +425,14 @@ async function init() {
   if (last?.sources) { S.current = last; scrollToCurrent(); scheduleRender(); Radio.needle(); }
   renderNow();
 
+  // A share link (#share=…) carries favorites or a list: offer to add them.
+  const shared = location.hash.startsWith('#share=');
+  if (shared) Share.receive();
+  addEventListener('hashchange', () => { if (location.hash.startsWith('#share=')) Share.receive(); });
   // Shortcut: ?m3u=<playlist url> adds that list (once).
   const qp = new URLSearchParams(location.search).get('m3u');
-  if (qp && !S.lists.some(p => p.url === qp)) {
+  if (shared) { /* handled above */ }
+  else if (qp && !S.lists.some(p => p.url === qp)) {
     loadWithSpinner({ kind: 'm3u', name: decodeURIComponent(qp.split('/').pop() || 'Shared list').replace(/\.(m3u8?|pls)$/i, ''), url: qp });
   } else if (!S.lists.length && !S.ui.seeded) {
     // First visit: load Radio Browser's top stations. Only once, so removing it sticks.
