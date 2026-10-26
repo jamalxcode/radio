@@ -116,11 +116,14 @@ const isTimeout = e => e && (e.name === 'TimeoutError' || e.name === 'AbortError
 
 /* hls.js loads on demand: most radio is plain Icecast/Shoutcast, which the browser plays itself. */
 const LIBS = { hls: 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js' };
+// The browser checks the file against this hash before running it, so a changed or tampered copy is refused.
+const LIB_HASH = { hls: 'sha384-9v3HcdYrO3D+OPDTjZ40RXocgE4GtXVCd3/mCS62JsM93JXgI1afJVuwjFvsu6ni' };
 const libLoads = {};
 function loadLib(name) {
   return libLoads[name] || (libLoads[name] = new Promise((res, rej) => {
     const s = document.createElement('script');
     s.src = LIBS[name];
+    if (LIB_HASH[name]) { s.integrity = LIB_HASH[name]; s.crossOrigin = 'anonymous'; }
     s.async = true;
     s.onload = res;
     s.onerror = () => { delete libLoads[name]; s.remove(); rej(new Error('Couldn’t load the HLS player library')); };

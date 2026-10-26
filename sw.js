@@ -4,7 +4,7 @@
      page (index.html)   network first, cached copy when offline
      app files           cached copy first, refreshed in the background
      player libraries    cached once from the CDN */
-const CACHE = 'radio-shell-v2';
+const CACHE = 'radio-shell-v3';
 const SHELL = ['./', 'index.html', 'style.css', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'manifest.webmanifest',
   'js/core.js', 'js/lists.js', 'js/health.js', 'js/guide.js', 'js/radio.js', 'js/player.js', 'js/nowplaying.js', 'js/car.js', 'js/ipod.js', 'js/share.js', 'js/app.js'];
 const LIBS = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/(hls\.js|country-flag-emoji-polyfill)|fonts\.(googleapis|gstatic)\.com)/;
@@ -24,7 +24,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (isPage(req)) return e.respondWith(networkFirst(req));
-  if (sameOrigin(url)) return e.respondWith(staleWhileRevalidate(req));
+  if (sameOrigin(url) && !url.pathname.includes('/lists/')) return e.respondWith(staleWhileRevalidate(req)); // the mirrored lists are big: not cached
   if (LIBS.test(req.url)) return e.respondWith(cacheFirst(req));
   // everything else (streams, Radio Browser, relay, mirrors): straight to the network
 });

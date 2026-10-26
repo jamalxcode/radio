@@ -433,7 +433,11 @@ async function init() {
   const qp = new URLSearchParams(location.search).get('m3u');
   if (shared) { /* handled above */ }
   else if (qp && !S.lists.some(p => p.url === qp)) {
-    loadWithSpinner({ kind: 'm3u', name: decodeURIComponent(qp.split('/').pop() || 'Shared list').replace(/\.(m3u8?|pls)$/i, ''), url: qp });
+    // Ask first: a link shouldn't be able to add a list to someone's radio without them noticing.
+    history.replaceState(null, '', location.pathname);
+    if (/^https?:\/\//i.test(qp) && confirm(`Add the station list from ${new URL(qp).host}?`)) {
+      loadWithSpinner({ kind: 'm3u', name: decodeURIComponent(qp.split('/').pop() || 'Shared list').replace(/\.(m3u8?|pls)$/i, ''), url: qp });
+    }
   } else if (!S.lists.length && !S.ui.seeded) {
     // First visit: load Radio Browser's top stations. Only once, so removing it sticks.
     S.ui.seeded = true;

@@ -16,11 +16,23 @@ const Share = (() => {
     }
     return 'j' + b64(new TextEncoder().encode(json));
   }
+  const MAX_UNPACKED = 4 * 1024 * 1024; // a link can't unpack to more than this (guards against a crafted, hugely compressed link)
   async function unpack(s) {
+    if (s.length > MAX_CHARS + 1000) throw new Error('too long');
     const bytes = unb64(s.slice(1));
     if (s[0] === 'z') {
       const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
-      return JSON.parse(await new Response(stream).text());
+      const reader = stream.getReader();
+      const chunks = [];
+      let size = 0;
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        size += value.length;
+        if (size > MAX_UNPACKED) { reader.cancel(); throw new Error('too big'); }
+        chunks.push(value);
+      }
+      return JSON.parse(new TextDecoder().decode(await new Blob(chunks).arrayBuffer()));
     }
     return JSON.parse(new TextDecoder().decode(bytes));
   }
