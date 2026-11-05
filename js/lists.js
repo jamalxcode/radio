@@ -27,7 +27,7 @@ function titleComma(s) {
   return s.length;
 }
 const isStreamUrl = u => /^(https?|icy):\/\//i.test(u);
-function parseM3U(text, defGroup = '') {
+function parseM3U(text, defGroup = '', defCountry = '') {
   const out = [];
   let cur = null;
   for (const raw of text.replace(/^﻿/, '').split(/\r?\n/)) {
@@ -50,7 +50,7 @@ function parseM3U(text, defGroup = '') {
       const url = line.split('|')[0].trim().replace(/^icy:/i, 'http:');
       if (!isStreamUrl(url)) { cur = null; continue; }
       out.push({ name: cur?.name || url.split('/').pop() || 'Unnamed', logo: cur?.logo || '',
-                 group: (cur?.group || defGroup || 'Ungrouped').replace(/_/g, ' '), country: cur?.country || '', lang: cur?.lang || '', url });
+                 group: (cur?.group || defGroup || 'Ungrouped').replace(/_/g, ' '), country: cur?.country || defCountry || '', lang: cur?.lang || '', url });
       cur = null;
     }
   }
@@ -62,7 +62,7 @@ function parsePLS(text, defGroup = '') {
   return Object.keys(files).filter(n => isStreamUrl(files[n]))
     .map(n => ({ name: titles[n] || files[n], logo: '', group: defGroup || 'Ungrouped', country: '', url: files[n] }));
 }
-const parseText = (text, defGroup) => (/^\s*\[playlist\]/i.test(text) ? parsePLS(text, defGroup) : parseM3U(text, defGroup));
+const parseText = (text, defGroup, defCountry) => (/^\s*\[playlist\]/i.test(text) ? parsePLS(text, defGroup) : parseM3U(text, defGroup, defCountry));
 
 // Radio Browser station -> entry. Its tags become the station's groups.
 function rbEntry(s) {
@@ -155,7 +155,7 @@ async function fetchText(url) {
 async function loadEntries(list) {
   if (list.kind === 'rb') return (await rbFetch(list.query)).map(rbEntry);
   if (list.kind === 'soma') return somaEntries(JSON.parse(await fetchText(SOMA_URL)));
-  return parseText(await fetchText(list.url), list.genre);
+  return parseText(await fetchText(list.url), list.genre, list.country);
 }
 
 /* =========================================================================
@@ -321,6 +321,11 @@ async function loadChoices(kind) {
       $('#jgFile').innerHTML = '<option value="">Choose a genre…</option>' +
         genres.map(f => `<option value="${esc(f.name)}">${esc(jgLabel(f.name))}</option>`).join('') +
         (big.length ? '<optgroup label="Everything (large)">' + big.map(f => `<option value="${esc(f.name)}">${esc(f.name.replace(/^-+|\.m3u$/g, ''))} · ${(f.size / 1e6).toFixed(0)} MB</option>`).join('') + '</optgroup>' : '');
+    } else if (kind === 'cur') {
+      const cat = await (await fetch('lists/curated.json', { cache: 'no-store' })).json();
+      CURATED = cat.groups;
+      $('#curGroup').innerHTML = cat.groups.map(g => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('');
+      showCurated();
     } else if (kind === 'mirror') {
       const items = await (await fetch('lists/index.json', { cache: 'no-store' })).json();
       $('#mirrorFile').innerHTML = items.map(i => `<option value="${esc(i.file)}">${esc(i.name)} (${i.count} stations, updated ${esc((i.updated || '').slice(0, 10))})</option>`).join('');
@@ -330,6 +335,22 @@ async function loadChoices(kind) {
     if (kind === 'jg') $('#jgFile').innerHTML = '<option value="">Couldn’t load the genre list (GitHub limit?). Try again later.</option>';
     else if (kind === 'rb') $('#addErr').textContent = e.message;
   }
+}
+let CURATED = null;
+// The second dropdown of "Curated collections": countries (yours first) or the collection's files.
+function showCurated() {
+  const g = CURATED?.find(x => x.id === $('#curGroup').value);
+  if (!g) return;
+  $('#curBlurb').innerHTML = `${esc(g.blurb)} <a href="${esc(g.home)}" target="_blank" rel="noopener">Source</a>`;
+  $('#curItemLbl').textContent = g.byCountry ? 'Country' : 'List';
+  let items = g.items;
+  if (g.byCountry) {
+    items = [...items].map(i => ({ ...i, label: `${countryFlag(i.country)} ${countryName(i.country)} (${i.count})`, sortKey: countryName(i.country) }))
+      .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+  } else items = items.map(i => ({ ...i, label: i.name }));
+  const opts = items.map(i => `<option value="${esc(i.url)}"${g.byCountry && i.country === userCountry.toLowerCase() ? ' selected' : ''}>${esc(i.label)}</option>`);
+  if (g.all) opts.unshift(`<option value="${esc(new URL('lists/' + g.all, location.href).href)}">All of it (every theme in one list)</option>`);
+  $('#curItem').innerHTML = opts.join('');
 }
 const jgLabel = f => f.replace(/\.m3u$/, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 function showSrc() {
@@ -364,6 +385,15 @@ async function dialogChoice() {
     return { meta: { kind: 'm3u', name: name || `junguler · ${f.startsWith('-') ? f.replace(/^-+|\.m3u$/g, '') : jgLabel(f)}`, url: JG_RAW + encodeURIComponent(f), genre } };
   }
   if (k === 'soma') return { meta: { kind: 'soma', name: name || 'SomaFM' } };
+  if (k === 'cur') {
+    const url = $('#curItem').value;
+    const g = CURATED?.find(x => x.id === $('#curGroup').value);
+    if (!url || !g) throw new Error('Pick a collection and a list first.');
+    const item = g.items.find(i => i.url === url);
+    const label = g.byCountry && item ? countryName(item.country) : $('#curItem').selectedOptions[0].textContent;
+    const short = g.name.split(' · ')[0];
+    return { meta: { kind: 'm3u', name: name || `${short} · ${label}`, url, country: g.byCountry && item ? item.country : '' } };
+  }
   if (k === 'mirror') {
     const f = $('#mirrorFile').value;
     if (!f) throw new Error('No mirrored lists yet.');

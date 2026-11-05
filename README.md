@@ -10,6 +10,7 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 | **junguler/m3u-radio-music-playlists** | Genre M3U files read straight from GitHub (the genre menu comes from the GitHub API). |
 | **SomaFM** | Official channel API. |
 | **Mirrored lists** | Lists whose servers block browsers (no CORS) are copied into the published site by the deploy workflow once a day. Add more in `lists/sources.json`. |
+| **Curated collections** | [IPRD](https://github.com/iprd-org/iprd) (24,000 stations in 225 countries, by country and broadcaster, with logos), [radio-playlists](https://github.com/dderry2/radio-playlists) (Radio Browser by genre, rebuilt weekly, plus a worldwide top 500), [recommended-radio-streams](https://github.com/deroverda/recommended-radio-streams) (hand-picked underground electronic, jazz, ambient, campus radio) and [internet-radio-streams](https://github.com/mikepierce/internet-radio-streams) (small themed playlists). The catalogue (`lists/curated.json`) is refreshed daily by `scripts/curated.mjs`; the committed copy stands in when a source is down. |
 | **Your own** | Any M3U/PLS URL, an uploaded file, or pasted text. `?m3u=<url>` adds a list from a link. |
 
 ## Finding stations

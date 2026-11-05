@@ -237,6 +237,7 @@ function wire() {
   onClick('#deleteListBtn', deleteList);
   $('#srcKind').addEventListener('change', showSrc);
   $('#rbMode').addEventListener('change', showSrc);
+  $('#curGroup').addEventListener('change', showCurated);
   $('#addForm').addEventListener('submit', async e => {
     if (e.submitter?.value === 'cancel') return;
     e.preventDefault();

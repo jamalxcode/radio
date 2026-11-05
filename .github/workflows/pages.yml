@@ -33,6 +33,9 @@ jobs:
       - name: Mirror station lists
         run: node scripts/mirror-lists.mjs
         continue-on-error: true   # a list server being down shouldn't stop the site from deploying
+      - name: Refresh the curated collections catalogue
+        run: node scripts/curated.mjs
+        continue-on-error: true   # the committed lists/curated.json stands in when a source is down
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

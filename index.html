@@ -339,6 +339,7 @@
       <option value="rb">Radio Browser (radio-browser.info)</option>
       <option value="jg">junguler/m3u-radio-music-playlists (by genre)</option>
       <option value="soma">SomaFM (all channels)</option>
+      <option value="cur">Curated collections (IPRD, genre and hand-picked lists)</option>
       <option value="mirror" id="mirrorOpt" hidden>Mirrored lists (updated daily by this site)</option>
       <option value="url">Playlist URL (M3U / PLS)</option>
       <option value="file">Upload a file</option>
@@ -367,6 +368,14 @@
       <label for="jgFile">Genre</label>
       <select id="jgFile"><option value="">Loading genres…</option></select>
       <p class="muted small">Updated regularly on <a href="https://github.com/junguler/m3u-radio-music-playlists" target="_blank" rel="noopener">GitHub</a>. The “everything” lists are very large (10–40 MB).</p>
+    </div>
+
+    <div class="src hidden" data-src="cur">
+      <label for="curGroup">Collection</label>
+      <select id="curGroup"><option value="">Loading collections…</option></select>
+      <label for="curItem" id="curItemLbl">List</label>
+      <select id="curItem"></select>
+      <p class="muted small" id="curBlurb"></p>
     </div>
 
     <div class="src hidden" data-src="soma">
@@ -472,6 +481,7 @@
       <dt>◉ iPod look</dt><dd>A black click-wheel player that fills the screen (also under Settings → Look). Turn the wheel to move the highlight, press the centre to pick, MENU goes back (hold it for the main menu), ⏮ ⏭ change station, ▶❚❚ plays or pauses. On Now Playing the wheel is the volume. Open a folding phone, or use a tablet or computer, and the station guide sits on the left page with the iPod on the right.</dd>
       <dt>On a small phone</dt><dd>The radio becomes a 1950s push-button car radio. Tap a name on the dial or swipe it to tune, use the five keys as presets (tap an empty key to store the station that’s on, hold a key to replace it), and press STATIONS for search and filters.</dd>
       <dt>Station guide</dt><dd>Tap a station to play it. Rows turn <b class="hl-ok">silver</b> once a station is on air and <b class="hl-off">brown</b> when it’s off air.</dd>
+      <dt>+ List · Curated collections</dt><dd>Four public station collections: IPRD (24,000 stations by country, with logos), Radio Playlists (Radio Browser by genre, rebuilt weekly, plus a worldwide top 500), Recommended Radio Streams (one listener's hand-picked underground, jazz and ambient stations) and Internet Radio Streams (small themed playlists: BBC, SomaFM, college radio). Pick a collection, then a country or list.</dd>
       <dt>Search &amp; chips</dt><dd>Filter the list you have, search all your lists, or search all of Radio Browser (about 50,000 stations). The chips (Near me, Jazz, News…) browse Radio Browser; save what you find as a new list.</dd>
       <dt>Lists</dt><dd>Pick, add (+), reload (⟳) or remove (🗑) a list at the top of the station guide. On the shortwave radio the lists are also the BAND knob: FM is the first, MW the second, SW1–SW8 the next eight. On the iPod, tap the title bar to filter the stations as you type.</dd>
       <dt>TUNING</dt><dd>Moves through the stations. Tap the left or right half of the knob, scroll on it, or drag it round. It tunes in when you stop.</dd>
@@ -487,17 +497,17 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=22"></script>
-<script src="js/lists.js?v=22"></script>
-<script src="js/health.js?v=22"></script>
-<script src="js/guide.js?v=22"></script>
-<script src="js/radio.js?v=22"></script>
-<script src="js/player.js?v=22"></script>
-<script src="js/nowplaying.js?v=22"></script>
-<script src="js/car.js?v=22"></script>
-<script src="js/ipod.js?v=22"></script>
-<script src="js/share.js?v=22"></script>
-<script src="js/app.js?v=22"></script>
+<script src="js/core.js?v=23"></script>
+<script src="js/lists.js?v=23"></script>
+<script src="js/health.js?v=23"></script>
+<script src="js/guide.js?v=23"></script>
+<script src="js/radio.js?v=23"></script>
+<script src="js/player.js?v=23"></script>
+<script src="js/nowplaying.js?v=23"></script>
+<script src="js/car.js?v=23"></script>
+<script src="js/ipod.js?v=23"></script>
+<script src="js/share.js?v=23"></script>
+<script src="js/app.js?v=23"></script>
 <!-- Offline shell: the app's files are kept in the browser (sw.js), so it opens instantly and without network -->
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

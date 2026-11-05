@@ -1,0 +1,1965 @@
+{
+ "updated": "2026-11-05T14:21:04.958Z",
+ "groups": [
+  {
+   "id": "iprd",
+   "name": "IPRD · International Public Radio Directory",
+   "home": "https://github.com/iprd-org/iprd",
+   "blurb": "24,286 stations in 225 countries, curated by country and broadcaster, with logos and genres.",
+   "byCountry": true,
+   "items": [
+    {
+     "name": "US",
+     "country": "us",
+     "count": 3619,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/us.m3u"
+    },
+    {
+     "name": "DE",
+     "country": "de",
+     "count": 2289,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/de.m3u"
+    },
+    {
+     "name": "CN",
+     "country": "cn",
+     "count": 1740,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cn.m3u"
+    },
+    {
+     "name": "FR",
+     "country": "fr",
+     "count": 1267,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/fr.m3u"
+    },
+    {
+     "name": "CA",
+     "country": "ca",
+     "count": 1140,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ca.m3u"
+    },
+    {
+     "name": "CL",
+     "country": "cl",
+     "count": 1057,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cl.m3u"
+    },
+    {
+     "name": "GR",
+     "country": "gr",
+     "count": 1025,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gr.m3u"
+    },
+    {
+     "name": "CO",
+     "country": "co",
+     "count": 953,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/co.m3u"
+    },
+    {
+     "name": "IT",
+     "country": "it",
+     "count": 876,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/it.m3u"
+    },
+    {
+     "name": "RU",
+     "country": "ru",
+     "count": 841,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ru.m3u"
+    },
+    {
+     "name": "MX",
+     "country": "mx",
+     "count": 771,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mx.m3u"
+    },
+    {
+     "name": "PL",
+     "country": "pl",
+     "count": 618,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pl.m3u"
+    },
+    {
+     "name": "GB",
+     "country": "gb",
+     "count": 585,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gb.m3u"
+    },
+    {
+     "name": "CH",
+     "country": "ch",
+     "count": 554,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ch.m3u"
+    },
+    {
+     "name": "BR",
+     "country": "br",
+     "count": 451,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/br.m3u"
+    },
+    {
+     "name": "AU",
+     "country": "au",
+     "count": 424,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/au.m3u"
+    },
+    {
+     "name": "ES",
+     "country": "es",
+     "count": 364,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/es.m3u"
+    },
+    {
+     "name": "NL",
+     "country": "nl",
+     "count": 346,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/nl.m3u"
+    },
+    {
+     "name": "AR",
+     "country": "ar",
+     "count": 250,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ar.m3u"
+    },
+    {
+     "name": "BE",
+     "country": "be",
+     "count": 201,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/be.m3u"
+    },
+    {
+     "name": "TR",
+     "country": "tr",
+     "count": 201,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tr.m3u"
+    },
+    {
+     "name": "UA",
+     "country": "ua",
+     "count": 196,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ua.m3u"
+    },
+    {
+     "name": "PE",
+     "country": "pe",
+     "count": 180,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pe.m3u"
+    },
+    {
+     "name": "HU",
+     "country": "hu",
+     "count": 179,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/hu.m3u"
+    },
+    {
+     "name": "CZ",
+     "country": "cz",
+     "count": 173,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cz.m3u"
+    },
+    {
+     "name": "IN",
+     "country": "in",
+     "count": 157,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/in.m3u"
+    },
+    {
+     "name": "PT",
+     "country": "pt",
+     "count": 154,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pt.m3u"
+    },
+    {
+     "name": "RO",
+     "country": "ro",
+     "count": 148,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ro.m3u"
+    },
+    {
+     "name": "HR",
+     "country": "hr",
+     "count": 146,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/hr.m3u"
+    },
+    {
+     "name": "BA",
+     "country": "ba",
+     "count": 140,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ba.m3u"
+    },
+    {
+     "name": "AT",
+     "country": "at",
+     "count": 133,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/at.m3u"
+    },
+    {
+     "name": "ID",
+     "country": "id",
+     "count": 103,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/id.m3u"
+    },
+    {
+     "name": "RS",
+     "country": "rs",
+     "count": 99,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/rs.m3u"
+    },
+    {
+     "name": "SE",
+     "country": "se",
+     "count": 97,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/se.m3u"
+    },
+    {
+     "name": "NO",
+     "country": "no",
+     "count": 96,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/no.m3u"
+    },
+    {
+     "name": "FI",
+     "country": "fi",
+     "count": 85,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/fi.m3u"
+    },
+    {
+     "name": "IE",
+     "country": "ie",
+     "count": 80,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ie.m3u"
+    },
+    {
+     "name": "ZA",
+     "country": "za",
+     "count": 77,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/za.m3u"
+    },
+    {
+     "name": "DZ",
+     "country": "dz",
+     "count": 74,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/dz.m3u"
+    },
+    {
+     "name": "BG",
+     "country": "bg",
+     "count": 73,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bg.m3u"
+    },
+    {
+     "name": "SK",
+     "country": "sk",
+     "count": 70,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sk.m3u"
+    },
+    {
+     "name": "EC",
+     "country": "ec",
+     "count": 67,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ec.m3u"
+    },
+    {
+     "name": "SI",
+     "country": "si",
+     "count": 67,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/si.m3u"
+    },
+    {
+     "name": "BO",
+     "country": "bo",
+     "count": 65,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bo.m3u"
+    },
+    {
+     "name": "DK",
+     "country": "dk",
+     "count": 65,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/dk.m3u"
+    },
+    {
+     "name": "IL",
+     "country": "il",
+     "count": 61,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/il.m3u"
+    },
+    {
+     "name": "NZ",
+     "country": "nz",
+     "count": 59,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/nz.m3u"
+    },
+    {
+     "name": "BY",
+     "country": "by",
+     "count": 49,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/by.m3u"
+    },
+    {
+     "name": "LV",
+     "country": "lv",
+     "count": 44,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/lv.m3u"
+    },
+    {
+     "name": "TW",
+     "country": "tw",
+     "count": 44,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tw.m3u"
+    },
+    {
+     "name": "LT",
+     "country": "lt",
+     "count": 41,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/lt.m3u"
+    },
+    {
+     "name": "MA",
+     "country": "ma",
+     "count": 39,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ma.m3u"
+    },
+    {
+     "name": "TH",
+     "country": "th",
+     "count": 37,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/th.m3u"
+    },
+    {
+     "name": "JP",
+     "country": "jp",
+     "count": 35,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/jp.m3u"
+    },
+    {
+     "name": "KE",
+     "country": "ke",
+     "count": 35,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ke.m3u"
+    },
+    {
+     "name": "MY",
+     "country": "my",
+     "count": 35,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/my.m3u"
+    },
+    {
+     "name": "PH",
+     "country": "ph",
+     "count": 35,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ph.m3u"
+    },
+    {
+     "name": "CI",
+     "country": "ci",
+     "count": 33,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ci.m3u"
+    },
+    {
+     "name": "CU",
+     "country": "cu",
+     "count": 33,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cu.m3u"
+    },
+    {
+     "name": "UY",
+     "country": "uy",
+     "count": 30,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/uy.m3u"
+    },
+    {
+     "name": "CR",
+     "country": "cr",
+     "count": 29,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cr.m3u"
+    },
+    {
+     "name": "EG",
+     "country": "eg",
+     "count": 29,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/eg.m3u"
+    },
+    {
+     "name": "AZ",
+     "country": "az",
+     "count": 28,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/az.m3u"
+    },
+    {
+     "name": "CM",
+     "country": "cm",
+     "count": 27,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cm.m3u"
+    },
+    {
+     "name": "GT",
+     "country": "gt",
+     "count": 27,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gt.m3u"
+    },
+    {
+     "name": "CY",
+     "country": "cy",
+     "count": 26,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cy.m3u"
+    },
+    {
+     "name": "DO",
+     "country": "do",
+     "count": 26,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/do.m3u"
+    },
+    {
+     "name": "HK",
+     "country": "hk",
+     "count": 26,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/hk.m3u"
+    },
+    {
+     "name": "NI",
+     "country": "ni",
+     "count": 25,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ni.m3u"
+    },
+    {
+     "name": "AW",
+     "country": "aw",
+     "count": 24,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/aw.m3u"
+    },
+    {
+     "name": "TN",
+     "country": "tn",
+     "count": 24,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tn.m3u"
+    },
+    {
+     "name": "TZ",
+     "country": "tz",
+     "count": 24,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tz.m3u"
+    },
+    {
+     "name": "KR",
+     "country": "kr",
+     "count": 23,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/kr.m3u"
+    },
+    {
+     "name": "PR",
+     "country": "pr",
+     "count": 23,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pr.m3u"
+    },
+    {
+     "name": "SG",
+     "country": "sg",
+     "count": 23,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sg.m3u"
+    },
+    {
+     "name": "BD",
+     "country": "bd",
+     "count": 21,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bd.m3u"
+    },
+    {
+     "name": "BI",
+     "country": "bi",
+     "count": 21,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bi.m3u"
+    },
+    {
+     "name": "BZ",
+     "country": "bz",
+     "count": 21,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bz.m3u"
+    },
+    {
+     "name": "HN",
+     "country": "hn",
+     "count": 20,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/hn.m3u"
+    },
+    {
+     "name": "IS",
+     "country": "is",
+     "count": 20,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/is.m3u"
+    },
+    {
+     "name": "AM",
+     "country": "am",
+     "count": 19,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/am.m3u"
+    },
+    {
+     "name": "LB",
+     "country": "lb",
+     "count": 18,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/lb.m3u"
+    },
+    {
+     "name": "LU",
+     "country": "lu",
+     "count": 18,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/lu.m3u"
+    },
+    {
+     "name": "SY",
+     "country": "sy",
+     "count": 18,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sy.m3u"
+    },
+    {
+     "name": "VE",
+     "country": "ve",
+     "count": 18,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ve.m3u"
+    },
+    {
+     "name": "VN",
+     "country": "vn",
+     "count": 18,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/vn.m3u"
+    },
+    {
+     "name": "AO",
+     "country": "ao",
+     "count": 17,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ao.m3u"
+    },
+    {
+     "name": "EE",
+     "country": "ee",
+     "count": 17,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ee.m3u"
+    },
+    {
+     "name": "NG",
+     "country": "ng",
+     "count": 17,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ng.m3u"
+    },
+    {
+     "name": "PY",
+     "country": "py",
+     "count": 17,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/py.m3u"
+    },
+    {
+     "name": "ZM",
+     "country": "zm",
+     "count": 17,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/zm.m3u"
+    },
+    {
+     "name": "MZ",
+     "country": "mz",
+     "count": 16,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mz.m3u"
+    },
+    {
+     "name": "SA",
+     "country": "sa",
+     "count": 16,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sa.m3u"
+    },
+    {
+     "name": "AL",
+     "country": "al",
+     "count": 15,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/al.m3u"
+    },
+    {
+     "name": "BS",
+     "country": "bs",
+     "count": 15,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bs.m3u"
+    },
+    {
+     "name": "CD",
+     "country": "cd",
+     "count": 15,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cd.m3u"
+    },
+    {
+     "name": "LK",
+     "country": "lk",
+     "count": 15,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/lk.m3u"
+    },
+    {
+     "name": "MD",
+     "country": "md",
+     "count": 15,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/md.m3u"
+    },
+    {
+     "name": "UG",
+     "country": "ug",
+     "count": 15,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ug.m3u"
+    },
+    {
+     "name": "AE",
+     "country": "ae",
+     "count": 14,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ae.m3u"
+    },
+    {
+     "name": "BJ",
+     "country": "bj",
+     "count": 14,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bj.m3u"
+    },
+    {
+     "name": "GE",
+     "country": "ge",
+     "count": 14,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ge.m3u"
+    },
+    {
+     "name": "NA",
+     "country": "na",
+     "count": 14,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/na.m3u"
+    },
+    {
+     "name": "BB",
+     "country": "bb",
+     "count": 13,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bb.m3u"
+    },
+    {
+     "name": "GH",
+     "country": "gh",
+     "count": 13,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gh.m3u"
+    },
+    {
+     "name": "IR",
+     "country": "ir",
+     "count": 13,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ir.m3u"
+    },
+    {
+     "name": "KZ",
+     "country": "kz",
+     "count": 13,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/kz.m3u"
+    },
+    {
+     "name": "NP",
+     "country": "np",
+     "count": 12,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/np.m3u"
+    },
+    {
+     "name": "SN",
+     "country": "sn",
+     "count": 12,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sn.m3u"
+    },
+    {
+     "name": "SV",
+     "country": "sv",
+     "count": 12,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sv.m3u"
+    },
+    {
+     "name": "IQ",
+     "country": "iq",
+     "count": 11,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/iq.m3u"
+    },
+    {
+     "name": "JM",
+     "country": "jm",
+     "count": 11,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/jm.m3u"
+    },
+    {
+     "name": "MK",
+     "country": "mk",
+     "count": 10,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mk.m3u"
+    },
+    {
+     "name": "MT",
+     "country": "mt",
+     "count": 10,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mt.m3u"
+    },
+    {
+     "name": "RE",
+     "country": "re",
+     "count": 10,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/re.m3u"
+    },
+    {
+     "name": "AG",
+     "country": "ag",
+     "count": 9,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ag.m3u"
+    },
+    {
+     "name": "CV",
+     "country": "cv",
+     "count": 9,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cv.m3u"
+    },
+    {
+     "name": "GN",
+     "country": "gn",
+     "count": 9,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gn.m3u"
+    },
+    {
+     "name": "KG",
+     "country": "kg",
+     "count": 9,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/kg.m3u"
+    },
+    {
+     "name": "TT",
+     "country": "tt",
+     "count": 9,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tt.m3u"
+    },
+    {
+     "name": "BM",
+     "country": "bm",
+     "count": 8,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bm.m3u"
+    },
+    {
+     "name": "ET",
+     "country": "et",
+     "count": 8,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/et.m3u"
+    },
+    {
+     "name": "MG",
+     "country": "mg",
+     "count": 8,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mg.m3u"
+    },
+    {
+     "name": "MN",
+     "country": "mn",
+     "count": 8,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mn.m3u"
+    },
+    {
+     "name": "QA",
+     "country": "qa",
+     "count": 8,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/qa.m3u"
+    },
+    {
+     "name": "BF",
+     "country": "bf",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bf.m3u"
+    },
+    {
+     "name": "BH",
+     "country": "bh",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bh.m3u"
+    },
+    {
+     "name": "FJ",
+     "country": "fj",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/fj.m3u"
+    },
+    {
+     "name": "LC",
+     "country": "lc",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/lc.m3u"
+    },
+    {
+     "name": "MQ",
+     "country": "mq",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mq.m3u"
+    },
+    {
+     "name": "RW",
+     "country": "rw",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/rw.m3u"
+    },
+    {
+     "name": "SO",
+     "country": "so",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/so.m3u"
+    },
+    {
+     "name": "VI",
+     "country": "vi",
+     "count": 7,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/vi.m3u"
+    },
+    {
+     "name": "AD",
+     "country": "ad",
+     "count": 6,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ad.m3u"
+    },
+    {
+     "name": "BN",
+     "country": "bn",
+     "count": 6,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bn.m3u"
+    },
+    {
+     "name": "CW",
+     "country": "cw",
+     "count": 6,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cw.m3u"
+    },
+    {
+     "name": "GP",
+     "country": "gp",
+     "count": 6,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gp.m3u"
+    },
+    {
+     "name": "HT",
+     "country": "ht",
+     "count": 6,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ht.m3u"
+    },
+    {
+     "name": "ME",
+     "country": "me",
+     "count": 6,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/me.m3u"
+    },
+    {
+     "name": "MW",
+     "country": "mw",
+     "count": 6,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mw.m3u"
+    },
+    {
+     "name": "AF",
+     "country": "af",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/af.m3u"
+    },
+    {
+     "name": "BW",
+     "country": "bw",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bw.m3u"
+    },
+    {
+     "name": "CG",
+     "country": "cg",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cg.m3u"
+    },
+    {
+     "name": "FO",
+     "country": "fo",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/fo.m3u"
+    },
+    {
+     "name": "MC",
+     "country": "mc",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mc.m3u"
+    },
+    {
+     "name": "PA",
+     "country": "pa",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pa.m3u"
+    },
+    {
+     "name": "PK",
+     "country": "pk",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pk.m3u"
+    },
+    {
+     "name": "PS",
+     "country": "ps",
+     "count": 5,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ps.m3u"
+    },
+    {
+     "name": "AS",
+     "country": "as",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/as.m3u"
+    },
+    {
+     "name": "BQ",
+     "country": "bq",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bq.m3u"
+    },
+    {
+     "name": "CF",
+     "country": "cf",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/cf.m3u"
+    },
+    {
+     "name": "GD",
+     "country": "gd",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gd.m3u"
+    },
+    {
+     "name": "GF",
+     "country": "gf",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gf.m3u"
+    },
+    {
+     "name": "JO",
+     "country": "jo",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/jo.m3u"
+    },
+    {
+     "name": "KM",
+     "country": "km",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/km.m3u"
+    },
+    {
+     "name": "LY",
+     "country": "ly",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ly.m3u"
+    },
+    {
+     "name": "MM",
+     "country": "mm",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mm.m3u"
+    },
+    {
+     "name": "OM",
+     "country": "om",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/om.m3u"
+    },
+    {
+     "name": "SL",
+     "country": "sl",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sl.m3u"
+    },
+    {
+     "name": "TG",
+     "country": "tg",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tg.m3u"
+    },
+    {
+     "name": "VC",
+     "country": "vc",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/vc.m3u"
+    },
+    {
+     "name": "XK",
+     "country": "xk",
+     "count": 4,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/xk.m3u"
+    },
+    {
+     "name": "AI",
+     "country": "ai",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ai.m3u"
+    },
+    {
+     "name": "BT",
+     "country": "bt",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/bt.m3u"
+    },
+    {
+     "name": "GU",
+     "country": "gu",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gu.m3u"
+    },
+    {
+     "name": "GY",
+     "country": "gy",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gy.m3u"
+    },
+    {
+     "name": "KH",
+     "country": "kh",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/kh.m3u"
+    },
+    {
+     "name": "ML",
+     "country": "ml",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ml.m3u"
+    },
+    {
+     "name": "MO",
+     "country": "mo",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mo.m3u"
+    },
+    {
+     "name": "NC",
+     "country": "nc",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/nc.m3u"
+    },
+    {
+     "name": "PF",
+     "country": "pf",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pf.m3u"
+    },
+    {
+     "name": "PM",
+     "country": "pm",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pm.m3u"
+    },
+    {
+     "name": "SM",
+     "country": "sm",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sm.m3u"
+    },
+    {
+     "name": "SR",
+     "country": "sr",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sr.m3u"
+    },
+    {
+     "name": "YE",
+     "country": "ye",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ye.m3u"
+    },
+    {
+     "name": "YT",
+     "country": "yt",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/yt.m3u"
+    },
+    {
+     "name": "ZW",
+     "country": "zw",
+     "count": 3,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/zw.m3u"
+    },
+    {
+     "name": "FK",
+     "country": "fk",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/fk.m3u"
+    },
+    {
+     "name": "GG",
+     "country": "gg",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gg.m3u"
+    },
+    {
+     "name": "GI",
+     "country": "gi",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gi.m3u"
+    },
+    {
+     "name": "GL",
+     "country": "gl",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gl.m3u"
+    },
+    {
+     "name": "IM",
+     "country": "im",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/im.m3u"
+    },
+    {
+     "name": "KY",
+     "country": "ky",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ky.m3u"
+    },
+    {
+     "name": "PG",
+     "country": "pg",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/pg.m3u"
+    },
+    {
+     "name": "SX",
+     "country": "sx",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sx.m3u"
+    },
+    {
+     "name": "TJ",
+     "country": "tj",
+     "count": 2,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tj.m3u"
+    },
+    {
+     "name": "AX",
+     "country": "ax",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ax.m3u"
+    },
+    {
+     "name": "CK",
+     "country": "ck",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ck.m3u"
+    },
+    {
+     "name": "DM",
+     "country": "dm",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/dm.m3u"
+    },
+    {
+     "name": "FM",
+     "country": "fm",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/fm.m3u"
+    },
+    {
+     "name": "GA",
+     "country": "ga",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ga.m3u"
+    },
+    {
+     "name": "GM",
+     "country": "gm",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gm.m3u"
+    },
+    {
+     "name": "GQ",
+     "country": "gq",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/gq.m3u"
+    },
+    {
+     "name": "JE",
+     "country": "je",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/je.m3u"
+    },
+    {
+     "name": "KN",
+     "country": "kn",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/kn.m3u"
+    },
+    {
+     "name": "KW",
+     "country": "kw",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/kw.m3u"
+    },
+    {
+     "name": "LA",
+     "country": "la",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/la.m3u"
+    },
+    {
+     "name": "LI",
+     "country": "li",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/li.m3u"
+    },
+    {
+     "name": "LR",
+     "country": "lr",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/lr.m3u"
+    },
+    {
+     "name": "LS",
+     "country": "ls",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ls.m3u"
+    },
+    {
+     "name": "MH",
+     "country": "mh",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mh.m3u"
+    },
+    {
+     "name": "MP",
+     "country": "mp",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mp.m3u"
+    },
+    {
+     "name": "MR",
+     "country": "mr",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mr.m3u"
+    },
+    {
+     "name": "MS",
+     "country": "ms",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ms.m3u"
+    },
+    {
+     "name": "MU",
+     "country": "mu",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/mu.m3u"
+    },
+    {
+     "name": "NE",
+     "country": "ne",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ne.m3u"
+    },
+    {
+     "name": "NR",
+     "country": "nr",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/nr.m3u"
+    },
+    {
+     "name": "SB",
+     "country": "sb",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sb.m3u"
+    },
+    {
+     "name": "SC",
+     "country": "sc",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sc.m3u"
+    },
+    {
+     "name": "SD",
+     "country": "sd",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sd.m3u"
+    },
+    {
+     "name": "SH",
+     "country": "sh",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sh.m3u"
+    },
+    {
+     "name": "SS",
+     "country": "ss",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ss.m3u"
+    },
+    {
+     "name": "SZ",
+     "country": "sz",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/sz.m3u"
+    },
+    {
+     "name": "TC",
+     "country": "tc",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tc.m3u"
+    },
+    {
+     "name": "TF",
+     "country": "tf",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tf.m3u"
+    },
+    {
+     "name": "TL",
+     "country": "tl",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tl.m3u"
+    },
+    {
+     "name": "TM",
+     "country": "tm",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/tm.m3u"
+    },
+    {
+     "name": "TO",
+     "country": "to",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/to.m3u"
+    },
+    {
+     "name": "UM",
+     "country": "um",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/um.m3u"
+    },
+    {
+     "name": "UZ",
+     "country": "uz",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/uz.m3u"
+    },
+    {
+     "name": "VA",
+     "country": "va",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/va.m3u"
+    },
+    {
+     "name": "VG",
+     "country": "vg",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/vg.m3u"
+    },
+    {
+     "name": "VU",
+     "country": "vu",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/vu.m3u"
+    },
+    {
+     "name": "WF",
+     "country": "wf",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/wf.m3u"
+    },
+    {
+     "name": "WS",
+     "country": "ws",
+     "count": 1,
+     "url": "https://iprd-org.github.io/iprd/site_data/by_country/ws.m3u"
+    }
+   ]
+  },
+  {
+   "id": "rp",
+   "name": "Radio Playlists · by genre (weekly)",
+   "home": "https://github.com/dderry2/radio-playlists",
+   "blurb": "Working stations from the Radio Browser directory, rebuilt every week into one file per genre, plus a worldwide top 500.",
+   "items": [
+    {
+     "name": "Top 500 worldwide",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/top/top-500.m3u"
+    },
+    {
+     "name": "2000s",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/2000s.m3u"
+    },
+    {
+     "name": "60s",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/60s.m3u"
+    },
+    {
+     "name": "70s",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/70s.m3u"
+    },
+    {
+     "name": "80s",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/80s.m3u"
+    },
+    {
+     "name": "90s",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/90s.m3u"
+    },
+    {
+     "name": "Adult Contemporary",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/adult-contemporary.m3u"
+    },
+    {
+     "name": "Alternative",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/alternative.m3u"
+    },
+    {
+     "name": "Ambient",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/ambient.m3u"
+    },
+    {
+     "name": "Blues",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/blues.m3u"
+    },
+    {
+     "name": "Chill",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/chill.m3u"
+    },
+    {
+     "name": "Chillout",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/chillout.m3u"
+    },
+    {
+     "name": "Christian",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/christian.m3u"
+    },
+    {
+     "name": "Christmas",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/christmas.m3u"
+    },
+    {
+     "name": "Classic Hits",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/classic-hits.m3u"
+    },
+    {
+     "name": "Classic Rock",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/classic-rock.m3u"
+    },
+    {
+     "name": "Classical",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/classical.m3u"
+    },
+    {
+     "name": "Country",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/country.m3u"
+    },
+    {
+     "name": "Cumbia",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/cumbia.m3u"
+    },
+    {
+     "name": "Dance",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/dance.m3u"
+    },
+    {
+     "name": "Deep House",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/deep-house.m3u"
+    },
+    {
+     "name": "Disco",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/disco.m3u"
+    },
+    {
+     "name": "Drum And Bass",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/drum-and-bass.m3u"
+    },
+    {
+     "name": "Easy Listening",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/easy-listening.m3u"
+    },
+    {
+     "name": "Edm",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/edm.m3u"
+    },
+    {
+     "name": "Electronic",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/electronic.m3u"
+    },
+    {
+     "name": "Folk",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/folk.m3u"
+    },
+    {
+     "name": "Funk",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/funk.m3u"
+    },
+    {
+     "name": "Gospel",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/gospel.m3u"
+    },
+    {
+     "name": "Hard Rock",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/hard-rock.m3u"
+    },
+    {
+     "name": "Hip Hop",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/hip-hop.m3u"
+    },
+    {
+     "name": "House",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/house.m3u"
+    },
+    {
+     "name": "Indie",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/indie.m3u"
+    },
+    {
+     "name": "Instrumental",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/instrumental.m3u"
+    },
+    {
+     "name": "Jazz",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/jazz.m3u"
+    },
+    {
+     "name": "Kids",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/kids.m3u"
+    },
+    {
+     "name": "Latin",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/latin.m3u"
+    },
+    {
+     "name": "Lounge",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/lounge.m3u"
+    },
+    {
+     "name": "Metal",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/metal.m3u"
+    },
+    {
+     "name": "News",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/news.m3u"
+    },
+    {
+     "name": "Oldies",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/oldies.m3u"
+    },
+    {
+     "name": "Pop",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/pop.m3u"
+    },
+    {
+     "name": "Punk",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/punk.m3u"
+    },
+    {
+     "name": "R And B",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/r-and-b.m3u"
+    },
+    {
+     "name": "Ranchera",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/ranchera.m3u"
+    },
+    {
+     "name": "Reggae",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/reggae.m3u"
+    },
+    {
+     "name": "Reggaeton",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/reggaeton.m3u"
+    },
+    {
+     "name": "Regional Mexican",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/regional-mexican.m3u"
+    },
+    {
+     "name": "Religious",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/religious.m3u"
+    },
+    {
+     "name": "Rock",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/rock.m3u"
+    },
+    {
+     "name": "Salsa",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/salsa.m3u"
+    },
+    {
+     "name": "Schlager",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/schlager.m3u"
+    },
+    {
+     "name": "Smooth Jazz",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/smooth-jazz.m3u"
+    },
+    {
+     "name": "Soul",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/soul.m3u"
+    },
+    {
+     "name": "Sports",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/sports.m3u"
+    },
+    {
+     "name": "Talk",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/talk.m3u"
+    },
+    {
+     "name": "Techno",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/techno.m3u"
+    },
+    {
+     "name": "Top 40",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/top-40.m3u"
+    },
+    {
+     "name": "Trance",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/trance.m3u"
+    },
+    {
+     "name": "Tropical",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/tropical.m3u"
+    },
+    {
+     "name": "World",
+     "url": "https://raw.githubusercontent.com/dderry2/radio-playlists/main/genres/world.m3u"
+    }
+   ]
+  },
+  {
+   "id": "rec",
+   "name": "Recommended Radio Streams · hand-picked",
+   "home": "https://github.com/deroverda/recommended-radio-streams",
+   "blurb": "About 470 stations one listener actually listens to: underground electronic, freeform, jazz, ambient, campus radio and the odd and wonderful.",
+   "items": [
+    {
+     "name": "Ambient Lo Fi Chill",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/ambient-lo-fi-chill.m3u"
+    },
+    {
+     "name": "Campus Public Radio",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/campus-public-radio.m3u"
+    },
+    {
+     "name": "Christmas Holiday",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/christmas-holiday.m3u"
+    },
+    {
+     "name": "Classical Opera",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/classical-opera.m3u"
+    },
+    {
+     "name": "Decades Oldies Nostalgia",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/decades-oldies-nostalgia.m3u"
+    },
+    {
+     "name": "Electronic",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/electronic.m3u"
+    },
+    {
+     "name": "Experimental Nerdy Scanners",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/experimental-nerdy-scanners.m3u"
+    },
+    {
+     "name": "Funk Soul Hip Hop Disco",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/funk-soul-hip-hop-disco.m3u"
+    },
+    {
+     "name": "Global Independent Online Communities",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/global-independent-online-communities.m3u"
+    },
+    {
+     "name": "Jazz Blues",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/jazz-blues.m3u"
+    },
+    {
+     "name": "Metal Heavy",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/metal-heavy.m3u"
+    },
+    {
+     "name": "News Spoken Word",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/news-spoken-word.m3u"
+    },
+    {
+     "name": "Reggae Dub",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/reggae-dub.m3u"
+    },
+    {
+     "name": "Rock Indie Alternative Country Folk",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/rock-indie-alternative-country-folk.m3u"
+    },
+    {
+     "name": "Video Game Chiptune Soundtracks",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/video-game-chiptune-soundtracks.m3u"
+    },
+    {
+     "name": "World Regional",
+     "url": "https://raw.githubusercontent.com/deroverda/recommended-radio-streams/main/playlists/world-regional.m3u"
+    }
+   ]
+  },
+  {
+   "id": "mp",
+   "name": "Internet Radio Streams · curated themes",
+   "home": "https://github.com/mikepierce/internet-radio-streams",
+   "blurb": "About 250 streams in small themed playlists: BBC, SomaFM, ambient, jazz, college and community radio.",
+   "all": "curated-mikepierce.m3u",
+   "items": [
+    {
+     "name": "313.FM",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/313.FM.m3u"
+    },
+    {
+     "name": "9128.live",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/9128.live.m3u"
+    },
+    {
+     "name": "AM Ambient",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/AM-Ambient.m3u"
+    },
+    {
+     "name": "AfterhoursFM",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/AfterhoursFM.m3u"
+    },
+    {
+     "name": "AmbientSleepingPill",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/AmbientSleepingPill.m3u"
+    },
+    {
+     "name": "BBC Radio Stations",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/BBC-Radio-Stations.m3u"
+    },
+    {
+     "name": "BBC WorldService",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/BBC-WorldService.m3u"
+    },
+    {
+     "name": "BadRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/BadRadio.m3u"
+    },
+    {
+     "name": "Bluemars Cryosleep",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Bluemars-Cryosleep.m3u"
+    },
+    {
+     "name": "Bluemars VoicesFromWithin",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Bluemars-VoicesFromWithin.m3u"
+    },
+    {
+     "name": "Bluemars",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Bluemars.m3u"
+    },
+    {
+     "name": "CashmereRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/CashmereRadio.m3u"
+    },
+    {
+     "name": "DandelionRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/DandelionRadio.m3u"
+    },
+    {
+     "name": "DarkAmbientRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/DarkAmbientRadio.m3u"
+    },
+    {
+     "name": "DialRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/DialRadio.m3u"
+    },
+    {
+     "name": "DoYouRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/DoYouRadio.m3u"
+    },
+    {
+     "name": "Dogglounge",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Dogglounge.m3u"
+    },
+    {
+     "name": "Doubleclap",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Doubleclap.m3u"
+    },
+    {
+     "name": "Dublab",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Dublab.m3u"
+    },
+    {
+     "name": "FIP Stations",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/FIP-Stations.m3u"
+    },
+    {
+     "name": "Frisky Chill",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Frisky-Chill.m3u"
+    },
+    {
+     "name": "Frisky Deep",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Frisky-Deep.m3u"
+    },
+    {
+     "name": "Frisky",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Frisky.m3u"
+    },
+    {
+     "name": "Hirschmilch Stations",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Hirschmilch-Stations.m3u"
+    },
+    {
+     "name": "IntergalacticFM Stations",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/IntergalacticFM-Stations.m3u"
+    },
+    {
+     "name": "KAFM WesternCO Public",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KAFM-WesternCO-Public.m3u"
+    },
+    {
+     "name": "KALX Berkeley",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KALX-Berkeley.m3u"
+    },
+    {
+     "name": "KCHUNG",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KCHUNG.m3u"
+    },
+    {
+     "name": "KEXP Seattle",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KEXP-Seattle.m3u"
+    },
+    {
+     "name": "KPISS",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KPISS.m3u"
+    },
+    {
+     "name": "KSPC Claremont",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KSPC-Claremont.m3u"
+    },
+    {
+     "name": "KXLU SoCalLoyolaMarymount",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KXLU-SoCalLoyolaMarymount.m3u"
+    },
+    {
+     "name": "KioskRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/KioskRadio.m3u"
+    },
+    {
+     "name": "LeMellotron",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/LeMellotron.m3u"
+    },
+    {
+     "name": "NASA ThirdRockRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/NASA-ThirdRockRadio.m3u"
+    },
+    {
+     "name": "NTS1",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/NTS1.m3u"
+    },
+    {
+     "name": "NTS2",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/NTS2.m3u"
+    },
+    {
+     "name": "Nectarine",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Nectarine.m3u"
+    },
+    {
+     "name": "NewtownRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/NewtownRadio.m3u"
+    },
+    {
+     "name": "NightwavePlaza",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/NightwavePlaza.m3u"
+    },
+    {
+     "name": "Noods Radio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Noods-Radio.m3u"
+    },
+    {
+     "name": "RadioCaroline",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/RadioCaroline.m3u"
+    },
+    {
+     "name": "RadioParadise Global",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/RadioParadise-Global.m3u"
+    },
+    {
+     "name": "RadioParadise MainMix",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/RadioParadise-MainMix.m3u"
+    },
+    {
+     "name": "RadioRivendell",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/RadioRivendell.m3u"
+    },
+    {
+     "name": "Radiomeuh",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Radiomeuh.m3u"
+    },
+    {
+     "name": "RePlayScape",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/RePlayScape.m3u"
+    },
+    {
+     "name": "RinseFM",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/RinseFM.m3u"
+    },
+    {
+     "name": "SanctuaryRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SanctuaryRadio.m3u"
+    },
+    {
+     "name": "ShonenBeachFM",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/ShonenBeachFM.m3u"
+    },
+    {
+     "name": "Slay Radio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Slay-Radio.m3u"
+    },
+    {
+     "name": "SleepbotEnvironmental",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SleepbotEnvironmental.m3u"
+    },
+    {
+     "name": "Sleepscapes Rain",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Sleepscapes-Rain.m3u"
+    },
+    {
+     "name": "Sleepscapes Waves",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Sleepscapes-Waves.m3u"
+    },
+    {
+     "name": "SohoRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SohoRadio.m3u"
+    },
+    {
+     "name": "SomaFM DeepSpaceOne",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SomaFM-DeepSpaceOne.m3u"
+    },
+    {
+     "name": "SomaFM DroneZone",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SomaFM-DroneZone.m3u"
+    },
+    {
+     "name": "SomaFM GrooveSalad",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SomaFM-GrooveSalad.m3u"
+    },
+    {
+     "name": "SomaFM Lush",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SomaFM-Lush.m3u"
+    },
+    {
+     "name": "SomaFM SF10 33",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SomaFM-SF10-33.m3u"
+    },
+    {
+     "name": "SomaFM SpaceStation",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SomaFM-SpaceStation.m3u"
+    },
+    {
+     "name": "Subcity",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/Subcity.m3u"
+    },
+    {
+     "name": "SyntheticFM NewItaloDisco",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SyntheticFM-NewItaloDisco.m3u"
+    },
+    {
+     "name": "SyntheticFM Synth",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/SyntheticFM-Synth.m3u"
+    },
+    {
+     "name": "TheLotRadio",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/TheLotRadio.m3u"
+    },
+    {
+     "name": "WFMU Jersey City",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/WFMU-Jersey-City.m3u"
+    },
+    {
+     "name": "WorldwideFM",
+     "url": "https://raw.githubusercontent.com/mikepierce/internet-radio-streams/main/WorldwideFM.m3u"
+    }
+   ]
+  }
+ ]
+}
