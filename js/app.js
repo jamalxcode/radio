@@ -53,7 +53,7 @@ const favRecord = st => ({ key: st.key, name: st.name, logo: st.logo, group: st.
 function toggleFav(st) {
   if (!st) return;
   if (S.favs.has(st.key)) { S.favs.delete(st.key); DB.del('favs', st.key); toast('Removed from favorites'); }
-  else { const f = favRecord(st); S.favs.set(st.key, f); DB.put('favs', f); toast('Saved to favorites (Show: ★ Favorites)'); }
+  else { const f = favRecord(st); S.favs.set(st.key, f); DB.put('favs', f); toast(document.body.classList.contains('modern-ui') ? 'Saved to favorites' : 'Saved to favorites (Show: ★ Favorites)'); }
   if (S.ui.status === 'fav') { rebuildGroups(); applyFilters(true); } else scheduleRender();
   renderNow();
 }
@@ -373,6 +373,9 @@ function wire() {
     if (e.target.closest?.('input, textarea, select, dialog') || e.ctrlKey || e.metaKey || e.altKey) return;
     const onButton = !!e.target.closest?.('button, a');
     const k = e.key;
+    // The modern interface has no visible guide cursor: arrows, paging, Enter and Escape keep their normal
+    // meaning there (scrolling, pressing the focused control, closing overlays). Space, M, F and media keys still work.
+    if (document.body.classList.contains('modern-ui') && ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'PageDown', 'PageUp', 'Home', 'End', 'Enter', 'Escape'].includes(k)) return;
     const handled = () => e.preventDefault();
     if (k === 'ArrowDown' || k === 'ArrowUp') { handled(); const c = cursorStart(); moveCursor(c < 0 ? 0 : c + (k === 'ArrowDown' ? 1 : -1)); }
     else if (k === 'PageDown' || k === 'PageUp') { handled(); moveCursor(Math.max(0, cursorStart()) + (k === 'PageDown' ? 1 : -1) * pageRows()); }
@@ -381,7 +384,7 @@ function wire() {
     else if (['ArrowRight', 'n', 'MediaTrackNext'].includes(k)) { handled(); step(1); }
     else if (['ArrowLeft', 'p', 'MediaTrackPrevious'].includes(k)) { handled(); step(-1); }
     else if (k === 'Escape') { if (Picker.isOpen()) Picker.close(); if (document.body.classList.contains('sheet-open')) Sheet.close(); S.cursor = S.current ? S.filtered.findIndex(c => c.key === S.current.key) : -1; scrollToCurrent(); scheduleRender(); }
-    else if (k === 'f' || k === 'F') { toggleFav(S.filtered[S.cursor] || S.current); }
+    else if (k === 'f' || k === 'F') { toggleFav(document.body.classList.contains('modern-ui') ? S.current : (S.filtered[S.cursor] || S.current)); }
     else if (k === 'm' || k === 'M') { setMuted(!audio.muted); }
     else if ((k === ' ' && !onButton) || k === 'MediaPlayPause') { handled(); togglePause(); }
   });
@@ -446,7 +449,8 @@ async function init() {
     loadWithSpinner(DEFAULT_LIST);
   }
   // First visit: explain the radio once.
-  if (!S.ui.helpSeen) {
+  // The help describes the classic radio's controls, so the modern interface doesn't open it on first visit.
+  if (!S.ui.helpSeen && !document.body.classList.contains('modern-ui')) {
     S.ui.helpSeen = true;
     saveUi();
     $('#helpDlg').showModal();
