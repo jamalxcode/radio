@@ -46,6 +46,7 @@ const Modern = (() => {
     '<aside class="m-browser" id="mBrowser"><header class="m-browser-head"><div><h2>Station picker</h2><p>Explore your entire radio collection</p></div><button id="mBrowserClose" aria-label="Close station picker">✕</button></header>' +
     '<div class="m-browser-search"><input type="search" id="mSearch" placeholder="Search stations in this view…" aria-label="Search stations"><button id="mSearchWorld" title="Search Radio Browser worldwide">Worldwide</button></div>' +
     '<div class="m-browser-tabs"><button data-view="browse">Discover</button><button data-view="favorites">♥ Favorites</button><button data-view="recent">Recent</button></div>' +
+    '<div class="m-quick"><button data-quick="trending">Trending</button><button data-quick="news">News</button><button data-quick="jazz">Jazz</button><button data-quick="classical">Classical</button><button data-quick="near">My country</button></div>' +
     '<div class="m-columns" id="mColumns" aria-label="Finder-style station browser"></div>' +
     '<footer class="m-browser-footer"><span class="m-silver-key">✓ Verified working</span><span class="m-failed-key">× Unavailable</span><button id="mTest">Check visible</button></footer></aside>' +
     '</div><div id="mBackdrop" class="m-backdrop"></div>';
@@ -93,6 +94,12 @@ const Modern = (() => {
     for (const b of root.querySelectorAll('[data-view]')) b.classList.toggle('selected', b.dataset.view===view);
     const active = root.querySelector('.m-column-stations');
     if (active && !root.dataset.columnsInitialized) { root.dataset.columnsInitialized='yes'; }
+  }
+  function scrollColumns(i){
+    const holder=$m('mColumns'),column=holder.children[i];
+    if(!column)return;
+    const offset=column.offsetLeft-holder.children[0].offsetLeft;
+    holder.scrollTo({left:offset,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   }
   function paintPresets(force=false) {
     const presets = Car.presets();
@@ -145,7 +152,7 @@ const Modern = (() => {
   function refresh() {
     paintLive();paintPresets();paintRecent();
     if(browserOpen){
-      const sig=[view,country,genre,query,S.ui.currentId,S.browse?.label,S.browse?.stations?.length,S.stations.length,S.favs.size,S.recent.length,S.health.size,T.done,T.active,S.current?.key].join('|');
+      const sig=[view,country,genre,query,S.ui.currentId,S.browse?.label,S.browse?.stations?.length,S.stations.length,S.favs.size,S.recent.length,S.health.size,T.done,T.active,Math.floor(Date.now()/5000),S.current?.key].join('|');
       if(sig!==renderSignature){renderSignature=sig;drawBrowser();}
     }
   }
@@ -173,9 +180,10 @@ const Modern = (() => {
     if(!b)return;
     if(b.dataset.action){const a=b.dataset.action;if(a==='settings')document.getElementById('settingsBtn').click();else if(a==='classic')location.href=location.pathname+'?classic=1';else if(a==='home'){openBrowser(false);openNav(false);}else if(a==='stations')setView('browse');else setView(a);return;}
     if(b.dataset.view)return setView(b.dataset.view);
-    if(b.dataset.list!==undefined){if(b.dataset.list==='__browse__')return drawBrowser();return chooseList(b.dataset.list);}
-    if(b.dataset.country!==undefined){country=b.dataset.country;genre='';return drawBrowser();}
-    if(b.dataset.genre!==undefined){genre=b.dataset.genre;return drawBrowser();}
+    if(b.dataset.quick){view='browse';country='';genre='';query='';$m('mSearch').value='';return browseRb(chipQuery(b.dataset.quick)).then(()=>{drawBrowser();scrollColumns(3);});}
+    if(b.dataset.list!==undefined){if(b.dataset.list==='__browse__')return scrollColumns(1);chooseList(b.dataset.list);return scrollColumns(1);}
+    if(b.dataset.country!==undefined){country=b.dataset.country;genre='';drawBrowser();return scrollColumns(2);}
+    if(b.dataset.genre!==undefined){genre=b.dataset.genre;drawBrowser();return scrollColumns(3);}
     if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);if(matchMedia('(max-width:950px)').matches)openBrowser(false);}return;}
     if(b.dataset.favSt!==undefined){const st=$m('mColumns')._shown[+b.dataset.favSt];if(st)toggleFav(st);drawBrowser();return;}
     if(b.dataset.recent!==undefined){const r=S.recent[+b.dataset.recent];if(r)playStation(stationFor(r));return;}
