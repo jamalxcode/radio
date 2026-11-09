@@ -41,7 +41,7 @@
 - #7: rename zero-value sleep option to **Sleep Off**, wired to existing `Sleep.set(0)`.
 - #8: sort countries by their visible country names rather than station counts; normalize natural alphabetical order for station names.
 - #9: duplicate presets may share station keys; a selection index is tracked, so only one button gets `.active`. If playback came from outside presets, first matching preset is the fallback.
-- #10 (debug pass, no visual change): the classic first-visit help no longer opens over the modern UI; the classic keyboard handler no longer acts underneath it (arrows/Enter/Home/End/PageUp/PageDown stopped silently changing station or playing a hidden row, and page scrolling works); Escape closes the drawer, then the picker (overlay mode); while an overlay is open on narrow screens the screen behind it is `inert`; search also matches country names and genres; the play button shows Pause while tuning/buffering (a press pauses then); the sleep countdown rounds up (15 min shows 15:00, not 14:00) and the selector follows a timer started from classic/iPod; the picker only redraws on real engine changes (previously every 5 s while idle); toasts use modern wording and styling and sit above overlays.
+- #11 (debug pass, no visual change): the classic first-visit help no longer opens over the modern UI; the classic keyboard handler no longer acts underneath it (arrows/Enter/Home/End/PageUp/PageDown stopped silently changing station or playing a hidden row, and page scrolling works); Escape closes the drawer, then the picker (overlay mode); while an overlay is open on narrow screens the screen behind it is `inert`; search also matches country names and genres; the play button shows Pause while tuning/buffering (a press pauses then); the sleep countdown rounds up (15 min shows 15:00, not 14:00) and the selector follows a timer started from classic/iPod; the picker only redraws on real engine changes (previously every 5 s while idle); toasts use modern wording and styling and sit above overlays.
 
 Relevant PR links are recorded in [the design decision log](DECISIONS-2026-11-09.md).
 
@@ -51,7 +51,7 @@ Relevant PR links are recorded in [the design decision log](DECISIONS-2026-11-09
 - Isolated sorting and duplicate-preset examples were checked in JavaScript, but are not a substitute for a full browser test.
 - Main and backup branch integrity were checked after changes.
 
-**Browser-tested for #10 (headless Chromium via Playwright, phone 390×844, fold 1100×800, desktop 1440×900, network to outside services blocked):** first visit, picker columns and A–Z order, search (incl. "united kingdom"), Escape on picker and drawer, arrow keys on the main screen, play/pause glyph while tuning, favorite toast, preset long-press save and single highlight, nav Favorites view, idle redraw count (0 in 11 s), inert background, sleep label/selector, Sleep Off; no console errors. Before/after screenshots matched apart from the toast.
+**Browser-tested for #11 (headless Chromium via Playwright, phone 390×844, fold 1100×800, desktop 1440×900, network to outside services blocked):** first visit, picker columns and A–Z order, search (incl. "united kingdom"), Escape on picker and drawer, arrow keys on the main screen, play/pause glyph while tuning, favorite toast, preset long-press save and single highlight, nav Favorites view, idle redraw count (0 in 11 s), inert background, sleep label/selector, Sleep Off; no console errors. Before/after screenshots matched apart from the toast.
 
 **Not independently verified:**
 - GitHub Pages successful completion for each workflow run and live CDN/service-worker propagation.
@@ -65,7 +65,7 @@ These were merged with owner authorization to publish and iterate, so they are *
 ## Current files / build rules
 - Pure HTML/CSS/JavaScript. Preserve no-framework architecture.
 - Modern assets are `js/modern.js` and `modern.css`, linked from `index.html`.
-- Current versions after PR #10: `modern.js?v=8`, `modern.css?v=7`, `js/app.js?v=28`, service-worker cache `radio-shell-v7`; increment as needed for future deploys.
+- Current versions after PR #11: `modern.js?v=8`, `modern.css?v=7`, `js/app.js?v=28`, service-worker cache `radio-shell-v7`; increment as needed for future deploys.
 - Existing service worker is registered by `index.html`. Revalidate cache update paths when introducing new dependencies.
 - Do not replace the classic engine or erase radio stations, saved favorites, station tests, imported lists, history or user data when doing UI work.
 

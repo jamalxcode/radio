@@ -54,7 +54,7 @@ These follow-up decisions supersede older descriptions or visual mockups:
 | [#7](https://github.com/jamalxcode/radio/pull/7) | Explicit Sleep Off selection |
 | [#8](https://github.com/jamalxcode/radio/pull/8) | Alphabetical countries and stronger station-name sorting |
 | [#9](https://github.com/jamalxcode/radio/pull/9) | Only one highlighted preset slot |
-| [#10](https://github.com/jamalxcode/radio/pull/10) | Debug pass: owner asked to fix bugs while keeping the interface as it is (details in the implementation notes) |
+| [#11](https://github.com/jamalxcode/radio/pull/11) | Debug pass: owner asked to fix bugs while keeping the interface as it is (details in the implementation notes) |
 
 **Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
 
