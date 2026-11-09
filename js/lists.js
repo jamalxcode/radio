@@ -206,7 +206,7 @@ async function addList(meta, entries) {
   allCache = null;
   if (S.ui.status === 'fav' || S.ui.status === 'recent') S.ui.status = 'all';
   await selectList(id, sts);
-  toast(`${sts.length} stations added`);
+  toast(S.lists.length <= BANDS.length ? `Added ${sts.length} stations on band ${bandLabel(S.lists.length - 1)}` : `Added ${sts.length} stations`);
 }
 async function selectList(id, parsed) {
   S.ui.currentId = id;

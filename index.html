@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=31">
+<link rel="stylesheet" href="style.css?v=29">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -178,11 +178,11 @@
           <div class="knobs">
             <div class="knob-wrap">
               <div class="knob band" id="bandKnob" role="slider" tabindex="0" aria-label="Band: station list" title="BAND: your station lists. Tap the left/right half, scroll or drag."><i></i></div>
-              <small>BAND <em>· list</em></small><span class="knob-val" id="bandName">FM</span>
+              <small>BAND</small><span class="knob-val" id="bandName">FM</span>
             </div>
             <div class="knob-wrap">
               <div class="knob tuning" id="tuneKnob" role="slider" tabindex="0" aria-label="Tuning" title="TUNING: tap the left/right half to step, or scroll / drag"><i></i></div>
-              <small>TUNING <em>· station</em></small><span class="knob-val">◀ ▶</span>
+              <small>TUNING</small><span class="knob-val">◀ ▶</span>
             </div>
             <div class="knob-wrap">
               <div class="knob vol" id="volKnob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" title="VOLUME: tap the left/right half, scroll or drag"><i></i></div>
@@ -192,15 +192,15 @@
 
           <div class="switches">
             <button id="playBtn" class="slide" title="Power: play / stop (Space)" aria-label="Power" aria-pressed="false">
-              <small>POWER <em>· play</em></small><span class="track"><i></i></span><span class="pos"><b>OFF</b><b>ON</b></span>
+              <small>POWER</small><span class="track"><i></i></span><span class="pos"><b>OFF</b><b>ON</b></span>
             </button>
             <button id="dxBtn" class="slide" title="DX = every station · LOCAL = hide stations that are off air or blocked" aria-label="Show all stations, or hide off-air ones" aria-pressed="false">
-              <small>SENS <em>· hide off air</em></small><span class="track"><i></i></span><span class="pos"><b>DX</b><b>LOCAL</b></span>
+              <small>SENS</small><span class="track"><i></i></span><span class="pos"><b>DX</b><b>LOCAL</b></span>
             </button>
             <div class="pills">
-              <button id="prevBtn" class="pill" title="Previous station (←)" aria-label="Previous station">◀ PREV</button>
-              <button id="nextBtn" class="pill" title="Next station (→)" aria-label="Next station">NEXT ▶</button>
-              <button id="favBtn" class="pill" title="Save as a favorite (F)" aria-label="Favorite"><b>☆</b> FAVORITE</button>
+              <button id="prevBtn" class="pill" title="Previous station (←)" aria-label="Previous station">◀ SCAN</button>
+              <button id="nextBtn" class="pill" title="Next station (→)" aria-label="Next station">SCAN ▶</button>
+              <button id="favBtn" class="pill" title="Save as a favorite (F)" aria-label="Favorite"><b>☆</b> MEMORY</button>
               <button id="lightBtn" class="pill" title="Dial light and effects" aria-label="Light" aria-pressed="true">LIGHT</button>
             </div>
           </div>
@@ -212,24 +212,21 @@
 
     <!-- Details for the station on the dial: which link, your rating, test history, earlier songs. -->
     <section class="details" aria-label="Station details">
-      <details class="det-fold" id="detFold">
-      <summary><span>Station details</span><span class="det-sum muted small" id="detSum"></span></summary>
       <div class="det-row">
         <select id="sourceSel" class="hidden" title="This station has several stream links; pick one" aria-label="Stream link"></select>
-        <span class="det-meta" title="Which link is playing, and how many seconds of audio are loaded ahead (low = about to drop out)">Link <b id="vfdSrc">—</b> · buffer <b id="vfdBuf">▯▯▯▯▯▯</b></span>
+        <span class="det-meta" title="Which link is playing, and how many seconds of audio are loaded ahead (low = about to drop out)">LINK <b id="vfdSrc">—</b> · BUFFER <b id="vfdBuf">▯▯▯▯▯▯</b></span>
         <span class="spacer"></span>
         <button id="testOneBtn" title="Test this station's links now">Test</button>
         <button id="copyBtn" title="Copy the stream link, e.g. to open in VLC">Copy link</button>
       </div>
       <div class="rate">
-        <span class="rate-lbl">Rate it</span>
+        <span class="rate-lbl">How does it play?</span>
         <button data-rate="good" title="Mark this link as playing fine">On air</button>
         <button data-rate="buffers" title="Mark this link as weak / dropping out">Weak</button>
         <button data-rate="broken" title="Mark this link as off air">Off air</button>
         <button data-rate="" title="Remove your mark">Clear</button>
       </div>
       <div id="nowStats" class="stats muted"></div>
-      </details>
     </section>
   </section>
 
@@ -310,21 +307,6 @@
         </select>
       </div>
       <div class="fp-foot"><button type="button" id="filterReset">Clear filters</button><span class="spacer"></span><button type="button" class="primary" id="filterDone">Done</button></div>
-    </div>
-    <!-- First visit: a few places to start, instead of a wall of help. Gone after the first pick. -->
-    <div class="start" id="start" hidden>
-      <div class="start-head"><b>Where shall we start?</b><button type="button" id="startClose" aria-label="Close">✕</button></div>
-      <div class="start-tiles">
-        <button data-chip="near"><i>📍</i><span>Near me</span><small id="startNear"></small></button>
-        <button data-chip="trending"><i>🔥</i><span>Trending</span><small>right now</small></button>
-        <button data-start="top"><i>🌍</i><span>Top worldwide</span><small>most voted</small></button>
-        <button data-chip="news"><i>📰</i><span>News</span></button>
-        <button data-chip="jazz"><i>🎷</i><span>Jazz</span></button>
-        <button data-chip="classical"><i>🎻</i><span>Classical</span></button>
-        <button data-chip="electronic"><i>🎧</i><span>Electronic</span></button>
-        <button data-chip="pop"><i>🎤</i><span>Pop</span></button>
-      </div>
-      <p class="muted small">Tap a station to play it. ☆ keeps it in your favorites. More lists and filters are under <b>+</b> and <b>Filter</b>.</p>
     </div>
     <div id="browseBar" class="browse-bar hidden" role="status"></div>
     <div id="scanBar" class="scanbar" title="Checking stations…" aria-hidden="true"></div>
@@ -517,17 +499,17 @@
     <p>It plays internet radio stations and checks, in your browser, which ones are actually on air.</p>
     <dl class="help-grid">
       <dt>◉ iPod look</dt><dd>A black click-wheel player that fills the screen (also under Settings → Look). Turn the wheel to move the highlight, press the centre to pick, MENU goes back (hold it for the main menu), ⏮ ⏭ change station, ▶❚❚ plays or pauses. On Now Playing the wheel is the volume. Open a folding phone, or use a tablet or computer, and the station guide sits on the left page with the iPod on the right.</dd>
-      <dt>On a phone</dt><dd>The station list fills the screen with a player bar at the bottom: ★ keeps the station, ▶ pauses, ⌃ opens the full radio with the sleep timer and details. Settings → Look can swap this for the <b>Car radio</b>, a 1950s push-button dashboard: tap a name on the dial or swipe it to tune, the five keys are presets (tap an empty key to store the station that’s on, hold to replace), STATIONS opens the list.</dd>
-      <dt>Station list</dt><dd>Tap a station to play it. The dot says how it plays: <b class="hl-ok">green</b> on air, amber weak, <b class="hl-off">red</b> off air, grey not tested yet. ★ Favorites and 🕘 Recent sit under the search; <b>All ›</b> shows them as the list.</dd>
+      <dt>On a small phone</dt><dd>The radio becomes a 1950s push-button car radio. Tap a name on the dial or swipe it to tune, use the five keys as presets (tap an empty key to store the station that’s on, hold a key to replace it), and press STATIONS for search and filters.</dd>
+      <dt>Station guide</dt><dd>Tap a station to play it. Rows turn <b class="hl-ok">silver</b> once a station is on air and <b class="hl-off">brown</b> when it’s off air.</dd>
       <dt>+ List · Curated collections</dt><dd>Four public station collections: IPRD (24,000 stations by country, with logos), Radio Playlists (Radio Browser by genre, rebuilt weekly, plus a worldwide top 500), Recommended Radio Streams (one listener's hand-picked underground, jazz and ambient stations) and Internet Radio Streams (small themed playlists: BBC, SomaFM, college radio). Pick a collection, then a country or list.</dd>
-      <dt>Search &amp; Filter</dt><dd>Search filters the list you have. <b>Filter</b> opens the rest: search all your lists or all of Radio Browser (about 50,000 stations), the Near me / Trending / genre chips, country, genre, what to show, sort order, and Test. The number on the button says how many filters are on.</dd>
+      <dt>Search &amp; chips</dt><dd>Filter the list you have, search all your lists, or search all of Radio Browser (about 50,000 stations). The chips (Near me, Jazz, News…) browse Radio Browser; save what you find as a new list.</dd>
       <dt>Lists</dt><dd>Pick, add (+), reload (⟳) or remove (🗑) a list at the top of the station guide. On the shortwave radio the lists are also the BAND knob: FM is the first, MW the second, SW1–SW8 the next eight. On the iPod, tap the title bar to filter the stations as you type.</dd>
       <dt>TUNING</dt><dd>Moves through the stations. Tap the left or right half of the knob, scroll on it, or drag it round. It tunes in when you stop.</dd>
       <dt>Under the dial</dt><dd>⏮ ⏭ previous / next station · ⏸ pause (Space) · ⏹ stop · 🔊 mute (M) · ● LIVE jumps back to the live broadcast after a pause.</dd>
       <dt>POWER</dt><dd>Play / stop. If a stream drops, the radio reconnects by itself.</dd>
-      <dt>SENS DX / LOCAL</dt><dd>Hide off air: DX shows every station, LOCAL hides the ones that are off air or blocked.</dd>
+      <dt>SENS DX / LOCAL</dt><dd>DX shows every station; LOCAL hides the ones that are off air or blocked.</dd>
       <dt>⏾ Sleep</dt><dd>Next to the play controls: pick 30 minutes to 3 hours, in 30-minute steps. It counts down there, then fades the sound out and turns the radio off.</dd>
-      <dt>PREV · NEXT · FAVORITE · LIGHT</dt><dd>Previous / next station · save a favorite · dial lamp and effects.</dd>
+      <dt>MEMORY · LIGHT</dt><dd>Save a favorite · dial lamp and effects.</dd>
       <dt>♪ Songs</dt><dd>The song playing shows on the dial, the car LCD, the phone bar and the iPod; tap it for the song card with YouTube, Spotify and Apple Music links and what played before it. ♪ Songs in the header lists everything you heard.</dd>
     </dl>
     <div class="dlg-acts"><button value="close" class="primary">Got it</button></div>
@@ -535,17 +517,17 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=26"></script>
-<script src="js/lists.js?v=26"></script>
-<script src="js/health.js?v=26"></script>
-<script src="js/guide.js?v=26"></script>
-<script src="js/radio.js?v=26"></script>
-<script src="js/player.js?v=26"></script>
-<script src="js/nowplaying.js?v=26"></script>
-<script src="js/car.js?v=26"></script>
-<script src="js/ipod.js?v=26"></script>
-<script src="js/share.js?v=26"></script>
-<script src="js/app.js?v=26"></script>
+<script src="js/core.js?v=24"></script>
+<script src="js/lists.js?v=24"></script>
+<script src="js/health.js?v=24"></script>
+<script src="js/guide.js?v=24"></script>
+<script src="js/radio.js?v=24"></script>
+<script src="js/player.js?v=24"></script>
+<script src="js/nowplaying.js?v=24"></script>
+<script src="js/car.js?v=24"></script>
+<script src="js/ipod.js?v=24"></script>
+<script src="js/share.js?v=24"></script>
+<script src="js/app.js?v=24"></script>
 <!-- Offline shell: the app's files are kept in the browser (sw.js), so it opens instantly and without network -->
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
