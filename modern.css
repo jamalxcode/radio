@@ -232,3 +232,9 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
 @media(max-width:620px){
   #modernApp .m-timer #mSleep{min-width:120px;max-width:155px;min-height:43px;font-size:12px;padding:8px 23px 8px 9px}
 }
+
+/* Toasts come from the shared engine; in the modern interface they use its palette and type,
+   and sit above the picker and menu overlays instead of under them. */
+body.modern-ui .toast{z-index:60;bottom:calc(20px + env(safe-area-inset-bottom));background:#203549;border:1px solid #a0c4dd;border-radius:12px;padding:10px 16px;color:#f3f7fc;font:600 14px/1.35 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:0;box-shadow:0 8px 28px #030b14b0;text-align:center}
+/* Long-pressing a preset on iOS shouldn't pop the system callout. */
+#modernApp .m-preset{-webkit-touch-callout:none}

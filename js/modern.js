@@ -10,6 +10,13 @@ const Modern = (() => {
   let renderSignature = '', recentSignature = '', presetSignature = '';
   let chosenPreset = -1; // exact slot tapped, even if the same station is saved twice
   let holdTimer = null, held = false, downKey = -1;
+  // The engine calls scheduleRender() whenever stations, health, favorites or tests change.
+  // Counting those calls lets the picker redraw only when something actually changed.
+  let changes = 0;
+  if (typeof scheduleRender === 'function') {
+    const engineRender = scheduleRender;
+    scheduleRender = function () { changes++; return engineRender.apply(this, arguments); }; // eslint-disable-line no-global-assign
+  }
   const $m = id => document.getElementById(id);
   const ico = (path, size = 20) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>';
   const antenna = ico('<path d="M12 20v-8m-4 8h8M12 8v1m-4-5a11 11 0 0 0-2 13m14 0a11 11 0 0 0-2-13M5 7a7 7 0 0 0 0 10m14 0a7 7 0 0 0 0-10"/><circle cx="12" cy="10" r="1.6"/>');
@@ -62,14 +69,29 @@ const Modern = (() => {
     '<footer class="m-browser-footer"><span class="m-silver-key">✓ Verified working</span><span class="m-failed-key">× Unavailable</span><button id="mTest">Check visible</button></footer></aside>' +
     '</div><div id="mBackdrop" class="m-backdrop"></div>';
   for(const option of $m('mSleep').options) option.dataset.originalLabel=option.textContent;
+  // On narrow screens the picker and the menu cover the radio: keep keyboard and screen-reader focus inside them.
+  const overlayMode = () => matchMedia('(max-width: 1049px)').matches;
+  function syncInert() {
+    const central = root.querySelector('.m-central'), browser = $m('mBrowser'), nav = $m('mNav');
+    const narrow = overlayMode();
+    central.inert = narrow && (browserOpen || navOpen);
+    browser.inert = narrow && (!browserOpen || navOpen);
+    nav.inert = narrow && !navOpen;
+  }
   function openBrowser(open) {
     browserOpen = open;
+    syncInert();
     root.classList.toggle('m-browser-open', open);
     $m('mStationToggle').setAttribute('aria-expanded', String(open));
     if (open) { drawBrowser(); if (matchMedia('(max-width: 1049px)').matches) $m('mBrowserClose').focus({preventScroll:true}); }
     else $m('mStationToggle').focus({preventScroll:true});
   }
-  function openNav(open) { navOpen = open; root.classList.toggle('m-nav-open', open); }
+  function openNav(open) {
+    navOpen = open;
+    syncInert();
+    root.classList.toggle('m-nav-open', open);
+    if (open) root.querySelector('.m-navitem')?.focus({ preventScroll: true });
+  }
   function setView(v) {
     view = v; country = ''; genre = '';
     $m('mSearch').value = ''; query = '';
@@ -99,7 +121,7 @@ const Modern = (() => {
     const countriesSorted = [...countries].sort((a,b) =>
       alpha.compare(displayCountry(a[0]).trim(), displayCountry(b[0]).trim()) || alpha.compare(a[0],b[0]));
     const genresSorted = [...genres].sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
-    const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country].join(' ').toLowerCase().includes(query)))
+    const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country ? countryName(st.country) : '', groupsOf(st).join(' ')].join(' ').toLowerCase().includes(query)))
       .sort((a,b) => alpha.compare(a.name.trim().replace(/^[^\p{L}\p{N}]+/u, ''), b.name.trim().replace(/^[^\p{L}\p{N}]+/u, '')) || alpha.compare(a.name,b.name));
     const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3><button data-list="__browse__" class="' + (S.browse ? 'selected' : '') + '">All in view <span>›</span></button>' +
       S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
@@ -160,8 +182,10 @@ const Modern = (() => {
     $m('mConnTitle').textContent=title;
     $m('mConnSub').textContent=detail;
     $m('mRetry').hidden=status!=='nosignal';
-    $m('mPlay').textContent=status==='live'?'❚❚':'▶';
-    $m('mPlay').setAttribute('aria-label', status==='live'?'Pause':'Play');
+    // While connecting or buffering a press stops the attempt, so it shows pause too.
+    const busy=['live','tuning','buffering'].includes(status);
+    $m('mPlay').textContent=busy?'❚❚':'▶';
+    $m('mPlay').setAttribute('aria-label', busy?'Pause':'Play');
     $m('mPlay').disabled=!st;
     $m('mHeart').classList.toggle('active',!!st && S.favs.has(st.key));
     $m('mHeart').setAttribute('aria-pressed',String(!!st&&S.favs.has(st.key)));
@@ -172,13 +196,23 @@ const Modern = (() => {
     const select=$m('mSleep');
     const on=Sleep.at>0, left=Math.max(0,Sleep.at-Date.now());
     if(!on && select.value!=='0')select.value='0';
+    // A timer started from another view (classic radio, iPod): select the nearest duration at or above it.
+    // Only when a new timer starts (Sleep.at changes), so a chosen slot doesn't drift as it counts down.
+    if(on && !Sleep.fading && document.activeElement!==select && select.dataset.at!==String(Sleep.at)){
+      const mins=Math.ceil(left/60000), opts=[...select.options].map(o=>+o.value).filter(v=>v>0);
+      const want=String(opts.find(v=>v>=mins)??opts[opts.length-1]);
+      select.value=want;
+      select.dataset.at=String(Sleep.at);
+    }
+    if(!on)delete select.dataset.at;
     for (const option of select.options) {
       if(option.dataset.originalLabel && option.textContent!==option.dataset.originalLabel)
         option.textContent=option.dataset.originalLabel;
     }
     if(on){
-      const minutes=Math.floor(left/60000),seconds=Math.ceil(left%60000/1000);
-      const display=Sleep.fading?'Sleep · Fading…':'Sleep · '+minutes+':'+String(seconds%60).padStart(2,'0');
+      const total=Math.ceil(left/1000), h=Math.floor(total/3600), m=Math.floor(total/60)%60, s=total%60;
+      const clock=(h?h+':'+String(m).padStart(2,'0'):String(m))+':'+String(s).padStart(2,'0');
+      const display=Sleep.fading?'Sleep · Fading…':'Sleep · '+clock;
       const selected=select.selectedOptions[0];
       if(selected && selected.textContent!==display)selected.textContent=display;
     }
@@ -186,7 +220,7 @@ const Modern = (() => {
   function refresh() {
     paintLive();paintPresets();paintRecent();
     if(browserOpen){
-      const sig=[view,country,genre,query,S.ui.currentId,S.browse?.label,S.browse?.stations?.length,S.stations.length,S.favs.size,S.recent.length,S.health.size,T.done,T.active,Math.floor(Date.now()/5000),S.current?.key].join('|');
+      const sig=[view,country,genre,query,S.ui.currentId,S.browse?.label,S.browse?.stations?.length,S.stations.length,S.favs.size,S.recent.length,S.health.size,T.done,T.active,changes,S.current?.key].join('|');
       if(sig!==renderSignature){renderSignature=sig;drawBrowser();}
     }
   }
@@ -228,9 +262,15 @@ const Modern = (() => {
   ['pointerup','pointercancel','pointerleave'].forEach(t=>presetsEl.addEventListener(t,()=>clearTimeout(holdTimer)));
   presetsEl.addEventListener('contextmenu',e=>{if(e.target.closest('[data-preset]'))e.preventDefault();});
   root.addEventListener('keydown',e=>{const b=e.target.closest('[data-preset]');if(!b)return;if(e.key==='Enter'&&e.shiftKey){e.preventDefault();assign(+b.dataset.preset);}});
-  window.addEventListener('resize',()=>{if(matchMedia('(min-width:1050px)').matches){openNav(false);} });
+  window.addEventListener('resize',()=>{if(matchMedia('(min-width:1050px)').matches){openNav(false);} syncInert();});
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape')return;
+    if(navOpen){e.preventDefault();openNav(false);$m('mNavToggle').focus({preventScroll:true});}
+    else if(browserOpen&&overlayMode()){e.preventDefault();openBrowser(false);}
+  });
   root.classList.toggle('m-browser-open',browserOpen);
   $m('mStationToggle').setAttribute('aria-expanded',String(browserOpen));
+  syncInert();
   setInterval(refresh,900);
   refresh();
   return {refresh,openBrowser};
