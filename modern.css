@@ -166,3 +166,30 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
 #modernApp .m-quick{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:0 13px 12px;flex:none;scrollbar-width:thin}
 #modernApp .m-quick button{flex:none;background:#304961!important;border:1px solid #597993!important;border-radius:14px!important;padding:6px 10px!important;font-size:11px!important;white-space:nowrap}
 #modernApp .m-quick button:hover{background:#456782!important}
+
+/* Compact the station picker on folded-cover/mobile layouts.
+   Make room for approximately 7-8 visible station choices on common phone heights
+   without removing search, discovery chips, verification or status legend. */
+@media(max-width:1049px){
+  #modernApp .m-browser-head{padding:10px 12px 4px;min-height:43px}
+  #modernApp .m-browser-head h2{font-size:16px;line-height:1.2}
+  #modernApp .m-browser-head p{display:none}
+  #modernApp #mBrowserClose{padding:3px 7px!important;font-size:18px}
+  #modernApp .m-browser-search{padding:5px 10px;gap:5px}
+  #modernApp .m-browser-search input{padding:7px 9px;font-size:12px;min-height:35px}
+  #modernApp #mSearchWorld{padding:5px 8px!important;font-size:10px!important}
+  #modernApp .m-browser-tabs{padding:3px 10px 6px;gap:3px}
+  #modernApp .m-browser-tabs button{padding:5px 7px!important;font-size:11px!important}
+  #modernApp .m-quick{padding:0 10px 7px;gap:5px}
+  #modernApp .m-quick button{padding:4px 8px!important;font-size:10px!important}
+  #modernApp .m-column h3{padding:8px 9px;font-size:12px}
+  #modernApp .m-column>button{min-height:34px;padding:5px 8px!important;font-size:11px!important}
+  #modernApp .m-st-select{padding:5px 6px!important;min-height:43px;gap:7px}
+  #modernApp .m-st-select img{width:27px;height:27px}
+  #modernApp .m-st-text strong{font-size:11px}
+  #modernApp .m-status{font-size:9px}
+  #modernApp .m-status-good{padding:1px 4px}
+  #modernApp .m-st-fav{width:29px;font-size:19px!important}
+  #modernApp .m-browser-footer{padding:6px 10px;gap:6px;font-size:10px}
+  #modernApp #mTest{padding:5px 7px!important;font-size:10px!important}
+}
