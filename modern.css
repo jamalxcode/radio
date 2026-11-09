@@ -224,3 +224,11 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
   #modernApp .m-browser-head{padding:8px 10px 4px}
   #modernApp .m-back-radio{min-height:44px;padding:8px 12px!important;font-size:13px!important}
 }
+
+/* One self-explanatory sleep control: duration selector and live countdown.
+   No decorative crescent, progress circle, or duplicate Off indicator. */
+#modernApp .m-timer{display:flex;align-items:center;flex:0 0 auto;gap:0}
+#modernApp .m-timer #mSleep{min-width:132px;max-width:180px;min-height:43px;padding:9px 28px 9px 12px;background:#304d64;border:1px solid #a0c4dd;border-radius:12px;color:#f5faff;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer}
+@media(max-width:620px){
+  #modernApp .m-timer #mSleep{min-width:120px;max-width:155px;min-height:43px;font-size:12px;padding:8px 23px 8px 9px}
+}
