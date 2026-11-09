@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-label="Radio.sala.company adaptive sliding pane architecture">
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#eff4fa} .title{font-weight:700;font-size:31px}.sub{font-size:18px;fill:#c4d1dc}.panel{fill:#1d2937;stroke:#53677b;stroke-width:2}.box{fill:#263748;stroke:#7f9ab3;stroke-width:1.4}.label{font-weight:700;font-size:22px}.small{font-size:17px;fill:#d8e4ef}.silver{fill:#c6cbd3;stroke:#f4f7fa;stroke-width:2}.ink{fill:#19232c}.orange{fill:#aa7046}</style>
+<rect width="1440" height="900" fill="#0b1625"/>
+<text class="title" x="52" y="65">radio.sala.company  |  APPROVED DIRECTION</text>
+<text class="sub" x="52" y="98">Responsive multipane radio, with slide-out Finder-style station browser • schematic, not an exact screenshot</text>
+<rect class="panel" x="45" y="130" width="1010" height="690" rx="26"/>
+<rect class="box" x="63" y="148" width="185" height="651" rx="16"/>
+<text class="label" x="85" y="188">Navigation</text>
+<text class="small" x="85" y="232">Home</text><text class="small" x="85" y="275">Favorites</text><text class="small" x="85" y="318">Recent</text><text class="small" x="85" y="361">Settings</text>
+<rect class="box" x="264" y="148" width="453" height="651" rx="16"/>
+<text class="label" x="292" y="193">Central Radio</text>
+<rect x="291" y="220" width="400" height="106" fill="#182b3e" rx="17"/>
+<text x="314" y="252" class="small">Kuwait Radio • Playing</text>
+<text x="314" y="296" font-size="24" font-weight="700">▶ / ❚❚  Play–Pause ONLY</text>
+<rect x="292" y="346" width="399" height="68" fill="#1d4050" rx="13"/>
+<text x="309" y="374" font-size="20" font-weight="700">Connection health  ● Verified</text>
+<text x="309" y="398" class="small">Buffering / retry / failure visible</text>
+<text x="292" y="450" class="label">Favorites presets • 3 rows</text>
+<g fill="#42596c" stroke="#bdd0e1" stroke-width="2">
+<rect x="292" y="466" width="59" height="49" rx="8"/><rect x="359" y="466" width="59" height="49" rx="8"/><rect x="426" y="466" width="59" height="49" rx="8"/><rect x="493" y="466" width="59" height="49" rx="8"/><rect x="560" y="466" width="59" height="49" rx="8"/><rect x="627" y="466" width="59" height="49" rx="8"/>
+<rect x="292" y="524" width="59" height="49" rx="8"/><rect x="359" y="524" width="59" height="49" rx="8"/><rect x="426" y="524" width="59" height="49" rx="8"/><rect x="493" y="524" width="59" height="49" rx="8"/><rect x="560" y="524" width="59" height="49" rx="8"/><rect x="627" y="524" width="59" height="49" rx="8"/>
+<rect x="292" y="582" width="59" height="49" rx="8"/><rect x="359" y="582" width="59" height="49" rx="8"/><rect x="426" y="582" width="59" height="49" rx="8"/><rect x="493" y="582" width="59" height="49" rx="8"/><rect x="560" y="582" width="59" height="49" rx="8"/><rect x="627" y="582" width="59" height="49" rx="8"/></g>
+<text class="small" x="292" y="659">Station logos • long-press assigns a preset</text>
+<text x="292" y="700" class="label">Recently Played • 2 rows</text>
+<rect x="292" y="715" width="394" height="58" rx="10" fill="#34475a"/>
+<text class="small" x="309" y="738">Station 1   Station 2   Station 3</text>
+<text class="small" x="309" y="762">Station 4   Station 5   Station 6</text>
+<rect class="box" x="734" y="148" width="302" height="651" rx="16"/>
+<text x="753" y="193" class="label">Station Picker</text>
+<text x="753" y="230" class="small">Radio antenna icon</text>
+<rect x="753" y="255" width="87" height="325" rx="9" fill="#293f53"/><rect x="845" y="255" width="83" height="325" rx="9" fill="#293f53"/><rect x="933" y="255" width="86" height="325" rx="9" fill="#293f53"/>
+<text x="763" y="286" font-size="15">Country</text><text x="853" y="286" font-size="15">Genre</text><text x="939" y="286" font-size="15">Station</text>
+<text x="763" y="322" font-size="14">Kuwait ›</text><text x="853" y="322" font-size="14">Jazz ›</text><rect x="942" y="338" width="68" height="29" rx="5" class="silver"/><text x="945" y="357" font-size="13" class="ink">✓ On air</text>
+<rect x="942" y="384" width="68" height="29" rx="5" class="orange"/><text x="946" y="403" font-size="13">× Failed</text>
+<text x="754" y="621" class="small">Finder-style columns</text><text x="754" y="650" class="small">Silver = verified</text><text x="754" y="679" class="small">Icon + text + color</text>
+<text x="754" y="726" class="small">Panels slide on/off</text>
+<rect class="panel" x="1080" y="130" width="312" height="690" rx="32"/>
+<rect x="1103" y="152" width="264" height="645" rx="22" fill="#203043"/>
+<text x="1122" y="194" font-size="22" font-weight="700">Folded Cover</text>
+<text x="1122" y="231" class="small">⌁ Stations   ♥ Favorite</text>
+<rect x="1122" y="254" width="226" height="103" rx="14" fill="#2c4456"/>
+<text x="1139" y="286" class="small">Kuwait Radio</text>
+<text x="1139" y="325" font-size="22" font-weight="700">▶ / ❚❚</text>
+<text x="1122" y="393" class="small">Connection: ✓ Live</text>
+<text x="1122" y="430" class="small">Sleep: ◴ 25:20</text>
+<text x="1122" y="477" class="small">Presets 1–18</text>
+<g fill="#607b95"><rect x="1122" y="494" width="68" height="42" rx="9"/><rect x="1200" y="494" width="68" height="42" rx="9"/><rect x="1278" y="494" width="68" height="42" rx="9"/><rect x="1122" y="548" width="68" height="42" rx="9"/><rect x="1200" y="548" width="68" height="42" rx="9"/><rect x="1278" y="548" width="68" height="42" rx="9"/><rect x="1122" y="602" width="68" height="42" rx="9"/><rect x="1200" y="602" width="68" height="42" rx="9"/><rect x="1278" y="602" width="68" height="42" rx="9"/></g>
+<text x="1122" y="684" class="small">Recent • two rows</text>
+<text x="1122" y="728" class="small">Browser slides in →</text>
+<text x="52" y="864" class="sub">Not included: previous/next station buttons • decorative slider dial • oscilloscope • hamburger picker</text>
+</svg>
