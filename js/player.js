@@ -52,6 +52,7 @@ const currentSourceUrl = () =>
 const hasBackup = () => session && session.idx < session.order.length - 1;
 
 function playStation(st, startUrl) {
+  startDone?.(); // the first station played ends the start card
   leaveSession();
   teardown();
   S.current = st;

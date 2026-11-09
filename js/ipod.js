@@ -73,7 +73,7 @@ const Ipod = (() => {
     ]),
   };
   function openSearch() {
-    if (isCar()) Picker.open();
+    if (CAR.matches) Picker.open(); // on a phone the guide is a separate screen in the iPod look
     else $('#search').focus();
   }
   // Type-to-filter: tap the title bar on a menu screen and the title becomes a filter box for the Stations list.

@@ -304,7 +304,14 @@ body.fx.playing .holes { animation: thump 0.5s ease-in-out infinite alternate; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ---------- station details (below the radio) ---------- */
-.details { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; background: var(--guide); border-radius: 8px; flex: none; }
+.details { display: flex; flex-direction: column; gap: 8px; padding: 6px 12px; background: var(--guide); border-radius: 8px; flex: none; }
+.det-fold > summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; padding: 4px 0; font: 700 12px/1 var(--print-font); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.det-fold > summary::-webkit-details-marker { display: none; }
+.det-fold > summary::before { content: "▸"; color: var(--hi); font-size: 12px; }
+.det-fold[open] > summary::before { content: "▾"; }
+.det-fold > summary .det-sum { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.det-fold > :not(summary) { margin-top: 8px; }
+.knob-wrap small em, .slide small em { font-style: normal; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted); }
 .det-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 #sourceSel { max-width: 100%; min-width: 0; flex: 1 1 220px; }
 .rate { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
@@ -376,6 +383,18 @@ button.shelf-tab.on, .filters button.shelf-tab.on { background: none; border-col
 .browse-bar .bb-label b { color: var(--text); }
 .browse-bar button { padding: 2px 8px; font-size: 12px; flex: none; }
 
+/* first-visit start card */
+.start { display: flex; flex-direction: column; gap: 8px; padding: 10px 10px 8px; background: var(--guide-deep); border-bottom: 2px solid var(--guide); }
+.start[hidden] { display: none; }
+.start-head { display: flex; align-items: center; }
+.start-head b { flex: 1; font: 700 16px/1 var(--print-font); }
+.start-head button { width: 30px; height: 30px; padding: 0; border-radius: 50%; }
+.start-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.start-tiles button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; height: auto; border-radius: 10px; background: var(--row1); font: 600 12px/1.2 var(--print-font); }
+.start-tiles button i { font-style: normal; font-size: 20px; line-height: 1.1; }
+.start-tiles button small { font-size: 10px; color: var(--muted); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.start-tiles button:hover { background: #34353a; }
+.start p { margin: 0; }
 .list { flex: 1; overflow-y: auto; position: relative; scrollbar-color: var(--num) var(--guide-deep); }
 #listInner { position: relative; }
 /* Rows: a readable name, the logo, one line of context with a status dot. The number column keeps the
@@ -632,23 +651,23 @@ dialog.wide { width: min(680px, calc(100vw - 32px)); }
     position: static; transform: none; visibility: visible; flex: 1; min-height: 0;
     overflow-y: auto; padding: 0 0 16px; gap: 12px; background: var(--guide-deep);
   }
-  body.look-car .sheet-close, body.look-car .radio, body.look-car .mini { display: none !important; }
+  body.look-car .sheet-close, body.look-car .radio, body.look-car .mini, body.look-ipod .mini { display: none !important; }
   body.look-car .details { margin: 0 10px; }
 
   /* the station picker: the whole guide as its own screen */
-  body.look-car .guide {
+  body.look-car .guide, body.look-ipod .guide {
     position: fixed; inset: 0; z-index: 40; flex: none; margin: 0;
     transform: translateY(100%); visibility: hidden; transition: transform .22s ease-out, visibility 0s .22s;
   }
-  body.look-car.picker-open .guide { transform: none; visibility: visible; transition: transform .22s ease-out; }
-  body.look-car .picker-head {
+  body.look-car.picker-open .guide, body.look-ipod.picker-open .guide { transform: none; visibility: visible; transition: transform .22s ease-out; }
+  body.look-car .picker-head, body.look-ipod .picker-head {
     display: flex; align-items: center; gap: 8px; padding: calc(4px + env(safe-area-inset-top)) 8px 4px;
     background: var(--guide-deep); border-bottom: 2px solid var(--hi);
   }
-  body.look-car .picker-head b { flex: 1; font: 700 15px/1 var(--print-font); letter-spacing: .04em; text-align: center; }
-  body.look-car .picker-back { display: inline-flex; align-items: center; gap: 2px; padding: 4px 10px 4px 2px; color: var(--hi); font-weight: 700; }
-  body.look-car .picker-back svg { width: 20px; height: 20px; }
-  body.look-car .guide .list { flex: 1; height: auto; }
+  body.look-car .picker-head b, body.look-ipod .picker-head b { flex: 1; font: 700 15px/1 var(--print-font); letter-spacing: .04em; text-align: center; }
+  body.look-car .picker-back, body.look-ipod .picker-back { display: inline-flex; align-items: center; gap: 2px; padding: 4px 10px 4px 2px; color: var(--hi); font-weight: 700; }
+  body.look-car .picker-back svg, body.look-ipod .picker-back svg { width: 20px; height: 20px; }
+  body.look-car .guide .list, body.look-ipod .guide .list { flex: 1; height: auto; }
 
   /* the car radio: painted dashboard with a chrome-ringed cream dial */
   body.look-car .car {

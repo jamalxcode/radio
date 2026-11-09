@@ -26,7 +26,7 @@ const Picker = {
     $('#carStations').focus({ preventScroll: true });
   },
   isOpen: () => document.body.classList.contains('picker-open'),
-  sync() { $('#guide').inert = isCar() && !Picker.isOpen(); },
+  sync() { $('#guide').inert = CAR.matches && (isCar() || S.settings?.skin === 'ipod') && !Picker.isOpen(); },
 };
 
 const Car = (() => {

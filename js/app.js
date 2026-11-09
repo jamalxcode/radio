@@ -8,7 +8,7 @@ function renderNow() {
   for (const b of document.querySelectorAll('.details button, #favBtn, #tFav')) b.disabled = !st;
   VFD.update();
   Radio.fav(!!st && S.favs.has(st.key));
-  if (!st) { $('#nowStats').innerHTML = '<div>Pick a station to see its links, test results and earlier songs.</div>'; return; }
+  if (!st) { $('#nowStats').innerHTML = '<div>Pick a station to see its links, test results and earlier songs.</div>'; $('#detSum').textContent = ''; return; }
   const url = currentSourceUrl();
   const src = st.sources.find(s => s.url === url) || st.sources[0];
   const h = S.health.get(src.url);
@@ -39,6 +39,9 @@ function renderNow() {
     lines.push(esc('No song or show titles: this station’s server doesn’t share them with web pages.'));
   }
   $('#nowStats').innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+  // the folded summary: status, links, your rating
+  const ss = stationStatus(st);
+  $('#detSum').textContent = [ss.label, st.sources.length > 1 ? `${st.sources.length} links` : '', h?.rating ? 'rated ' + { good: 'on air', buffers: 'weak', broken: 'off air' }[h.rating] : ''].filter(Boolean).join(' · ');
 }
 
 function setRating(r) {
@@ -168,6 +171,11 @@ function openSongCard(st = S.current) {
   $('#songDlg').showModal();
 }
 // The Filter button shows how many filters are on, so a short list is never a mystery.
+function startDone() {
+  if (S.ui.startDone) return;
+  S.ui.startDone = true; saveUi();
+  $('#start').hidden = true;
+}
 function syncFilterBtn() {
   const n = [S.ui.group, S.ui.country, S.ui.lang, S.ui.sort].filter(Boolean).length + (S.ui.status !== 'all' ? 1 : 0) + (S.ui.scope !== 'view' ? 1 : 0);
   const b = $('#filterCount');
@@ -245,6 +253,14 @@ function wire() {
     S.ui.scope = 'view';
     $('#scopeSel').value = 'view';
     browseRb(chipQuery(c));
+  });
+  $('#start').addEventListener('click', e => {
+    const c = e.target.closest('[data-chip]')?.dataset.chip;
+    const s = e.target.closest('[data-start]')?.dataset.start;
+    if (!c && !s && !e.target.closest('#startClose')) return;
+    startDone();
+    if (c) { S.ui.scope = 'view'; $('#scopeSel').value = 'view'; browseRb(chipQuery(c)); }
+    else if (s === 'top') { if (S.browse) endBrowse(); const top = S.lists.find(l => l.kind === 'rb' && l.query === RB_QUERY.top); if (top) selectList(top.id); else loadWithSpinner(DEFAULT_LIST); }
   });
   $('#browseBar').addEventListener('click', e => {
     const a = e.target.closest('[data-bb]')?.dataset.bb;
@@ -485,12 +501,12 @@ async function init() {
     saveUi();
     loadWithSpinner(DEFAULT_LIST);
   }
-  // First visit: explain the radio once.
-  if (!S.ui.helpSeen) {
-    S.ui.helpSeen = true;
-    saveUi();
-    $('#helpDlg').showModal();
+  // First visit: a few places to start (the help stays behind ?). Gone after the first pick or the first station played.
+  if (!S.ui.startDone) {
+    $('#startNear').textContent = countryName(userCountry.toLowerCase());
+    $('#start').hidden = false;
   }
+  S.ui.helpSeen = true;
   // Show the "mirrored lists" option only when this site has some.
   fetch('lists/index.json', { method: 'HEAD', cache: 'no-store' }).then(r => { if (r.ok) $('#mirrorOpt').hidden = false; }).catch(() => {});
 }
