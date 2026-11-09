@@ -104,12 +104,12 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
 #modernApp .m-st-text strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #modernApp .m-st-fav{font-size:22px!important;width:31px;color:#e2d6bd!important}
 #modernApp .m-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:0;color:#bdcbd9}
-#modernApp .m-status-good{color:#f5f8fb;background:linear-gradient(110deg,#66798c,#a9b9c8 50%,#586a7e);border:1px solid #d2dce5;padding:2px 5px;border-radius:6px;text-shadow:0 1px 2px #162131}
+#modernApp .m-status-good{color:#142333;background:linear-gradient(110deg,#a5b5c3,#eef3f7 50%,#a1b2c1);border:1px solid #d2dce5;padding:2px 5px;border-radius:6px;text-shadow:none}
 #modernApp .m-status-bad,#modernApp .m-status-blocked{color:#ffc29b}
 #modernApp .m-status-warn{color:#ffe1a1}
 #modernApp .m-status-untested{color:#b9c5d1}
 #modernApp .m-browser-footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:13px;font-size:11px;color:#cedbea}
-#modernApp .m-silver-key{border:1px solid #e0e8f0;background:#71869a;padding:4px 6px;border-radius:6px}
+#modernApp .m-silver-key{border:1px solid #e0e8f0;background:#c3d0da;color:#142333;padding:4px 6px;border-radius:6px}
 #modernApp .m-failed-key{color:#ffd0a4}
 #modernApp #mTest{margin-left:auto;background:#304c64!important;border:1px solid #6d899e!important;border-radius:8px!important;padding:7px!important;font-size:11px!important}
 #modernApp .m-more{font-size:12px;color:var(--m-muted);padding:15px}
@@ -162,3 +162,7 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
   #modernApp .m-column-stations{min-width:228px;width:228px}
 }
 @media(prefers-reduced-motion:reduce){#modernApp *,#modernApp *:before{animation:none!important;transition:none!important}}
+
+#modernApp .m-quick{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:0 13px 12px;flex:none;scrollbar-width:thin}
+#modernApp .m-quick button{flex:none;background:#304961!important;border:1px solid #597993!important;border-radius:14px!important;padding:6px 10px!important;font-size:11px!important;white-space:nowrap}
+#modernApp .m-quick button:hover{background:#456782!important}
