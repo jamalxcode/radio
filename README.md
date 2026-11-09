@@ -2,6 +2,14 @@
 
 A web radio that runs entirely in the browser, live at **https://radio.sala.company** (GitHub Pages). It's styled after a 10-band shortwave portable, and it's the radio counterpart of M3U TV (video.sala.company).
 
+## Current adaptive radio interface
+
+The default interface is the **modern responsive radio**, deployed to the same GitHub Pages URL. It has a large Play/Pause control, actual connection status, Finder-style **Stations** picker opened by the antenna button, a separate hamburger navigation menu, a silver verified-stream indicator, 18 logo-backed presets and a compact two-row recent list. The station picker lists **countries, genres and stations alphabetically**. Selecting a station returns to the player; its **Back to Radio** arrow also closes the picker. On mobile, the browser appears as a sliding overlay.
+
+Only **one preset** is highlighted: the selected slot, even if the same station is saved twice. Long-press a preset to save/replace. The single sleep selector displays a duration/countdown and includes **Sleep Off** to cancel. Existing song title/artist metadata is exposed through browser Media Session when supported by the station and browser; no native Android Auto or Apple CarPlay interface is claimed.
+
+For the historical shortwave look, visit [classic mode](https://radio.sala.company/?classic=1). The original pre-redesign snapshot is retained at `backup/pre-redesign-2026-11-09`. Read the [current design decisions](docs/design/DECISIONS-2026-11-09.md) and [implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md) for the full decisions/issue history and limitations. Old documentation below describes the retained classic interface and its underlying features.
+
 ## Station sources
 
 | Source | How it loads |
