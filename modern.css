@@ -1,0 +1,164 @@
+/* Adaptive station-first interface. Original CSS is preserved for ?classic=1. */
+body.modern-ui{--m-bg:#0e1927;--m-panel:#172638;--m-panel2:#203449;--m-border:#415a72;--m-ink:#f3f7fc;--m-muted:#bdcbd9;--m-silver:#cbd3dc;--m-blue:#8dd0f3;background:var(--m-bg)!important;color:var(--m-ink)!important;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.modern-ui>.topbar,body.modern-ui>.layout{display:none!important}
+#modernApp{display:none}
+body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:hidden;color:var(--m-ink);background:radial-gradient(circle at 35% 20%,#23364c 0,#101d2c 56%,#0a1420 100%)}
+#modernApp *{box-sizing:border-box}
+#modernApp button,#modernApp select,#modernApp input{font:inherit}
+#modernApp button{cursor:pointer;color:inherit;background:none;border:0}
+#modernApp button:focus-visible,#modernApp input:focus-visible,#modernApp select:focus-visible{outline:3px solid #93d8ff;outline-offset:2px}
+#modernApp button:disabled{opacity:.45;cursor:not-allowed}
+#modernApp h1,#modernApp h2,#modernApp h3,#modernApp p{margin:0}
+#modernApp .m-shell{display:grid;grid-template-columns:184px minmax(310px,1fr) minmax(355px,560px);height:100%;gap:0}
+#modernApp .m-nav{display:flex;flex-direction:column;min-width:0;background:#122132;border-right:1px solid var(--m-border);padding:24px 12px 18px;overflow:auto}
+#modernApp .m-brand{display:flex;align-items:center;gap:8px;font-size:18px;letter-spacing:.08em;margin:3px 8px 34px;white-space:nowrap}
+#modernApp .m-brand b{color:var(--m-blue)}
+#modernApp .m-navitem{display:flex;align-items:center;gap:12px;text-align:left;padding:13px 10px;margin:2px 0;border-radius:12px!important;font-size:14px!important;color:var(--m-muted)!important}
+#modernApp .m-navitem:hover,#modernApp .m-navitem:focus-visible{background:#2a4257!important;color:#fff!important}
+#modernApp .m-navitem svg{flex-shrink:0}
+#modernApp .m-navspacer{flex:1}
+#modernApp .m-central{display:flex;flex-direction:column;min-width:0;min-height:0}
+#modernApp .m-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 22px;min-height:72px;border-bottom:1px solid #41556b}
+#modernApp .m-header>div,#modernApp .m-head-actions{display:flex;align-items:center;gap:10px}
+#modernApp .m-brandtext{font-size:17px;font-weight:750;letter-spacing:.01em}
+#modernApp #mNavToggle{display:none}
+#modernApp .m-station-launch{display:flex;align-items:center;gap:9px!important;border-radius:13px!important;background:#304d64!important;border:1px solid #64849e!important;padding:10px 14px!important;font-weight:700!important;white-space:nowrap}
+#modernApp #mSettings{font-size:22px;padding:7px!important}
+#modernApp .m-center-scroll{padding:clamp(12px,2vw,28px);overflow:auto;min-height:0;display:flex;flex-direction:column;gap:18px;scrollbar-color:#59738c transparent}
+#modernApp .m-player,#modernApp .m-section{background:linear-gradient(145deg,#203549,#17293b);border:1px solid var(--m-border);border-radius:22px;padding:clamp(15px,2vw,24px);box-shadow:0 6px 30px #030b1480}
+#modernApp .m-eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:#afc5da;display:flex;justify-content:space-between;align-items:center;gap:9px}
+#modernApp .m-now{display:flex;align-items:center;gap:16px;padding:22px 0 18px}
+#modernApp .m-now-logo{width:84px;height:84px;flex:none;background:#2c4660;border:1px solid #648199;border-radius:18px;display:grid;place-items:center;font-size:34px;overflow:hidden}
+#modernApp .m-now-logo img{width:100%;height:100%;object-fit:contain}
+#modernApp .m-now-labels{min-width:0;flex:1}
+#modernApp .m-now h1{font-size:clamp(21px,2.1vw,30px);line-height:1.15;letter-spacing:-.025em;overflow-wrap:anywhere;margin-bottom:8px}
+#modernApp .m-now p{font-size:13px;color:var(--m-muted);line-height:1.4}
+#modernApp .m-play{font-size:29px!important;flex:none;display:grid!important;place-items:center;width:66px;height:66px;border-radius:50%!important;color:#0a2537!important;background:#b1dcf4!important;box-shadow:0 0 0 4px #39627c}
+#modernApp .m-connection{display:flex;align-items:center;gap:12px;border:1px solid #577c91;border-radius:14px;padding:11px 14px;background:#203d4b;min-height:64px}
+#modernApp .m-connection-dot{width:15px;height:15px;flex:none;border-radius:50%;background:#d0dbe7;box-shadow:0 0 0 3px #73859740}
+#modernApp .m-connection strong,#modernApp .m-connection small{display:block}
+#modernApp .m-connection strong{font-size:14px}
+#modernApp .m-connection small{color:#c7d7e4;font-size:12px;margin-top:3px}
+#modernApp .m-connection[data-state="live"] .m-connection-dot{background:#a2e6cd}
+#modernApp .m-connection[data-state="buffering"] .m-connection-dot,#modernApp .m-connection[data-state="tuning"] .m-connection-dot{background:#ffda8b;animation:mPulse 1.25s infinite}
+#modernApp .m-connection[data-state="nosignal"]{border-color:#e8af87;background:#503b36}
+#modernApp .m-connection[data-state="nosignal"] .m-connection-dot{background:#ffb48c}
+#modernApp #mRetry{margin-left:auto;border:1px solid #dec4a9!important;padding:8px 12px!important;border-radius:9px!important}
+@keyframes mPulse{50%{opacity:.3;transform:scale(.75)}}
+#modernApp .m-player-tools{display:flex;align-items:center;gap:18px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+#modernApp #mHeart{display:flex;align-items:center;gap:7px;font-size:13px!important;border:1px solid #738da2!important;border-radius:11px!important;padding:10px!important}
+#modernApp #mHeart.active{background:#38566e!important;color:#fff!important;border-color:#bed7ec!important}
+#modernApp .m-timer{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--m-muted)}
+#modernApp .m-ring{--progress:0%;height:45px;width:45px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(#9dd6f7 var(--progress),#455f74 var(--progress));position:relative}
+#modernApp .m-ring:before{content:"";position:absolute;inset:5px;border-radius:50%;background:#1b2f42}
+#modernApp .m-ring>span{z-index:1;display:flex;align-items:center}
+#modernApp #mSleep,#modernApp #mVolume{background:#293e51;border:1px solid #688095;border-radius:9px;color:#f7fbff;padding:8px 5px;max-width:110px}
+#modernApp #mSleepTime{font-size:12px;min-width:38px;color:#e7f1fa;font-variant-numeric:tabular-nums}
+#modernApp .m-volume{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--m-muted)}
+#modernApp #mVolume{width:90px}
+#modernApp .m-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:15px}
+#modernApp .m-section h2{font-size:18px;line-height:1.3}
+#modernApp .m-section-head>span{font-size:11px;color:var(--m-muted);text-align:right}
+#modernApp .m-section-head button{font-size:12px!important;color:#a6dfff!important}
+#modernApp .m-presets{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;touch-action:pan-y}
+#modernApp .m-preset{min-width:0;min-height:89px;border:1px solid #547087!important;background:#263c50!important;border-radius:12px!important;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;position:relative;padding:10px 5px 6px!important;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+#modernApp .m-preset.active{background:#415f77!important;border-color:#d4dce4!important;box-shadow:inset 0 0 0 1px #cbd5df}
+#modernApp .m-preset-number{position:absolute;left:7px;top:5px;font-size:10px;color:#d0deeb}
+#modernApp .m-preset img{width:38px;height:33px;object-fit:contain;border-radius:5px}
+#modernApp .m-preset svg{width:30px;height:30px}
+#modernApp .m-preset-add{font-size:26px;color:#a5bcd0}
+#modernApp .m-preset-label{font-size:10px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#edf4fb}
+#modernApp .m-recent{display:grid;grid-template-rows:repeat(2,minmax(39px,auto));grid-auto-flow:column;grid-auto-columns:minmax(105px,1fr);gap:8px;overflow-x:auto;padding-bottom:4px}
+#modernApp .m-recent button{display:flex;gap:7px;align-items:center;min-width:0;border:1px solid #516a80!important;background:#283e52!important;padding:7px!important;border-radius:10px!important;text-align:left}
+#modernApp .m-recent img{width:25px;height:25px;object-fit:contain;flex:none}
+#modernApp .m-recent button>span:not(.m-fallback){font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#modernApp .m-empty{font-size:13px;color:#bdcbd8;line-height:1.5;padding:12px}
+#modernApp .m-browser{min-width:0;display:flex;flex-direction:column;background:#142335;border-left:1px solid var(--m-border);min-height:0;transition:transform .23s ease}
+#modernApp .m-browser-head{display:flex;align-items:center;justify-content:space-between;padding:22px 18px 12px}
+#modernApp .m-browser-head h2{font-size:19px}
+#modernApp .m-browser-head p{font-size:12px;color:var(--m-muted);margin-top:4px}
+#modernApp #mBrowserClose{font-size:20px;padding:7px!important}
+#modernApp .m-browser-search{display:flex;gap:6px;padding:10px 13px}
+#modernApp .m-browser-search input{flex:1;min-width:0;background:#263b50;border:1px solid #668098;color:#fff;border-radius:10px;padding:10px 12px;font-size:13px}
+#modernApp #mSearchWorld{background:#36536b!important;border-radius:10px!important;padding:8px!important;font-size:11px!important}
+#modernApp .m-browser-tabs{display:flex;gap:4px;padding:5px 13px 12px}
+#modernApp .m-browser-tabs button{border-radius:8px!important;padding:8px!important;font-size:12px!important;color:#b9cbd9!important}
+#modernApp .m-browser-tabs button.selected{background:#3c5870!important;color:#fff!important}
+#modernApp .m-columns{display:flex;overflow:auto;flex:1;min-height:0;scrollbar-color:#6b849b transparent;border-block:1px solid #496077}
+#modernApp .m-column{min-width:155px;width:155px;flex:none;overflow:auto;border-right:1px solid #40566b}
+#modernApp .m-column-source{min-width:164px;width:164px}
+#modernApp .m-column-stations{min-width:244px;width:244px}
+#modernApp .m-column h3{position:sticky;top:0;z-index:2;background:#213449;padding:13px 10px;font-size:13px;border-bottom:1px solid #4e667e}
+#modernApp .m-column h3 small{font-size:11px;color:var(--m-muted)}
+#modernApp .m-column>button{display:flex;align-items:center;gap:3px;width:100%;text-align:left;min-height:40px;padding:8px 10px!important;border-bottom:1px solid #354a5d!important;color:#d8e6f3!important;font-size:12px!important;overflow-wrap:anywhere}
+#modernApp .m-column>button span{margin-left:auto}
+#modernApp .m-column>button small{color:#b7cadd;margin-left:auto}
+#modernApp .m-column>button.selected{background:#355574!important;color:#fff!important}
+#modernApp .m-st-row{display:flex;align-items:stretch;border-bottom:1px solid #40556b;border-left:3px solid transparent}
+#modernApp .m-st-row.m-verified{border-left-color:#dce4eb;background:linear-gradient(90deg,#a5b8c91b,transparent)}
+#modernApp .m-st-select{display:flex;align-items:center;gap:9px;text-align:left;padding:9px 6px!important;flex:1;min-width:0}
+#modernApp .m-st-select img{width:32px;height:32px;object-fit:contain;border-radius:5px;flex:none}
+#modernApp .m-fallback{color:#b8e1fa;display:grid;place-items:center;min-width:27px}
+#modernApp .m-fallback svg{width:24px;height:24px}
+#modernApp .m-st-text{min-width:0}
+#modernApp .m-st-text strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#modernApp .m-st-fav{font-size:22px!important;width:31px;color:#e2d6bd!important}
+#modernApp .m-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:0;color:#bdcbd9}
+#modernApp .m-status-good{color:#f5f8fb;background:linear-gradient(110deg,#66798c,#a9b9c8 50%,#586a7e);border:1px solid #d2dce5;padding:2px 5px;border-radius:6px;text-shadow:0 1px 2px #162131}
+#modernApp .m-status-bad,#modernApp .m-status-blocked{color:#ffc29b}
+#modernApp .m-status-warn{color:#ffe1a1}
+#modernApp .m-status-untested{color:#b9c5d1}
+#modernApp .m-browser-footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:13px;font-size:11px;color:#cedbea}
+#modernApp .m-silver-key{border:1px solid #e0e8f0;background:#71869a;padding:4px 6px;border-radius:6px}
+#modernApp .m-failed-key{color:#ffd0a4}
+#modernApp #mTest{margin-left:auto;background:#304c64!important;border:1px solid #6d899e!important;border-radius:8px!important;padding:7px!important;font-size:11px!important}
+#modernApp .m-more{font-size:12px;color:var(--m-muted);padding:15px}
+#modernApp .m-backdrop{display:none}
+@media(max-width:1330px){
+  #modernApp .m-shell{grid-template-columns:67px minmax(300px,1fr) minmax(305px,480px)}
+  #modernApp .m-nav{padding-inline:7px;align-items:center}
+  #modernApp .m-brand span,#modernApp .m-navitem span{display:none}
+  #modernApp .m-navitem{justify-content:center;width:50px;font-size:24px!important}
+}
+@media(max-width:1049px){
+  #modernApp .m-shell{display:block;position:relative}
+  #modernApp .m-central{height:100%}
+  #modernApp .m-nav{position:absolute;inset:0 auto 0 0;width:min(270px,75vw);z-index:31;transform:translateX(-101%);transition:transform .25s ease;align-items:stretch;padding:25px 16px}
+  #modernApp .m-nav .m-brand span,#modernApp .m-nav .m-navitem span{display:inline}
+  #modernApp .m-nav .m-navitem{width:auto;justify-content:flex-start;font-size:15px!important}
+  #modernApp .m-nav-open .m-nav{transform:translateX(0)}
+  #modernApp #mNavToggle{display:inline-block;font-size:23px;padding:5px 11px!important}
+  #modernApp .m-browser{position:absolute;right:0;top:0;bottom:0;z-index:25;width:min(680px,90vw);box-shadow:-8px 0 35px #020b16a0;transform:translateX(105%)}
+  #modernApp .m-browser-open .m-browser{transform:translateX(0)}
+  #modernApp .m-backdrop{display:none;position:absolute;inset:0;background:#040b15ad;z-index:20}
+  #modernApp .m-browser-open .m-backdrop,#modernApp .m-nav-open .m-backdrop{display:block}
+}
+@media(max-width:620px){
+  #modernApp .m-header{padding:10px 13px;min-height:62px}
+  #modernApp .m-brandtext{font-size:13px}
+  #modernApp .m-station-launch{padding:8px!important;gap:4px!important}
+  #modernApp .m-station-launch span{font-size:11px}
+  #modernApp .m-center-scroll{padding:11px;gap:11px}
+  #modernApp .m-player,#modernApp .m-section{padding:13px;border-radius:16px}
+  #modernApp .m-now{gap:10px;padding:16px 0 13px}
+  #modernApp .m-now-logo{width:55px;height:55px;border-radius:12px}
+  #modernApp .m-now h1{font-size:20px;margin-bottom:5px}
+  #modernApp .m-play{width:54px;height:54px;font-size:25px!important}
+  #modernApp .m-connection{min-height:53px;padding:9px 11px}
+  #modernApp .m-player-tools{gap:8px;margin-top:11px}
+  #modernApp .m-timer label{display:none}
+  #modernApp .m-volume{display:none}
+  #modernApp .m-presets{gap:5px}
+  #modernApp .m-preset{min-height:68px;padding:9px 2px 4px!important;border-radius:8px!important}
+  #modernApp .m-preset img{width:26px;height:26px}
+  #modernApp .m-preset svg{width:23px;height:23px}
+  #modernApp .m-preset-number{font-size:9px;top:3px;left:4px}
+  #modernApp .m-preset-label{font-size:9px}
+  #modernApp .m-section-head>span{max-width:140px}
+  #modernApp .m-section h2{font-size:15px}
+  #modernApp .m-recent{grid-auto-columns:minmax(110px,145px)}
+  #modernApp .m-browser{width:100vw}
+  #modernApp .m-column{min-width:145px;width:145px}
+  #modernApp .m-column-stations{min-width:228px;width:228px}
+}
+@media(prefers-reduced-motion:reduce){#modernApp *,#modernApp *:before{animation:none!important;transition:none!important}}
