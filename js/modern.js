@@ -53,7 +53,7 @@ const Modern = (() => {
     '<section class="m-section"><div class="m-section-head"><h2>Favorite presets</h2><span>Long-press to save current station</span></div><div id="mPresets" class="m-presets"></div></section>' +
     '<section class="m-section"><div class="m-section-head"><h2>Recently played</h2><button data-action="recent">See all</button></div><div id="mRecent" class="m-recent"></div></section>' +
     '</div></section>' +
-    '<aside class="m-browser" id="mBrowser"><header class="m-browser-head"><div><h2>Station picker</h2><p>Explore your entire radio collection</p></div><button id="mBrowserClose" aria-label="Close station picker">✕</button></header>' +
+    '<aside class="m-browser" id="mBrowser"><header class="m-browser-head"><div><h2>Station picker</h2><p>Explore your entire radio collection</p></div><button id="mBrowserClose" class="m-back-radio" aria-label="Back to main radio screen" title="Back to Radio">← <span>Back to Radio</span></button></header>' +
     '<div class="m-browser-search"><input type="search" id="mSearch" placeholder="Search stations in this view…" aria-label="Search stations"><button id="mSearchWorld" title="Search Radio Browser worldwide">Worldwide</button></div>' +
     '<div class="m-browser-tabs"><button data-view="browse">Discover</button><button data-view="favorites">♥ Favorites</button><button data-view="recent">Recent</button></div>' +
     '<div class="m-quick"><button data-quick="trending">Trending</button><button data-quick="news">News</button><button data-quick="jazz">Jazz</button><button data-quick="classical">Classical</button><button data-quick="near">My country</button></div>' +
@@ -64,7 +64,8 @@ const Modern = (() => {
     browserOpen = open;
     root.classList.toggle('m-browser-open', open);
     $m('mStationToggle').setAttribute('aria-expanded', String(open));
-    if (open) { drawBrowser(); if (matchMedia('(max-width: 950px)').matches) $m('mBrowserClose').focus(); }
+    if (open) { drawBrowser(); if (matchMedia('(max-width: 1049px)').matches) $m('mBrowserClose').focus({preventScroll:true}); }
+    else $m('mStationToggle').focus({preventScroll:true});
   }
   function openNav(open) { navOpen = open; root.classList.toggle('m-nav-open', open); }
   function setView(v) {
@@ -92,7 +93,8 @@ const Modern = (() => {
     }
     const countriesSorted = [...countries].sort((a,b) => b[1]-a[1]);
     const genresSorted = [...genres].sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
-    const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country].join(' ').toLowerCase().includes(query)));
+    const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country].join(' ').toLowerCase().includes(query)))
+      .sort((a,b) => a.name.localeCompare(b.name, undefined, { sensitivity:'base', numeric:true }));
     const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3><button data-list="__browse__" class="' + (S.browse ? 'selected' : '') + '">All in view <span>›</span></button>' +
       S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
     const ccColumn = '<div class="m-column"><h3>Countries <small>' + countries.size + '</small></h3><button data-country="" class="' + (!country?'selected':'') + '">All countries <span>›</span></button>' + countriesSorted.map(([cc,n]) => '<button data-country="' + safe(cc) + '" class="' + (country===cc?'selected':'') + '">' + (cc==='__other__'?'':countryFlag(cc)+' ') + safe(cc==='__other__'?'Other':countryName(cc)) + ' <small>' + n + '</small><span>›</span></button>').join('') + '</div>';
@@ -199,7 +201,7 @@ const Modern = (() => {
     if(b.dataset.list!==undefined){if(b.dataset.list==='__browse__')return scrollColumns(1);chooseList(b.dataset.list);return scrollColumns(1);}
     if(b.dataset.country!==undefined){country=b.dataset.country;genre='';drawBrowser();return scrollColumns(2);}
     if(b.dataset.genre!==undefined){genre=b.dataset.genre;drawBrowser();return scrollColumns(3);}
-    if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);if(matchMedia('(max-width:950px)').matches)openBrowser(false);}return;}
+    if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);openBrowser(false);}return;}
     if(b.dataset.favSt!==undefined){const st=$m('mColumns')._shown[+b.dataset.favSt];if(st)toggleFav(st);drawBrowser();return;}
     if(b.dataset.recent!==undefined){const r=S.recent[+b.dataset.recent];if(r)playStation(stationFor(r));return;}
     if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const p=Car.presets()[+b.dataset.preset];if(p)playStation(stationFor(p));else toast('Long-press to assign the playing station');}

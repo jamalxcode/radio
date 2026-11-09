@@ -207,3 +207,20 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
   #modernApp .m-st-text{gap:5px}
   #modernApp .m-st-text .m-status-good{padding:3px 4px}
 }
+
+/* Station-picker return navigation, with enough touch area on a folded screen. */
+#modernApp .m-browser-head{gap:12px}
+#modernApp .m-back-radio{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;min-height:44px;padding:10px 13px!important;border:1px solid #a2bdd4!important;border-radius:12px!important;background:#33546d!important;color:#f5faff!important;font-size:14px!important;font-weight:700!important;white-space:nowrap}
+#modernApp .m-back-radio:hover{background:#466b87!important}
+@media(min-width:1050px){
+  #modernApp:not(.m-browser-open) .m-shell{grid-template-columns:184px minmax(310px,1fr) 0}
+  #modernApp:not(.m-browser-open) .m-browser{visibility:hidden;overflow:hidden;border:0;pointer-events:none}
+  #modernApp:not(.m-browser-open) .m-central{width:100%}
+}
+@media(min-width:1050px) and (max-width:1330px){
+  #modernApp:not(.m-browser-open) .m-shell{grid-template-columns:67px minmax(300px,1fr) 0}
+}
+@media(max-width:1049px){
+  #modernApp .m-browser-head{padding:8px 10px 4px}
+  #modernApp .m-back-radio{min-height:44px;padding:8px 12px!important;font-size:13px!important}
+}
