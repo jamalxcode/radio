@@ -59,6 +59,7 @@ These follow-up decisions supersede older descriptions or visual mockups:
 | [#14](https://github.com/jamalxcode/radio/pull/14) | No classic radio flash on load (owner request: remove the old interface showing on refresh) |
 | [#15](https://github.com/jamalxcode/radio/pull/15) | Merge 1–2-station countries/genres into groups of 6+ with abbreviated names (owner request: shorter lists) |
 | [#16](https://github.com/jamalxcode/radio/pull/16) | Classic interface removed entirely (no `?classic=1`); favorites folded into presets; picker tabs and chips removed; song + artist shown; Knight Rider scanner on the Stations button (owner requests) |
+| [#17](https://github.com/jamalxcode/radio/pull/17) | Picker shows a newly opened list's stations, dropping old filters (owner question about new lists) |
 
 **Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
 
