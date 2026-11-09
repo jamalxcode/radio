@@ -40,7 +40,7 @@ These follow-up decisions supersede older descriptions or visual mockups:
 - **Verified indicator:** compact inline check on station title line with silver treatment; accessibility label/tooltip expands the meaning.
 - **Presets:** one selected highlight maximum. Long press (650 ms) overwrites a slot with the current station; keyboard Shift+Enter is supported as a save alternative.
 - **Sleep:** one dropdown showing duration, or running countdown, with **Sleep Off** to cancel.
-- **Existing player + data:** underlying engine, lists, stream tests and playback state, favorites, recent history and saved presets remain reused. Classic fallback: `?classic=1`.
+- **Existing player + data:** underlying engine, lists, stream tests and playback state, recent history and saved presets remain reused. (Classic fallback `?classic=1` existed until #16, when the owner had the classic interface removed and favorites folded into presets.)
 
 ## 4. Implementation and deployment log
 | PR | Decision implemented |
@@ -58,6 +58,7 @@ These follow-up decisions supersede older descriptions or visual mockups:
 | [#13](https://github.com/jamalxcode/radio/pull/13) | Automatic quiet station checks in the modern picker (owner noticed stations stayed "?") |
 | [#14](https://github.com/jamalxcode/radio/pull/14) | No classic radio flash on load (owner request: remove the old interface showing on refresh) |
 | [#15](https://github.com/jamalxcode/radio/pull/15) | Merge 1–2-station countries/genres into groups of 6+ with abbreviated names (owner request: shorter lists) |
+| [#16](https://github.com/jamalxcode/radio/pull/16) | Classic interface removed entirely (no `?classic=1`); favorites folded into presets; picker tabs and chips removed; song + artist shown; Knight Rider scanner on the Stations button (owner requests) |
 
 **Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
 
@@ -66,7 +67,7 @@ These follow-up decisions supersede older descriptions or visual mockups:
 - GitHub Pages is configured to deploy on pushes to `main`, but merge success alone is not proof a particular deployment run completed. Check GitHub Actions and the live URL after changes.
 - Browser cache / service-worker cache may delay visible changes; `modern.js` and `modern.css` query-version increments were applied as fixes shipped.
 - Metadata may be unavailable from some stations because of missing ICY/HLS data or server CORS; no guarantee of Android Auto / CarPlay dashboard text without native integration, which the owner declined.
-- The modern UI can return to original presentation through `?classic=1`; do not alter its data storage without an explicit migration plan.
+- There is no classic interface any more (#16); do not alter data storage without an explicit migration plan (the favorites → presets move in #16 is the model: one-time, additive, flagged in `S.ui`).
 - Possible future tests: on-device touch and long-press, one-highlight behavior for duplicate presets, search and international sorting, stream status and reconnect, background playback, sleep expiry, accessibility, actual narrow-screen row count, offline cache and persistence.
 - The raster design concepts were generated in the design conversation. **They are not committed in this repo**. `docs/design/architecture.svg` is the checked-in diagram; early filenames in the older decision record referred to conversation assets, not versioned repository files.
 

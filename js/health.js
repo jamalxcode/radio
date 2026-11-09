@@ -67,13 +67,6 @@ const isBadCls = cls => cls === 'bad' || cls === 'blocked';
 const lastSeen = src => { const h = S.health.get(src.url); return Math.max(h?.probe?.at || 0, h?.lastPlay || 0); };
 const isFresh = src => !!S.health.get(src.url)?.rating || lastSeen(src) > Date.now() - FRESH_FOR;
 const hasFreshWorking = st => st.sources.some(s => isFresh(s) && RANK[sourceStatus(s).cls] <= 1);
-// Best known format: what the test measured, else what the list says.
-function formatOf(src) {
-  const p = S.health.get(src.url)?.probe;
-  const codec = p?.codec || src.codec || '';
-  const kbps = p?.kbps || src.br || 0;
-  return [codec, kbps ? kbps + 'k' : ''].filter(Boolean).join(' ');
-}
 
 /* =========================================================================
    Stream tester — same approach as M3U TV: read only the start of the stream,
@@ -358,13 +351,6 @@ function queueTests(urls, { manual = false, force = false, front = false, show =
   pump();
   updateTestUi();
 }
-function stopTests() {
-  for (const u of T.queue) T.queued.delete(u);
-  T.total -= T.queue.length;
-  T.queue = [];
-  T.manual = false;
-  updateTestUi();
-}
 function pickNext() {
   const lim = Math.min(T.queue.length, 300);
   for (let i = 0; i < lim; i++) {
@@ -418,14 +404,8 @@ function pump() {
       });
   }
 }
-// Only a test you asked for (the Test buttons) shows its progress; automatic tests work quietly and just update the badges.
-function updateTestUi() {
-  const busy = T.active > 0 || T.queue.length > 0;
-  $('#testBtn').textContent = T.manual && busy ? 'Stop' : 'Test';
-  $('#testProgress').textContent = T.manual && busy ? `Checking ${T.done}/${T.total}…` : '';
-  $('#scanBar').classList.toggle('on', T.manual && busy);
-  scheduleRender();
-}
+// Tests update the badges as they finish.
+function updateTestUi() { scheduleRender(); }
 function lightUp(st) { if (st?.key) S.lit.set(st.key, Date.now()); }
 function testState(st) {
   const vis = s => T.manual || T.shown.has(s.url);
@@ -441,12 +421,4 @@ function testUrlsFor(stations) {
     if (s) urls.push(s.url);
   }
   return urls;
-}
-function autoTestVisible() {
-  if (!S.settings.autoTest || document.body.classList.contains('modern-ui')) return; // the modern picker checks its own rows
-  const list = $('#list');
-  const start = Math.floor(list.scrollTop / ROW);
-  const end = Math.min(S.filtered.length, Math.ceil((list.scrollTop + listHeight()) / ROW));
-  const urls = testUrlsFor(S.filtered.slice(start, end));
-  if (urls.length) queueTests(urls);
 }

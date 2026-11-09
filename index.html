@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#151617">
+<meta name="theme-color" content="#0e1927">
 <!-- Some stream servers (e.g. SomaFM) refuse requests from unknown sites; send no Referer to players or testers. -->
 <meta name="referrer" content="no-referrer">
 <title>radio.sala.company</title>
@@ -11,329 +11,12 @@
 <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=32">
-<link rel="stylesheet" href="modern.css?v=8">
+<link rel="stylesheet" href="modern.css?v=30">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
-<body class="fx">
-<!-- Choose the interface before anything is drawn, so the classic radio never flashes on load (?classic=1 keeps it) -->
-<script>if(!new URLSearchParams(location.search).has('classic'))document.body.classList.add('modern-ui');</script>
+<body class="modern-ui">
 <div id="modernApp" aria-label="SALA Radio adaptive interface"></div>
-<header class="topbar">
-  <div class="brand"><span class="brand-dot" aria-hidden="true"></span><img class="brand-icon" src="favicon.svg" width="26" height="26" alt=""><span class="brand-text">radio.sala.company</span></div>
-  <div class="spacer"></div>
-  <button id="lookBtn" class="look-btn" title="Switch to the iPod look (press again on the radio icon to come back)" aria-label="Switch to the iPod look" aria-pressed="false"><svg class="apple-ico" viewBox="0 0 24 24" aria-hidden="true"><path class="leaf" d="M12.6 6.2c.2-2.1 1.7-3.6 4-3.9-.1 2.2-1.6 3.7-4 3.9z"/><path d="M12 8.1c-.9-.7-2-1.1-3.2-1.1C5.7 7 3.4 9.7 3.4 13.5c0 3.9 2.6 8.3 5.6 8.3 1 0 1.7-.6 3-.6s1.9.6 3 .6c3 0 5.6-4.4 5.6-8.3 0-3.8-2.3-6.5-5.4-6.5-1.2 0-2.3.4-3.2 1.1z"/></svg><span class="btn-lbl"> iPod</span></button>
-  <button id="songsBtn" title="Songs you heard" aria-label="Songs heard">♪<span class="btn-lbl"> Songs</span></button>
-  <button id="helpBtn" title="How this radio works" aria-label="Help">?</button>
-  <button id="settingsBtn" title="Settings & backup" aria-label="Settings">⚙</button>
-</header>
-
-<main class="layout">
-  <!-- On a phone this whole column is a sheet that slides up from the mini-player. -->
-  <section class="stage" id="stage" aria-label="Radio">
-    <button id="sheetClose" class="sheet-close" aria-label="Back to stations">▾ Stations</button>
-
-    <!-- The iPod look (Settings → Look): a black click-wheel player that fills the screen. When the screen is wide enough
-         (a fold opened, a tablet, a desktop) the station guide becomes the left page and the iPod the right one. -->
-    <div class="ipod-wrap" id="ipodWrap">
-      <!-- the same toggle as the header's apple, for when the header is hidden: back to the transistor radio -->
-      <button type="button" id="lookBack" class="look-back" title="Back to the old transistor radio" aria-label="Back to the old transistor radio"><img src="favicon.svg" width="28" height="28" alt=""></button>
-      <section class="ipod" id="ipod" aria-label="iPod">
-        <div class="ipod-screen">
-          <div class="ipod-bar">
-            <span class="ipod-clock" id="ipodClock">--:--</span>
-            <b class="ipod-title" id="ipodTitle" title="Tap to filter the stations">radio.sala.company</b>
-            <input class="ipod-find" id="ipodFind" type="search" placeholder="Type to filter…" autocomplete="off" aria-label="Filter stations">
-            <span class="ipod-bar-r"><i class="ipod-pi" id="ipodPlayIco" aria-hidden="true"></i><i class="ipod-batt" id="ipodBatt" aria-hidden="true"><b></b></i></span>
-          </div>
-          <div class="ipod-view" id="ipodView"></div>
-        </div>
-        <div class="ipod-wheel" id="ipodWheel" role="group" aria-label="Click wheel: turn to move, tap MENU, previous, next or play">
-          <button type="button" class="w-btn w-menu" id="ipodMenuBtn" aria-label="Menu: back (hold for the main menu)">MENU</button>
-          <button type="button" class="w-btn w-prev" id="ipodPrevBtn" aria-label="Previous station"><svg viewBox="0 0 24 16" aria-hidden="true"><path d="M2 2v12M12 2L3.5 8 12 14zM22 2L13.5 8 22 14z"/></svg></button>
-          <button type="button" class="w-btn w-next" id="ipodNextBtn" aria-label="Next station"><svg viewBox="0 0 24 16" aria-hidden="true"><path d="M22 2v12M12 2l8.5 6L12 14zM2 2l8.5 6L2 14z"/></svg></button>
-          <button type="button" class="w-btn w-play" id="ipodPlayBtn" aria-label="Play or pause"><svg viewBox="0 0 26 16" aria-hidden="true"><path d="M2 1l11 7-11 7zM16 1h3v14h-3zM22 1h3v14h-3z"/></svg></button>
-          <button type="button" class="ipod-center" id="ipodCenter" aria-label="Select"></button>
-        </div>
-      </section>
-    </div>
-    <!-- Small phones (folded): a 1950s push-button car radio instead of the shortwave receiver.
-         Dial with station names · LCD · five preset keys · controls with sleep · VOL / STATIONS / TUNE. -->
-    <section class="car" id="car" aria-label="Car radio">
-      <div class="car-dial" id="carDial" title="Tap a station name to tune to it, or swipe the dial">
-        <div class="car-names" id="carNames"></div>
-        <div class="car-ticks" aria-hidden="true"></div>
-        <div class="car-needle" aria-hidden="true"></div>
-      </div>
-
-      <div class="car-lcd" id="carLcd">
-        <b class="car-name" id="carName">PICK A STATION</b>
-        <span class="car-track" id="carTrack">Tap STATIONS to choose one</span>
-        <span class="car-status"><i class="led" id="carLed"></i><span id="carState">STANDBY</span><span class="car-sleep-left" id="carSleepLeft"></span></span>
-      </div>
-
-      <div class="car-keys" id="carKeys" role="group" aria-label="Preset buttons: tap to play, tap an empty one to store the station that's on, hold to replace"></div>
-
-      <div class="car-transport" role="group" aria-label="Station controls">
-        <button id="carPrev" aria-label="Previous station">⏮</button>
-        <button id="carPlay" class="car-main" aria-label="Play">▶</button>
-        <button id="carNext" aria-label="Next station">⏭</button>
-        <label class="car-sleep" id="carSleepBox" title="Sleep timer">
-          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
-          <span>SLEEP</span>
-          <select id="carSleepSel" aria-label="Sleep timer">
-            <option value="0">Sleep off</option>
-            <option value="30">30 minutes</option>
-            <option value="60">1 hour</option>
-            <option value="90">1½ hours</option>
-            <option value="120">2 hours</option>
-            <option value="150">2½ hours</option>
-            <option value="180">3 hours</option>
-          </select>
-        </label>
-        <button id="carMute" aria-label="Mute">🔊</button>
-        <button id="carFav" aria-label="Favorite" aria-pressed="false">☆</button>
-      </div>
-
-      <div class="car-bottom">
-        <div class="car-knob-wrap">
-          <div class="knob car-knob" id="carVol" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" title="Volume: tap left / right half, or turn"><i></i></div>
-          <small>VOL</small>
-        </div>
-        <button class="car-stations" id="carStations" title="Search and filter all stations">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-          STATIONS
-        </button>
-        <div class="car-knob-wrap">
-          <div class="knob car-knob tuning" id="carTune" role="slider" tabindex="0" aria-label="Tuning" title="Tuning: tap left / right half, or turn"><i></i></div>
-          <small>TUNE</small>
-        </div>
-      </div>
-    </section>
-    <!-- A 10-band shortwave portable. BAND = your station lists, TUNING = move through the list,
-         POWER = play/stop, SENS DX/LOCAL = all stations / hide off-air ones, LIGHT = dial lamp + effects. -->
-    <div class="radio" id="radio">
-      <div class="radio-top">
-        <div class="scale-window">
-          <div class="band-strip" id="bands" role="group" aria-label="Band: station list"></div>
-          <div class="dial-info" id="vfd">
-            <div class="dial-head">
-              <div class="dial-logo"><img id="vfdLogo" alt="" class="hidden"></div>
-              <div class="dial-title">
-                <b class="dial-name"><span id="vfdNum">---</span> <span id="vfdName">STANDBY</span></b>
-                <span class="dial-np hidden" id="vfdTrack" aria-live="polite"></span>
-                <span class="dial-meta" id="vfdMeta">Turn TUNING or pick a station from the guide</span>
-              </div>
-            </div>
-            <div class="dial-grid">
-              <div class="vfd-cell"><span class="vfd-k">STATUS</span><b id="vfdState">STANDBY</b></div>
-              <div class="vfd-cell"><span class="vfd-k">SIGNAL</span><b id="vfdSig">····</b></div>
-              <div class="vfd-cell"><span class="vfd-k">FORMAT</span><b id="vfdFmt">—</b></div>
-              <div class="vfd-cell"><span class="vfd-k">ON AIR</span><b id="vfdTime">--:--</b></div>
-              <div class="vfd-cell"><span class="vfd-k">TIME</span><b id="vfdClock">--:--</b></div>
-            </div>
-          </div>
-          <div class="tune-scale" id="dial" title="Click the scale to tune to that point of the list">
-            <div class="tune-nums" id="tuneNums" aria-hidden="true"></div>
-            <div class="needle" id="needle" aria-hidden="true"></div>
-          </div>
-          <!-- Station controls, right under the dial -->
-          <div class="transport" role="group" aria-label="Station controls">
-            <button id="tPrev" title="Previous station (←)" aria-label="Previous station">⏮</button>
-            <button id="tPause" class="t-main" title="Pause / play (Space)" aria-label="Pause">⏸</button>
-            <button id="tStop" title="Stop" aria-label="Stop">⏹</button>
-            <button id="tNext" title="Next station (→)" aria-label="Next station">⏭</button>
-            <!-- Sleep timer: pick how long, it counts down here and turns the sound off at zero -->
-            <label class="t-sleep" id="sleepBox" title="Sleep timer: the radio fades out and turns off when the countdown reaches zero">
-              <svg class="t-sleep-ico moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
-              <select id="sleepSel" aria-label="Sleep timer">
-                <option value="0">Sleep</option>
-                <option value="30">30 m</option>
-                <option value="60">1 h</option>
-                <option value="90">1½ h</option>
-                <option value="120">2 h</option>
-                <option value="150">2½ h</option>
-                <option value="180">3 h</option>
-              </select>
-              <b id="sleepLeft" class="t-sleep-left hidden" role="timer" aria-label="Time until the radio turns off"></b>
-            </label>
-            <span class="t-sep" aria-hidden="true"></span>
-            <button id="tMute" title="Mute (M)" aria-label="Mute" aria-pressed="false">🔊</button>
-            <button id="tLive" title="Back to live: reconnect at the live point" aria-label="Back to live">● LIVE</button>
-            <button id="tFav" title="Favorite (F)" aria-label="Favorite" aria-pressed="false">☆</button>
-          </div>
-        </div>
-        <div class="leds">
-          <span class="led-wrap"><i class="led" id="tuneLed"></i><small>TUNE</small></span>
-          <span class="led-wrap"><i class="led pwr" id="powerLed"></i><small>POWER</small></span>
-        </div>
-      </div>
-
-      <div class="radio-face">
-        <div class="speaker" aria-hidden="true">
-          <div class="holes"></div>
-          <div class="nameplate"><b>radio.<wbr>sala.<wbr>company</b><small>FM / MW / SW · 10 BAND</small></div>
-        </div>
-
-        <div class="panel">
-          <div class="knobs">
-            <div class="knob-wrap">
-              <div class="knob band" id="bandKnob" role="slider" tabindex="0" aria-label="Band: station list" title="BAND: your station lists. Tap the left/right half, scroll or drag."><i></i></div>
-              <small>BAND</small><span class="knob-val" id="bandName">FM</span>
-            </div>
-            <div class="knob-wrap">
-              <div class="knob tuning" id="tuneKnob" role="slider" tabindex="0" aria-label="Tuning" title="TUNING: tap the left/right half to step, or scroll / drag"><i></i></div>
-              <small>TUNING</small><span class="knob-val">◀ ▶</span>
-            </div>
-            <div class="knob-wrap">
-              <div class="knob vol" id="volKnob" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" title="VOLUME: tap the left/right half, scroll or drag"><i></i></div>
-              <small>VOLUME</small><span class="knob-val" id="volVal">80</span>
-            </div>
-          </div>
-
-          <div class="switches">
-            <button id="playBtn" class="slide" title="Power: play / stop (Space)" aria-label="Power" aria-pressed="false">
-              <small>POWER</small><span class="track"><i></i></span><span class="pos"><b>OFF</b><b>ON</b></span>
-            </button>
-            <button id="dxBtn" class="slide" title="DX = every station · LOCAL = hide stations that are off air or blocked" aria-label="Show all stations, or hide off-air ones" aria-pressed="false">
-              <small>SENS</small><span class="track"><i></i></span><span class="pos"><b>DX</b><b>LOCAL</b></span>
-            </button>
-            <div class="pills">
-              <button id="prevBtn" class="pill" title="Previous station (←)" aria-label="Previous station">◀ SCAN</button>
-              <button id="nextBtn" class="pill" title="Next station (→)" aria-label="Next station">SCAN ▶</button>
-              <button id="favBtn" class="pill" title="Save as a favorite (F)" aria-label="Favorite"><b>☆</b> MEMORY</button>
-              <button id="lightBtn" class="pill" title="Dial light and effects" aria-label="Light" aria-pressed="true">LIGHT</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <audio id="audio" preload="none"></audio>
-      <div id="overlay" class="overlay hidden"></div>
-    </div>
-
-    <!-- Details for the station on the dial: which link, your rating, test history, earlier songs. -->
-    <section class="details" aria-label="Station details">
-      <div class="det-row">
-        <select id="sourceSel" class="hidden" title="This station has several stream links; pick one" aria-label="Stream link"></select>
-        <span class="det-meta" title="Which link is playing, and how many seconds of audio are loaded ahead (low = about to drop out)">LINK <b id="vfdSrc">—</b> · BUFFER <b id="vfdBuf">▯▯▯▯▯▯</b></span>
-        <span class="spacer"></span>
-        <button id="testOneBtn" title="Test this station's links now">Test</button>
-        <button id="copyBtn" title="Copy the stream link, e.g. to open in VLC">Copy link</button>
-      </div>
-      <div class="rate">
-        <span class="rate-lbl">How does it play?</span>
-        <button data-rate="good" title="Mark this link as playing fine">On air</button>
-        <button data-rate="buffers" title="Mark this link as weak / dropping out">Weak</button>
-        <button data-rate="broken" title="Mark this link as off air">Off air</button>
-        <button data-rate="" title="Remove your mark">Clear</button>
-      </div>
-      <div id="nowStats" class="stats muted"></div>
-    </section>
-  </section>
-
-  <aside class="sidebar guide" id="guide">
-    <!-- Small phones: the guide is the station-picker screen, opened from the car radio's STATIONS button -->
-    <div class="picker-head">
-      <button id="pickerClose" class="picker-back" aria-label="Back to the radio">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Radio
-      </button>
-      <b>Pick a station</b>
-    </div>
-    <!-- The list this guide shows, and the tools for it: pick, add, reload, remove -->
-    <div class="guide-head">
-      <select id="listSelect" title="Your station lists (also on the BAND knob)" aria-label="Station list"></select>
-      <button id="addListBtn" class="primary" title="Add a station list" aria-label="Add a list">+</button>
-      <button id="refreshListBtn" title="Reload this list from its source" aria-label="Reload list">⟳</button>
-      <button id="deleteListBtn" title="Remove this list" aria-label="Remove list">🗑</button>
-      <span class="help" tabindex="0" title="Keyboard: ↑↓ move · Enter play · ←→ prev/next station · PgUp/PgDn page · Space pause · M mute · F favorite · Esc back to the playing station" aria-label="Keyboard shortcuts: up and down arrows move through the guide, Enter plays, left and right change station, Page Up and Page Down jump a page, Space pauses, M mutes, F toggles favorite, Escape returns to the playing station">?</span>
-      <span id="count" class="count"></span>
-    </div>
-    <div class="filters">
-      <div class="frow">
-        <input id="search" type="search" placeholder="Filter this list…" autocomplete="off" aria-label="Search stations">
-        <select id="scopeSel" class="scope" title="Where to search" aria-label="Where to search">
-          <option value="view">This view</option>
-          <option value="all">All my lists</option>
-          <option value="rb">Radio Browser</option>
-        </select>
-        <button id="testBtn" title="Check the stations in the current view">Test</button>
-      </div>
-      <div class="chips" id="chips" role="group" aria-label="Browse Radio Browser">
-        <button data-chip="near">📍 Near me</button>
-        <button data-chip="trending">🔥 Trending</button>
-        <button data-chip="news">News</button>
-        <button data-chip="talk">Talk</button>
-        <button data-chip="jazz">Jazz</button>
-        <button data-chip="classical">Classical</button>
-        <button data-chip="rock">Rock</button>
-        <button data-chip="pop">Pop</button>
-        <button data-chip="electronic">Electronic</button>
-        <button data-chip="ambient">Ambient</button>
-      </div>
-      <div class="frow frow4">
-        <select id="countryFilter" title="Country" aria-label="Country"></select>
-        <select id="groupFilter" title="Genre / group" aria-label="Genre"></select>
-        <select id="langFilter" class="hidden" title="Language the station broadcasts in" aria-label="Language"></select>
-        <select id="statusFilter" title="Show" aria-label="Show">
-          <option value="all">Show: all</option>
-          <option value="fav">★ Favorites</option>
-          <option value="recent">🕘 Recently played</option>
-          <option value="good">On air only</option>
-          <option value="hideBad">Hide off air</option>
-          <option value="untested">New (untested)</option>
-        </select>
-        <select id="sortSel" title="Sort order" aria-label="Sort">
-          <option value="">Sort: list order</option>
-          <option value="best">Sort: on air first</option>
-          <option value="name">Sort: A–Z</option>
-          <option value="br">Sort: bitrate</option>
-        </select>
-      </div>
-    </div>
-    <div id="browseBar" class="browse-bar hidden" role="status"></div>
-    <div id="scanBar" class="scanbar" title="Checking stations…" aria-hidden="true"></div>
-    <div id="list" class="list" tabindex="0" role="listbox" aria-label="Stations"><div id="listInner"></div></div>
-    <div class="guide-foot">
-      <span id="testProgress"></span>
-      <span class="legend">
-        <span class="badge good" title="Plays in this browser"><i>▮▮▮▮</i>On air</span>
-        <span class="badge warn" title="Slow to start or drops out"><i>▮▮▯▯</i>Weak</span>
-        <span class="badge bad" title="Not playing right now"><i>▯▯▯▯</i>Off air</span>
-        <span class="badge untested" title="Not tested yet"><i>····</i>New</span>
-      </span>
-    </div>
-  </aside>
-</main>
-
-<!-- Phone only: what's playing, always at hand. Tap it to open the radio. -->
-<div class="mini" id="mini">
-  <button class="mini-open" id="miniOpen" aria-label="Open the radio">
-    <span class="mini-logo"><img id="miniLogo" alt="" class="hidden"></span>
-    <span class="mini-text"><b id="miniName">Pick a station</b><span id="miniSub">Tap a station below to play it</span></span>
-  </button>
-  <!-- Sleep timer on the phone bar: the moon opens the same 30 min – 3 h menu; the countdown shows on it -->
-  <label class="mini-btn mini-sleep" id="miniSleepBox" title="Sleep timer">
-    <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
-    <span class="mini-sleep-left" id="miniSleepLeft"></span>
-    <select id="miniSleepSel" aria-label="Sleep timer">
-      <option value="0">Sleep off</option>
-      <option value="30">30 minutes</option>
-      <option value="60">1 hour</option>
-      <option value="90">1½ hours</option>
-      <option value="120">2 hours</option>
-      <option value="150">2½ hours</option>
-      <option value="180">3 hours</option>
-    </select>
-  </label>
-  <button class="mini-btn" id="miniMute" aria-label="Mute">🔊</button>
-  <button class="mini-btn" id="miniPlay" aria-label="Play or pause">▶</button>
-  <button class="mini-btn" id="miniNext" aria-label="Next station">⏭</button>
-  <button class="mini-btn mini-expand" id="miniExpand" aria-label="Open the full radio" title="Open the full radio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-</div>
+<audio id="audio" preload="none"></audio>
 
 <dialog id="addDlg">
   <form method="dialog" id="addForm">
@@ -419,16 +102,10 @@
 <dialog id="setDlg">
   <form method="dialog" id="setForm">
     <h3>Settings</h3>
-    <label for="sSkin">Look</label>
-    <select id="sSkin">
-      <option value="radio">Shortwave radio (car radio on small phones)</option>
-      <option value="ipod">iPod — black click-wheel player, fills the screen</option>
-    </select>
     <label class="check"><input id="sAutoSkip" type="checkbox"> Skip to the next working station when one fails</label>
-    <label class="check"><input id="sFx" type="checkbox"> Dial light and retro effects (same as the LIGHT button)</label>
+    <label class="check"><input id="sAutoTest" type="checkbox"> Check stations quietly as they come into view in the picker</label>
     <details class="adv">
       <summary>Advanced</summary>
-      <label class="check"><input id="sAutoTest" type="checkbox"> Test stations quietly as you scroll</label>
       <label for="sSlow">Count as a "slow start" after (seconds)</label>
       <input id="sSlow" type="number" min="1" max="60">
       <label for="sTimeout">Try the next link / warn after (seconds)</label>
@@ -436,11 +113,17 @@
       <label for="sConc">Stations to test at the same time</label>
       <input id="sConc" type="number" min="1" max="16">
     </details>
-    <h3>Your data</h3>
-    <p class="muted small">Lists, favorites, ratings, songs heard and test results are saved only in this browser. Use a backup to move them to another browser or device.</p>
+    <h3>Lists</h3>
+    <p class="muted small" id="curListName"></p>
     <div class="btns">
-      <button type="button" id="shareFavBtn" title="A link that carries your favorite stations to another phone or person">Share favorites</button>
-      <button type="button" id="shareListBtn" title="A link to the list you're on">Share this list</button>
+      <button type="button" id="refreshListBtn">Refresh this list</button>
+      <button type="button" id="shareListBtn" title="A link to the list that's open">Share this list</button>
+      <button type="button" id="deleteListBtn" class="danger">Remove this list</button>
+    </div>
+    <h3>Your data</h3>
+    <p class="muted small">Lists, presets, ratings, songs heard and test results are saved only in this browser. Use a backup to move them to another browser or device.</p>
+    <div class="btns">
+      <button type="button" id="sharePresetsBtn" title="A link that carries your preset stations to another phone or person">Share presets</button>
       <button type="button" id="exportBtn">Export backup</button>
       <label class="filebtn">Import backup<input id="importFile" type="file" accept=".json,application/json" hidden></label>
       <button type="button" id="clearStatsBtn">Clear test history</button>
@@ -475,44 +158,15 @@
   </form>
 </dialog>
 
-<dialog id="helpDlg" class="wide">
-  <form method="dialog">
-    <h3>How this radio works</h3>
-    <!-- Keyboard: ↑↓ guide · Enter play · ←→ prev/next · Space pause · M mute · F favorite -->
-
-    <p>It plays internet radio stations and checks, in your browser, which ones are actually on air.</p>
-    <dl class="help-grid">
-      <dt>◉ iPod look</dt><dd>A black click-wheel player that fills the screen (also under Settings → Look). Turn the wheel to move the highlight, press the centre to pick, MENU goes back (hold it for the main menu), ⏮ ⏭ change station, ▶❚❚ plays or pauses. On Now Playing the wheel is the volume. Open a folding phone, or use a tablet or computer, and the station guide sits on the left page with the iPod on the right.</dd>
-      <dt>On a small phone</dt><dd>The radio becomes a 1950s push-button car radio. Tap a name on the dial or swipe it to tune, use the five keys as presets (tap an empty key to store the station that’s on, hold a key to replace it), and press STATIONS for search and filters.</dd>
-      <dt>Station guide</dt><dd>Tap a station to play it. Rows turn <b class="hl-ok">silver</b> once a station is on air and <b class="hl-off">brown</b> when it’s off air.</dd>
-      <dt>+ List · Curated collections</dt><dd>Four public station collections: IPRD (24,000 stations by country, with logos), Radio Playlists (Radio Browser by genre, rebuilt weekly, plus a worldwide top 500), Recommended Radio Streams (one listener's hand-picked underground, jazz and ambient stations) and Internet Radio Streams (small themed playlists: BBC, SomaFM, college radio). Pick a collection, then a country or list.</dd>
-      <dt>Search &amp; chips</dt><dd>Filter the list you have, search all your lists, or search all of Radio Browser (about 50,000 stations). The chips (Near me, Jazz, News…) browse Radio Browser; save what you find as a new list.</dd>
-      <dt>Lists</dt><dd>Pick, add (+), reload (⟳) or remove (🗑) a list at the top of the station guide. On the shortwave radio the lists are also the BAND knob: FM is the first, MW the second, SW1–SW8 the next eight. On the iPod, tap the title bar to filter the stations as you type.</dd>
-      <dt>TUNING</dt><dd>Moves through the stations. Tap the left or right half of the knob, scroll on it, or drag it round. It tunes in when you stop.</dd>
-      <dt>Under the dial</dt><dd>⏮ ⏭ previous / next station · ⏸ pause (Space) · ⏹ stop · 🔊 mute (M) · ● LIVE jumps back to the live broadcast after a pause.</dd>
-      <dt>POWER</dt><dd>Play / stop. If a stream drops, the radio reconnects by itself.</dd>
-      <dt>SENS DX / LOCAL</dt><dd>DX shows every station; LOCAL hides the ones that are off air or blocked.</dd>
-      <dt>⏾ Sleep</dt><dd>Next to the play controls: pick 30 minutes to 3 hours, in 30-minute steps. It counts down there, then fades the sound out and turns the radio off.</dd>
-      <dt>MEMORY · LIGHT</dt><dd>Save a favorite · dial lamp and effects.</dd>
-      <dt>♪ Songs</dt><dd>The song playing shows on the dial, the car LCD, the phone bar and the iPod; tap it for the song card with YouTube, Spotify and Apple Music links and what played before it. ♪ Songs in the header lists everything you heard.</dd>
-    </dl>
-    <div class="dlg-acts"><button value="close" class="primary">Got it</button></div>
-  </form>
-</dialog>
-
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=27"></script>
-<script src="js/lists.js?v=27"></script>
-<script src="js/health.js?v=28"></script>
-<script src="js/guide.js?v=27"></script>
-<script src="js/radio.js?v=27"></script>
-<script src="js/player.js?v=27"></script>
-<script src="js/nowplaying.js?v=27"></script>
-<script src="js/car.js?v=27"></script>
-<script src="js/ipod.js?v=27"></script>
-<script src="js/share.js?v=27"></script>
-<script src="js/app.js?v=28"></script>
-<script src="js/modern.js?v=11"></script>
+<script src="js/core.js?v=30"></script>
+<script src="js/lists.js?v=30"></script>
+<script src="js/health.js?v=30"></script>
+<script src="js/player.js?v=30"></script>
+<script src="js/nowplaying.js?v=30"></script>
+<script src="js/share.js?v=30"></script>
+<script src="js/base.js?v=30"></script>
+<script src="js/modern.js?v=30"></script>
 <!-- Offline shell: the app's files are kept in the browser (sw.js), so it opens instantly and without network -->
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
