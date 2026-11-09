@@ -8,6 +8,7 @@ const Modern = (() => {
   let browserOpen = matchMedia('(min-width: 1050px)').matches;
   let navOpen = false, view = 'browse', country = '', genre = '', query = '';
   let renderSignature = '', recentSignature = '', presetSignature = '';
+  let chosenPreset = -1; // exact slot tapped, even if the same station is saved twice
   let holdTimer = null, held = false, downKey = -1;
   const $m = id => document.getElementById(id);
   const ico = (path, size = 20) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>';
@@ -125,11 +126,15 @@ const Modern = (() => {
   }
   function paintPresets(force=false) {
     const presets = Car.presets();
-    const sig = presets.map(p=>p?.key||'').join('|')+'|'+(S.current?.key||'');
+    // If the same station occupies several slots, highlight only the slot
+    // the listener selected; when coming from another view, use the first match.
+    const matches = presets.map((p,i) => p && S.current?.key===p.key ? i : -1).filter(i=>i>=0);
+    const activeIndex = matches.includes(chosenPreset) ? chosenPreset : (matches[0] ?? -1);
+    const sig = presets.map(p=>p?.key||'').join('|')+'|'+(S.current?.key||'')+'|'+activeIndex;
     if (!force && sig===presetSignature) return;
     presetSignature=sig;
     $m('mPresets').innerHTML = Array.from({length:18},(_,i)=>{
-      const p=presets[i], active=!!p && S.current?.key===p.key;
+      const p=presets[i], active=i===activeIndex;
       return '<button class="m-preset' +(active?' active':'')+'" data-preset="'+i+'" title="'+safe(p?p.name+' · long-press to replace':'Long-press to save current station')+'" aria-label="Preset '+(i+1)+(p?' '+safe(p.name):' empty')+'; long-press or Shift Enter to assign">' +
         '<span class="m-preset-number">'+(i+1)+'</span>'+(p?image(p,true):'<span class="m-preset-add">＋</span>')+'<span class="m-preset-label">'+safe(p?.name||'Save')+'</span></button>';
     }).join('');
@@ -216,7 +221,7 @@ const Modern = (() => {
     if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);openBrowser(false);}return;}
     if(b.dataset.favSt!==undefined){const st=$m('mColumns')._shown[+b.dataset.favSt];if(st)toggleFav(st);drawBrowser();return;}
     if(b.dataset.recent!==undefined){const r=S.recent[+b.dataset.recent];if(r)playStation(stationFor(r));return;}
-    if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const p=Car.presets()[+b.dataset.preset];if(p)playStation(stationFor(p));else toast('Long-press to assign the playing station');}
+    if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const i=+b.dataset.preset,p=Car.presets()[i];if(p){chosenPreset=i;playStation(stationFor(p));paintPresets(true);}else toast('Long-press to assign the playing station');}
   });
   const presetsEl=$m('mPresets');
   presetsEl.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-preset]');if(!b)return;downKey=+b.dataset.preset;held=false;clearTimeout(holdTimer);holdTimer=setTimeout(()=>{held=true;assign(downKey);navigator.vibrate?.(30)},650);});
