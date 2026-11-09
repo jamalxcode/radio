@@ -99,7 +99,7 @@ const Modern = (() => {
       alpha.compare(displayCountry(a[0]).trim(), displayCountry(b[0]).trim()) || alpha.compare(a[0],b[0]));
     const genresSorted = [...genres].sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
     const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country].join(' ').toLowerCase().includes(query)))
-      .sort((a,b) => alpha.compare(a.name.trim().replace(/^[^\\p{L}\\p{N}]+/u, ''), b.name.trim().replace(/^[^\\p{L}\\p{N}]+/u, '')) || alpha.compare(a.name,b.name));
+      .sort((a,b) => alpha.compare(a.name.trim().replace(/^[^\p{L}\p{N}]+/u, ''), b.name.trim().replace(/^[^\p{L}\p{N}]+/u, '')) || alpha.compare(a.name,b.name));
     const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3><button data-list="__browse__" class="' + (S.browse ? 'selected' : '') + '">All in view <span>›</span></button>' +
       S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
     const ccColumn = '<div class="m-column"><h3>Countries <small>' + countries.size + '</small></h3><button data-country="" class="' + (!country?'selected':'') + '">All countries <span>›</span></button>' + countriesSorted.map(([cc,n]) => '<button data-country="' + safe(cc) + '" class="' + (country===cc?'selected':'') + '">' + (cc==='__other__'?'':countryFlag(cc)+' ') + safe(cc==='__other__'?'Other':countryName(cc)) + ' <small>' + n + '</small><span>›</span></button>').join('') + '</div>';
