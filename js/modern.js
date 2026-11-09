@@ -93,8 +93,14 @@ const Modern = (() => {
     endBrowse(false);
     Promise.resolve(selectList(id)).then(() => drawBrowser()).catch(e => toast(e.message));
   }
+  let shownListId;
   function drawBrowser() {
     if (!browserOpen) return;
+    // Another list was opened (added, removed, imported, shared): show its stations, not the old filters or view.
+    if (S.ui.currentId !== shownListId) {
+      if (shownListId !== undefined) { view = 'browse'; country = ''; genre = ''; query = ''; $m('mSearch').value = ''; }
+      shownListId = S.ui.currentId;
+    }
     const all = source();
     const countries = new Map(), genres = new Map();
     const inCountry = st => !country || country.split('|').includes(st.country || '__other__');
