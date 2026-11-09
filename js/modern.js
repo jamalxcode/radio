@@ -91,7 +91,7 @@ const Modern = (() => {
       genres.set(g, (genres.get(g) || 0) + 1);
     }
     const countriesSorted = [...countries].sort((a,b) => b[1]-a[1]);
-    const genresSorted = [...genres].sort((a,b) => b[1]-a[1]).slice(0,160);
+    const genresSorted = [...genres].sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
     const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country].join(' ').toLowerCase().includes(query)));
     const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3><button data-list="__browse__" class="' + (S.browse ? 'selected' : '') + '">All in view <span>›</span></button>' +
       S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
