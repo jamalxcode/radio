@@ -19,11 +19,18 @@ const Modern = (() => {
   const stationFor = s => S.byKey.get(s.key) || s;
   const source = () => view === 'favorites' ? [...S.favs.values()].map(stationFor) : view === 'recent' ? S.recent.map(stationFor) : (S.browse?.stations || S.stations);
   const health = st => { try { return stationStatus(st); } catch (_) { return { cls: 'untested', label: 'New' }; } };
+  const verified = st => st?.sources?.some(src => {
+    const h=S.health.get(src.url);
+    return h?.probe?.status==='ok' || h?.lastResult==='ok';
+  }) && health(st).cls==='good';
   const marker = st => {
-    const h = health(st);
-    const props = { good: ['✓', 'Verified working'], warn: ['!', 'Weak stream'], bad: ['×', 'Unavailable'], blocked: ['×', 'Blocked'], untested: ['?', 'Not checked'] };
-    const [symbol, label] = props[h.cls] || props.untested;
-    return '<span class="m-status m-status-' + safe(h.cls) + '" aria-label="' + label + '" title="' + label + '"><span aria-hidden="true">' + symbol + '</span> ' + label + '</span>';
+    const h = health(st), checking=testState(st);
+    const good=verified(st);
+    const props = { good: ['✓', good?'Verified working':'Marked working'], warn: ['!', 'Weak stream'], bad: ['×', 'Unavailable'], blocked: ['×', 'Blocked'], untested: ['?', 'Not checked'] };
+    let [symbol, label] = props[h.cls] || props.untested;
+    if(checking){symbol='◌';label='Checking…';}
+    const cls=checking?'checking':good?'good':h.cls==='good'?'untested':h.cls;
+    return '<span class="m-status m-status-' + safe(cls) + '" aria-label="' + label + '" title="' + label + '"><span aria-hidden="true">' + symbol + '</span> ' + label + '</span>';
   };
   const navItem = (action, icon, label) => '<button type="button" class="m-navitem" data-action="' + action + '">' + icon + '<span>' + label + '</span></button>';
   root.innerHTML = '<div class="m-shell">' +
@@ -87,7 +94,7 @@ const Modern = (() => {
       S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
     const ccColumn = '<div class="m-column"><h3>Countries <small>' + countries.size + '</small></h3><button data-country="" class="' + (!country?'selected':'') + '">All countries <span>›</span></button>' + countriesSorted.map(([cc,n]) => '<button data-country="' + safe(cc) + '" class="' + (country===cc?'selected':'') + '">' + (cc==='__other__'?'':countryFlag(cc)+' ') + safe(cc==='__other__'?'Other':countryName(cc)) + ' <small>' + n + '</small><span>›</span></button>').join('') + '</div>';
     const genreColumn = '<div class="m-column"><h3>Genres <small>' + genres.size + '</small></h3><button data-genre="" class="' + (!genre?'selected':'') + '">All genres <span>›</span></button>' + genresSorted.map(([g,n]) => '<button data-genre="' + safe(g) + '" class="' + (genre===g?'selected':'') + '">' + safe(g) + ' <small>' + n + '</small><span>›</span></button>').join('') + '</div>';
-    const stRows = items.slice(0, 350).map((st,i) => '<div class="m-st-row ' + (health(st).cls==='good'?'m-verified':'') + '"><button data-st="' + i + '" class="m-st-select" title="' + safe(st.name) + '">' + image(st,true) + '<span class="m-st-text"><strong>' + safe(st.name) + '</strong>' + marker(st) + '</span></button><button data-fav-st="' + i + '" class="m-st-fav" aria-label="' + (S.favs.has(st.key)?'Remove from':'Add to') + ' favorites">' + (S.favs.has(st.key)?'♥':'♡') + '</button></div>').join('');
+    const stRows = items.slice(0, 350).map((st,i) => '<div class="m-st-row ' + (verified(st)?'m-verified':'') + '"><button data-st="' + i + '" class="m-st-select" title="' + safe(st.name) + '">' + image(st,true) + '<span class="m-st-text"><strong>' + safe(st.name) + '</strong>' + marker(st) + '</span></button><button data-fav-st="' + i + '" class="m-st-fav" aria-label="' + (S.favs.has(st.key)?'Remove from':'Add to') + ' favorites">' + (S.favs.has(st.key)?'♥':'♡') + '</button></div>').join('');
     const stationColumn = '<div class="m-column m-column-stations"><h3>Stations <small>' + items.length + '</small></h3>' + (stRows || '<p class="m-empty">No stations match. Choose another collection or search worldwide.</p>') + (items.length>350?'<p class="m-more">Showing first 350. Narrow by country, genre or search.</p>':'') + '</div>';
     $m('mColumns').innerHTML = listColumn + ccColumn + genreColumn + stationColumn;
     $m('mColumns')._shown = items;
@@ -108,7 +115,7 @@ const Modern = (() => {
     presetSignature=sig;
     $m('mPresets').innerHTML = Array.from({length:18},(_,i)=>{
       const p=presets[i], active=!!p && S.current?.key===p.key;
-      return '<button class="m-preset' +(active?' active':'')+'" data-preset="'+i+'" title="'+safe(p?p.name+' · long-press to replace':'Long-press to save current station')+'" aria-label="Preset '+(i+1)+(p?' '+safe(p.name):' empty')+'; long-press to assign">' +
+      return '<button class="m-preset' +(active?' active':'')+'" data-preset="'+i+'" title="'+safe(p?p.name+' · long-press to replace':'Long-press to save current station')+'" aria-label="Preset '+(i+1)+(p?' '+safe(p.name):' empty')+'; long-press or Shift Enter to assign">' +
         '<span class="m-preset-number">'+(i+1)+'</span>'+(p?image(p,true):'<span class="m-preset-add">＋</span>')+'<span class="m-preset-label">'+safe(p?.name||'Save')+'</span></button>';
     }).join('');
   }
