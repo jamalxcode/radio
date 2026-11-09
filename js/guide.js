@@ -2,7 +2,7 @@
 /* =========================================================================
    Station guide (virtualized — handles lists with tens of thousands of entries)
    ========================================================================= */
-const ROW = 56;
+const ROW = 48;
 const listHeight = () => $('#list').clientHeight || window.innerHeight || 800;
 let renderPending = false;
 function scheduleRender() {
@@ -18,27 +18,7 @@ const badgeHtml = st => `<span class="badge ${st.cls}" aria-label="${esc(st.labe
 const stNum = st => S.browse?.num.get(st.key) ?? S.numByKey.get(st.key) ?? '★';
 const bestBr = st => Math.max(0, ...st.sources.map(s => S.health.get(s.url)?.probe?.kbps || s.br || 0));
 
-/* The shelf under the search: favorites or recently played as tiles, one tap to play. Hidden when
-   the list already shows them (Show: ★ / 🕘), while browsing results, or when there's nothing to show. */
-let shelfSig = '';
-function renderShelf() {
-  const shelf = $('#shelf');
-  const which = S.ui.shelf === 'recent' ? 'recent' : 'fav';
-  const items = which === 'fav' ? [...S.favs.values()].map(f => S.byKey.get(f.key) || f) : S.recent.map(r => S.byKey.get(r.key) || r);
-  const show = !!S.lists.length && !S.browse && !['fav', 'recent'].includes(S.ui.status) && (S.favs.size || S.recent.length) && !S.ui.shelfOff;
-  shelf.hidden = !show;
-  if (!show) { shelfSig = ''; return; }
-  for (const t of shelf.querySelectorAll('.shelf-tab[data-shelf]')) t.classList.toggle('on', t.dataset.shelf === which);
-  const sig = which + '|' + (S.current?.key || '') + '|' + items.slice(0, 30).map(st => st.key + stationStatus(st).cls).join(',');
-  if (sig === shelfSig) return;
-  shelfSig = sig;
-  $('#shelfRow').innerHTML = items.length ? items.slice(0, 30).map(st => `<button class="tile${S.current?.key === st.key ? ' active' : ''}" data-key="${esc(st.key)}" title="${esc(st.name)}">
-      <span class="tile-art">${st.logo ? `<img src="${esc(st.logo)}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.remove()">` : '♪'}<i class="tile-dot ${stationStatus(st).cls}"></i></span>
-      <span>${esc(st.name)}</span></button>`).join('')
-    : `<div class="muted small" style="padding:6px 4px">${which === 'fav' ? 'Tap ☆ on a station to keep it here.' : 'Stations you play show up here.'}</div>`;
-}
 function renderList() {
-  renderShelf();
   const list = $('#list');
   const inner = $('#listInner');
   const n = S.filtered.length;
@@ -67,17 +47,17 @@ function renderList() {
     const ss = stationStatus(st);
     const fav = S.favs.has(st.key);
     const active = S.current && S.current.key === st.key;
-    const meta = [st.country ? countryName(st.country) : '', groupLabel(st)].filter(x => x && x.length > 1).join(' · ');
+    const fmt = formatOf(orderedSources(st)[0]);
+    const meta = [langsOf(st)[0] || '', groupLabel(st), fmt, st.sources.length > 1 ? `${st.sources.length} links` : ''].filter(Boolean).join(' · ');
     const good = ss.cls === 'good';
     const litAgo = good ? Date.now() - (S.lit.get(st.key) || 0) : Infinity;
     const lit = litAgo < 1200 ? ' lit' : '';
     const ts = testState(st);
-    // one dot and a short word for the status; "New" (untested) says nothing useful, so it's just the grey dot
     const badge = ts === 'checking'
-      ? '<i class="mini-spin" aria-hidden="true"></i><span class="st-lbl checking">Checking…</span>'
+      ? '<span class="badge checking"><i class="mini-spin" aria-hidden="true"></i>Checking…</span>'
       : ts === 'queued' && ss.cls === 'untested'
-        ? '<i class="dot" aria-hidden="true"></i><span class="st-lbl">Queued</span>'
-        : `<i class="dot ${ss.cls}" aria-hidden="true"></i>${ss.cls === 'untested' ? '' : `<span class="st-lbl ${ss.cls}">${esc(ss.label)}</span>`}`;
+        ? '<span class="badge queued"><i aria-hidden="true">···</i>Queued</span>'
+        : badgeHtml(ss);
     html += `<div class="ch${active ? ' active' : ''}${i === S.cursor ? ' cursor' : ''}${isBadCls(ss.cls) ? ' dead' : RANK[ss.cls] <= 1 ? ' ok' : ''}${ts ? ' ' + ts : ''}${lit}" id="ch-${i}" role="option" aria-selected="${i === S.cursor}" data-i="${i}" style="top:${i * ROW}px" title="${esc(st.name + ' — ' + ss.tip)}">
       <span class="ch-num">${stNum(st)}</span>
       <div class="ch-body">
@@ -252,7 +232,7 @@ function endBrowse(render = true) {
   S.browse = null;
   S.ui.scope = 'view';
   $('#scopeSel').value = 'view';
-  $('#search').placeholder = 'Search stations…';
+  $('#search').placeholder = 'Filter this list…';
   if (S.loading.startsWith('Searching') || S.loading.startsWith('Merging')) S.loading = '';
   showBrowse();
   if (render && was) { rebuildGroups(); applyFilters(); }

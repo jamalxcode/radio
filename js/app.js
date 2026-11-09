@@ -53,7 +53,7 @@ const favRecord = st => ({ key: st.key, name: st.name, logo: st.logo, group: st.
 function toggleFav(st) {
   if (!st) return;
   if (S.favs.has(st.key)) { S.favs.delete(st.key); DB.del('favs', st.key); toast('Removed from favorites'); }
-  else { const f = favRecord(st); S.favs.set(st.key, f); DB.put('favs', f); toast('Saved to favorites'); }
+  else { const f = favRecord(st); S.favs.set(st.key, f); DB.put('favs', f); toast('Saved to favorites (Show: ★ Favorites)'); }
   if (S.ui.status === 'fav') { rebuildGroups(); applyFilters(true); } else scheduleRender();
   renderNow();
 }
@@ -144,7 +144,7 @@ function openSettings() {
   $('#sAutoTest').checked = s.autoTest;
   $('#sConc').value = s.concurrency;
   $('#sFx').checked = s.fx;
-  $('#sSkin').value = ['ipod', 'car'].includes(s.skin) ? s.skin : 'radio';
+  $('#sSkin').value = s.skin === 'ipod' ? 'ipod' : 'radio';
   $('#setDlg').showModal();
 }
 /* The song card: the title that's on now, where to find it, and what played before it on this station. */
@@ -167,13 +167,6 @@ function openSongCard(st = S.current) {
   $('#songCopy').addEventListener('click', () => navigator.clipboard?.writeText(np.text).then(() => toast('Copied: ' + np.text)));
   $('#songDlg').showModal();
 }
-// The Filter button shows how many filters are on, so a short list is never a mystery.
-function syncFilterBtn() {
-  const n = [S.ui.group, S.ui.country, S.ui.lang, S.ui.sort].filter(Boolean).length + (S.ui.status !== 'all' ? 1 : 0) + (S.ui.scope !== 'view' ? 1 : 0);
-  const b = $('#filterCount');
-  b.hidden = !n; b.textContent = n;
-  $('#filterBtn').classList.toggle('on', n > 0);
-}
 function openSongs() {
   $('#songsSearch').value = '';
   renderSongs();
@@ -189,33 +182,6 @@ function wire() {
     scrollIdle = setTimeout(autoTestVisible, 600);
   });
   window.addEventListener('resize', scheduleRender);
-  // the shelf: tap a tile to play it, tabs to switch favorites / recent, "All" to make it the list
-  $('#shelf').addEventListener('click', e => {
-    const tab = e.target.closest('[data-shelf]');
-    if (tab) {
-      if (tab.dataset.shelf === 'all') { $('#statusFilter').value = S.ui.status = S.ui.shelf === 'recent' ? 'recent' : 'fav'; saveUi(); Radio.syncDx(); rebuildGroups(); applyFilters(); syncFilterBtn(); }
-      else { S.ui.shelf = tab.dataset.shelf; saveUi(); renderShelf(); }
-      return;
-    }
-    const tile = e.target.closest('.tile[data-key]');
-    if (tile) { const st = S.byKey.get(tile.dataset.key) || [...S.favs.values(), ...S.recent].find(x => x.key === tile.dataset.key); if (st) playStation(st); }
-  });
-  // the filter panel
-  const openFilters = open => {
-    $('#filterPanel').hidden = !open;
-    $('#filterBtn').setAttribute('aria-expanded', open);
-    document.body.classList.toggle('filters-open', open);
-    if (open) $('#scopeSel').focus({ preventScroll: true });
-  };
-  onClick('#filterBtn', () => openFilters($('#filterPanel').hidden));
-  onClick('#filterClose', () => openFilters(false));
-  onClick('#filterDone', () => openFilters(false));
-  onClick('#filterReset', () => {
-    S.ui.group = S.ui.country = S.ui.lang = S.ui.sort = ''; S.ui.status = 'all'; if (S.ui.scope !== 'view') setScope('view');
-    $('#statusFilter').value = 'all'; $('#sortSel').value = ''; $('#scopeSel').value = 'view';
-    saveUi(); Radio.syncDx(); rebuildGroups(); applyFilters(); syncFilterBtn();
-  });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#filterPanel').hidden) openFilters(false); });
   $('#listInner').addEventListener('click', e => {
     if (e.target.closest('[data-act="add"]')) return openAddDialog();
     const star = e.target.closest('[data-star]');
@@ -237,7 +203,7 @@ function wire() {
   // Search, scope, chips, filters
   let searchTimer;
   $('#search').addEventListener('input', e => { clearTimeout(searchTimer); searchTimer = setTimeout(() => onSearchInput(e.target.value), 150); });
-  $('#scopeSel').addEventListener('change', e => { setScope(e.target.value); syncFilterBtn(); });
+  $('#scopeSel').addEventListener('change', e => setScope(e.target.value));
   $('#chips').addEventListener('click', e => {
     const c = e.target.closest('[data-chip]')?.dataset.chip;
     if (!c) return;
@@ -251,11 +217,11 @@ function wire() {
     if (a === 'save') saveBrowse();
     else if (a === 'close') endBrowse();
   });
-  $('#groupFilter').addEventListener('change', e => { S.ui.group = e.target.value; saveUi(); applyFilters(); syncFilterBtn(); });
-  $('#countryFilter').addEventListener('change', e => { S.ui.country = e.target.value; saveUi(); applyFilters(); syncFilterBtn(); });
-  $('#langFilter').addEventListener('change', e => { S.ui.lang = e.target.value; saveUi(); applyFilters(); syncFilterBtn(); });
-  $('#statusFilter').addEventListener('change', e => { S.ui.status = e.target.value; saveUi(); Radio.syncDx(); rebuildGroups(); applyFilters(); syncFilterBtn(); });
-  $('#sortSel').addEventListener('change', e => { S.ui.sort = e.target.value; saveUi(); applyFilters(); syncFilterBtn(); });
+  $('#groupFilter').addEventListener('change', e => { S.ui.group = e.target.value; saveUi(); applyFilters(); });
+  $('#countryFilter').addEventListener('change', e => { S.ui.country = e.target.value; saveUi(); applyFilters(); });
+  $('#langFilter').addEventListener('change', e => { S.ui.lang = e.target.value; saveUi(); applyFilters(); });
+  $('#statusFilter').addEventListener('change', e => { S.ui.status = e.target.value; saveUi(); Radio.syncDx(); rebuildGroups(); applyFilters(); });
+  $('#sortSel').addEventListener('change', e => { S.ui.sort = e.target.value; saveUi(); applyFilters(); });
   onClick('#testBtn', () => {
     if (T.manual && (T.active || T.queue.length)) return stopTests();
     const urls = testUrlsFor(S.filtered);
@@ -304,7 +270,7 @@ function wire() {
       autoTest: $('#sAutoTest').checked,
       concurrency: clamp($('#sConc').value, 1, 16, d.concurrency),
       fx: $('#sFx').checked,
-      skin: ['ipod', 'car'].includes($('#sSkin').value) ? $('#sSkin').value : 'radio',
+      skin: $('#sSkin').value === 'ipod' ? 'ipod' : 'radio',
     };
     DB.put('kv', S.settings, 'settings');
     Radio.refreshFx();
@@ -323,11 +289,7 @@ function wire() {
   onClick('#songAll', () => { $('#songDlg').close(); openSongs(); });
   onClick('#carTrack', () => { if (NowPlaying.current(S.current)) openSongCard(); });
   $('#miniSub').addEventListener('click', e => { if (NowPlaying.current(S.current)) { e.stopPropagation(); openSongCard(); } });
-  // the apple toggles the iPod look on and off; off returns to whichever look was on before (standard or car radio)
-  const flipLook = () => {
-    if (S.settings.skin === 'ipod') Ipod.setSkin(S.settings.skinBefore === 'car' ? 'car' : 'radio');
-    else { S.settings.skinBefore = S.settings.skin; Ipod.setSkin('ipod'); }
-  };
+  const flipLook = () => Ipod.setSkin(S.settings.skin === 'ipod' ? 'radio' : 'ipod');
   onClick('#lookBtn', flipLook);
   onClick('#lookBack', flipLook);
   $('#songsSearch').addEventListener('input', renderSongs);
@@ -357,7 +319,6 @@ function wire() {
   onClick('#dxBtn', () => {
     S.ui.status = S.ui.status === 'hideBad' ? 'all' : 'hideBad';
     $('#statusFilter').value = S.ui.status;
-    syncFilterBtn();
     saveUi(); Radio.syncDx(); rebuildGroups(); applyFilters();
     toast(S.ui.status === 'hideBad' ? 'LOCAL: hiding stations that are off air or blocked' : 'DX: showing every station');
   });
@@ -385,7 +346,6 @@ function wire() {
   onClick('#miniPlay', togglePause);
   onClick('#miniNext', () => step(1));
   onClick('#miniMute', () => setMuted(!audio.muted));
-  onClick('#miniFav', () => toggleFav(S.current));
   // Station details
   $('#sourceSel').addEventListener('change', e => S.current && playStation(S.current, e.target.value));
   for (const b of document.querySelectorAll('[data-rate]')) b.addEventListener('click', () => setRating(b.dataset.rate));
