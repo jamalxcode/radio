@@ -108,10 +108,12 @@ const Modern = (() => {
     if (!browserOpen) return;
     const all = source();
     const countries = new Map(), genres = new Map();
+    const inCountry = st => !country || country.split('|').includes(st.country || '__other__');
+    const inGenre = st => !genre || genre.split('|').includes(groupsOf(st)[0] || 'Other');
     for (const st of all) {
       const cc = st.country || '__other__';
       countries.set(cc, (countries.get(cc) || 0) + 1);
-      if (country && (st.country || '__other__') !== country) continue;
+      if (!inCountry(st)) continue;
       const g = groupsOf(st)[0] || 'Other';
       genres.set(g, (genres.get(g) || 0) + 1);
     }
@@ -121,12 +123,14 @@ const Modern = (() => {
     const countriesSorted = [...countries].sort((a,b) =>
       alpha.compare(displayCountry(a[0]).trim(), displayCountry(b[0]).trim()) || alpha.compare(a[0],b[0]));
     const genresSorted = [...genres].sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
-    const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country ? countryName(st.country) : '', groupsOf(st).join(' ')].join(' ').toLowerCase().includes(query)))
+    const items = all.filter(st => inCountry(st) && inGenre(st) && (!query || [st.name, st.group, st.country ? countryName(st.country) : '', groupsOf(st).join(' ')].join(' ').toLowerCase().includes(query)))
       .sort((a,b) => alpha.compare(a.name.trim().replace(/^[^\p{L}\p{N}]+/u, ''), b.name.trim().replace(/^[^\p{L}\p{N}]+/u, '')) || alpha.compare(a.name,b.name));
     const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3><button data-list="__browse__" class="' + (S.browse ? 'selected' : '') + '">All in view <span>›</span></button>' +
       S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
-    const ccColumn = '<div class="m-column"><h3>Countries <small>' + countries.size + '</small></h3><button data-country="" class="' + (!country?'selected':'') + '">All countries <span>›</span></button>' + countriesSorted.map(([cc,n]) => '<button data-country="' + safe(cc) + '" class="' + (country===cc?'selected':'') + '">' + (cc==='__other__'?'':countryFlag(cc)+' ') + safe(cc==='__other__'?'Other':countryName(cc)) + ' <small>' + n + '</small><span>›</span></button>').join('') + '</div>';
-    const genreColumn = '<div class="m-column"><h3>Genres <small>' + genres.size + '</small></h3><button data-genre="" class="' + (!genre?'selected':'') + '">All genres <span>›</span></button>' + genresSorted.map(([g,n]) => '<button data-genre="' + safe(g) + '" class="' + (genre===g?'selected':'') + '">' + safe(g) + ' <small>' + n + '</small><span>›</span></button>').join('') + '</div>';
+    const mergedButton = (attr, current, e, single) => e.keys.length === 1 ? single(e.keys[0], e.n) :
+      '<button data-' + attr + '="' + safe(e.keys.join('|')) + '" class="m-merged' + (current===e.keys.join('|')?' selected':'') + '" title="' + safe(e.labels.join(', ')) + '" aria-label="' + safe(e.labels.join(', ') + ', ' + e.n + ' stations') + '" data-names="' + safe(JSON.stringify(e.labels)) + '"' + (attr==='country' ? ' data-codes="' + safe(e.keys.map(k => k==='__other__' ? 'Other' : k.toUpperCase()).join('·')) + '"' : '') + '><b class="m-merge-names">' + safe(e.labels.join(' · ')) + '</b> <small>' + e.n + '</small><span>›</span></button>';
+    const ccColumn = '<div class="m-column"><h3>Countries <small>' + countries.size + '</small></h3><button data-country="" class="' + (!country?'selected':'') + '">All countries <span>›</span></button>' + mergeSmall(countriesSorted.map(([cc,n]) => ({key:cc,n,label:displayCountry(cc)}))).map(e => mergedButton('country', country, e, (cc,n) => '<button data-country="' + safe(cc) + '" class="' + (country===cc?'selected':'') + '">' + (cc==='__other__'?'':countryFlag(cc)+' ') + safe(cc==='__other__'?'Other':countryName(cc)) + ' <small>' + n + '</small><span>›</span></button>')).join('') + '</div>';
+    const genreColumn = '<div class="m-column"><h3>Genres <small>' + genres.size + '</small></h3><button data-genre="" class="' + (!genre?'selected':'') + '">All genres <span>›</span></button>' + mergeSmall(genresSorted.map(([g,n]) => ({key:g,n,label:g}))).map(e => mergedButton('genre', genre, e, (g,n) => '<button data-genre="' + safe(g) + '" class="' + (genre===g?'selected':'') + '">' + safe(g) + ' <small>' + n + '</small><span>›</span></button>')).join('') + '</div>';
     const stRows = items.slice(0, 350).map((st,i) => '<div class="m-st-row ' + (verified(st)?'m-verified':'') + '"><button data-st="' + i + '" class="m-st-select" title="' + safe(st.name) + '">' + image(st,true) + '<span class="m-st-text"><strong>' + safe(st.name) + '</strong>' + marker(st) + '</span></button><button data-fav-st="' + i + '" class="m-st-fav" aria-label="' + (S.favs.has(st.key)?'Remove from':'Add to') + ' favorites">' + (S.favs.has(st.key)?'♥':'♡') + '</button></div>').join('');
     const stationColumn = '<div class="m-column m-column-stations"><h3>Stations <small>' + items.length + '</small></h3>' + (stRows || '<p class="m-empty">No stations match. Choose another collection or search worldwide.</p>') + (items.length>350?'<p class="m-more">Showing first 350. Narrow by country, genre or search.</p>':'') + '</div>';
     const holder=$m('mColumns');
@@ -139,7 +143,37 @@ const Modern = (() => {
     for (const b of root.querySelectorAll('[data-view]')) b.classList.toggle('selected', b.dataset.view===view);
     const active = root.querySelector('.m-column-stations');
     if (active && !root.dataset.columnsInitialized) { root.dataset.columnsInitialized='yes'; }
+    fitMergedNames();
     autoTestSoon();
+  }
+  // Countries/genres with only 1–2 stations are merged, A–Z, with the next small ones until the group
+  // holds at least 6 stations, so these columns scroll less. Bigger entries stay as they are.
+  function mergeSmall(entries){
+    const out=[]; let bucket=null;
+    for(const e of entries){
+      if(e.n>2){out.push({keys:[e.key],labels:[e.label],n:e.n});continue;}
+      if(!bucket){bucket={keys:[],labels:[],n:0};out.push(bucket);}
+      bucket.keys.push(e.key);bucket.labels.push(e.label);bucket.n+=e.n;
+      if(bucket.n>=6)bucket=null;
+    }
+    // a short leftover at the end joins the previous merged group
+    if(bucket&&bucket.n<6){
+      const prev=out.slice(0,out.indexOf(bucket)).reverse().find(g=>g.keys.length>1);
+      if(prev){prev.keys.push(...bucket.keys);prev.labels.push(...bucket.labels);prev.n+=bucket.n;out.splice(out.indexOf(bucket),1);}
+    }
+    return out;
+  }
+  // Merged names stay on one line: shorten every name a step at a time (Albania → Alban. → Alba.) until it fits;
+  // countries then switch to codes (AL·AD·AO), genres end with … if still too long.
+  const shorten=(name,k)=>name.length<=k+1?name:name.slice(0,k).replace(/[\s.,&-]+$/,'')+'.';
+  function fitMergedNames(){
+    for(const b of $m('mColumns').querySelectorAll('.m-merged')){
+      const el=b.querySelector('.m-merge-names'),names=JSON.parse(b.dataset.names||'[]');
+      el.textContent=names.join(' · ');
+      for(let k=10;k>=3&&el.scrollWidth>el.clientWidth;k--)el.textContent=names.map(n=>shorten(n,k)).join(k<=4?'·':' · ');
+      // countries: below 4 letters names get ambiguous (An., An., An.), so use their unique 2-letter codes
+      if(b.dataset.codes&&el.scrollWidth>el.clientWidth&&/(^|·)\S{1,3}\.(·|$)/.test(el.textContent))el.textContent=b.dataset.codes;
+    }
   }
   // Quiet checks for the station rows on screen, like the classic guide does while you scroll
   // (Settings → auto-test). Already-checked and queued stations are skipped, so redraws don't loop.
@@ -246,6 +280,7 @@ const Modern = (() => {
   }
   $m('mStationToggle').addEventListener('click',()=>openBrowser(!browserOpen));
   $m('mColumns').addEventListener('scroll',autoTestSoon,{capture:true,passive:true});
+  addEventListener('resize',()=>{if(browserOpen)fitMergedNames();});
   $m('mBrowserClose').addEventListener('click',()=>openBrowser(false));
   $m('mNavToggle').addEventListener('click',()=>openNav(!navOpen));
   $m('mBackdrop').addEventListener('click',()=>{openBrowser(false);openNav(false);});
