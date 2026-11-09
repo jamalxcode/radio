@@ -294,13 +294,15 @@ const Ipod = (() => {
   api.apply = () => {
     const ipod = S.settings.skin === 'ipod';
     document.body.classList.toggle('look-ipod', ipod);
+    document.body.classList.toggle('look-car', S.settings.skin === 'car');
     document.body.classList.remove('sheet-open', 'picker-open');
     el('lookBtn').classList.toggle('on', ipod);
     el('lookBtn').setAttribute('aria-pressed', ipod);
-    const sel = el('sSkin'); if (sel) sel.value = ipod ? 'ipod' : 'radio';
+    const sel = el('sSkin'); if (sel) sel.value = S.settings.skin || 'radio';
     Sheet.sync();
     Picker.sync();
     if (ipod) { if (!stack.length) home(); fit(); render(true); scheduleRender(); }
+    Car.render?.();
   };
 
   wireWheel();

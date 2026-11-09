@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=28">
+<link rel="stylesheet" href="style.css?v=29">
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
@@ -249,14 +249,31 @@
       <span id="count" class="count"></span>
     </div>
     <div class="filters">
+      <!-- the everyday row: search, and one button that opens everything else -->
       <div class="frow">
-        <input id="search" type="search" placeholder="Filter this list…" autocomplete="off" aria-label="Search stations">
+        <input id="search" type="search" placeholder="Search stations…" autocomplete="off" aria-label="Search stations">
+        <button id="filterBtn" class="filter-btn" aria-expanded="false" aria-controls="filterPanel" title="Where to search, genre, country, show, sort, test">Filter<b id="filterCount" hidden></b></button>
+      </div>
+      <!-- Favorites and recently played, right under the search, so they're one tap away -->
+      <div class="shelf" id="shelf" hidden>
+        <div class="shelf-tabs" role="tablist">
+          <button class="shelf-tab on" data-shelf="fav" role="tab">★ Favorites</button>
+          <button class="shelf-tab" data-shelf="recent" role="tab">🕘 Recent</button>
+          <button class="shelf-tab shelf-all" data-shelf="all" title="Show them as the list">All ›</button>
+        </div>
+        <div class="shelf-row" id="shelfRow"></div>
+      </div>
+    </div>
+    <div class="filter-panel" id="filterPanel" hidden>
+      <div class="fp-head"><b>Find &amp; filter</b><button type="button" id="filterClose" aria-label="Close">✕</button></div>
+      <div class="frow">
+        <label class="fp-lbl" for="scopeSel">Search in</label>
         <select id="scopeSel" class="scope" title="Where to search" aria-label="Where to search">
-          <option value="view">This view</option>
+          <option value="view">This list</option>
           <option value="all">All my lists</option>
-          <option value="rb">Radio Browser</option>
+          <option value="rb">All of Radio Browser</option>
         </select>
-        <button id="testBtn" title="Check the stations in the current view">Test</button>
+        <button id="testBtn" title="Check the stations in the current view">Test stations</button>
       </div>
       <div class="chips" id="chips" role="group" aria-label="Browse Radio Browser">
         <button data-chip="near">📍 Near me</button>
@@ -289,6 +306,7 @@
           <option value="br">Sort: bitrate</option>
         </select>
       </div>
+      <div class="fp-foot"><button type="button" id="filterReset">Clear filters</button><span class="spacer"></span><button type="button" class="primary" id="filterDone">Done</button></div>
     </div>
     <div id="browseBar" class="browse-bar hidden" role="status"></div>
     <div id="scanBar" class="scanbar" title="Checking stations…" aria-hidden="true"></div>
@@ -296,10 +314,10 @@
     <div class="guide-foot">
       <span id="testProgress"></span>
       <span class="legend">
-        <span class="badge good" title="Plays in this browser"><i>▮▮▮▮</i>On air</span>
-        <span class="badge warn" title="Slow to start or drops out"><i>▮▮▯▯</i>Weak</span>
-        <span class="badge bad" title="Not playing right now"><i>▯▯▯▯</i>Off air</span>
-        <span class="badge untested" title="Not tested yet"><i>····</i>New</span>
+        <span class="badge good" title="Plays in this browser"><i class="dot good"></i>On air</span>
+        <span class="badge warn" title="Slow to start or drops out"><i class="dot warn"></i>Weak</span>
+        <span class="badge bad" title="Not playing right now"><i class="dot bad"></i>Off air</span>
+        <span class="badge untested" title="Not tested yet"><i class="dot"></i>Not tested</span>
       </span>
     </div>
   </aside>
@@ -325,9 +343,10 @@
       <option value="180">3 hours</option>
     </select>
   </label>
-  <button class="mini-btn" id="miniMute" aria-label="Mute">🔊</button>
+  <button class="mini-btn" id="miniFav" aria-label="Favorite" aria-pressed="false">☆</button>
   <button class="mini-btn" id="miniPlay" aria-label="Play or pause">▶</button>
-  <button class="mini-btn" id="miniNext" aria-label="Next station">⏭</button>
+  <button class="mini-btn hidden" id="miniMute" aria-label="Mute">🔊</button>
+  <button class="mini-btn hidden" id="miniNext" aria-label="Next station">⏭</button>
   <button class="mini-btn mini-expand" id="miniExpand" aria-label="Open the full radio" title="Open the full radio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
 
@@ -417,7 +436,8 @@
     <h3>Settings</h3>
     <label for="sSkin">Look</label>
     <select id="sSkin">
-      <option value="radio">Shortwave radio (car radio on small phones)</option>
+      <option value="radio">Standard — station list with a player bar on phones, shortwave radio on bigger screens</option>
+      <option value="car">Car radio — 1950s push-button dashboard (small phones)</option>
       <option value="ipod">iPod — black click-wheel player, fills the screen</option>
     </select>
     <label class="check"><input id="sAutoSkip" type="checkbox"> Skip to the next working station when one fails</label>
@@ -497,17 +517,17 @@
 </dialog>
 
 <div id="toast" class="toast hidden" role="status"></div>
-<script src="js/core.js?v=23"></script>
-<script src="js/lists.js?v=23"></script>
-<script src="js/health.js?v=23"></script>
-<script src="js/guide.js?v=23"></script>
-<script src="js/radio.js?v=23"></script>
-<script src="js/player.js?v=23"></script>
-<script src="js/nowplaying.js?v=23"></script>
-<script src="js/car.js?v=23"></script>
-<script src="js/ipod.js?v=23"></script>
-<script src="js/share.js?v=23"></script>
-<script src="js/app.js?v=23"></script>
+<script src="js/core.js?v=24"></script>
+<script src="js/lists.js?v=24"></script>
+<script src="js/health.js?v=24"></script>
+<script src="js/guide.js?v=24"></script>
+<script src="js/radio.js?v=24"></script>
+<script src="js/player.js?v=24"></script>
+<script src="js/nowplaying.js?v=24"></script>
+<script src="js/car.js?v=24"></script>
+<script src="js/ipod.js?v=24"></script>
+<script src="js/share.js?v=24"></script>
+<script src="js/app.js?v=24"></script>
 <!-- Offline shell: the app's files are kept in the browser (sw.js), so it opens instantly and without network -->
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

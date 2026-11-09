@@ -9,7 +9,8 @@
      bottom      VOL knob · STATIONS (opens the picker) · TUNE knob
    ========================================================================= */
 const CAR = matchMedia('(max-width: 600px)');
-const isCar = () => CAR.matches;
+// The car radio is a Look (Settings → Look → Car radio) and only fits a small phone.
+const isCar = () => CAR.matches && S.settings?.skin === 'car';
 
 /* The station picker: the guide (search, chips, filters, list) as its own screen. */
 const Picker = {
