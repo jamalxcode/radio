@@ -30,7 +30,10 @@ const Modern = (() => {
     let [symbol, label] = props[h.cls] || props.untested;
     if(checking){symbol='◌';label='Checking…';}
     const cls=checking?'checking':good?'good':h.cls==='good'?'untested':h.cls;
-    return '<span class="m-status m-status-' + safe(cls) + '" aria-label="' + label + '" title="' + label + '"><span aria-hidden="true">' + symbol + '</span> ' + label + '</span>';
+    // Keep every status on the station-name line. Verified stations get a tiny
+    // silver check badge, with the full meaning retained for AT and tooltips.
+    const compact = good ? '✓' : checking ? '◌' : ({ warn:'! Weak', bad:'×', blocked:'×', untested:'?' }[cls] || symbol);
+    return '<span class="m-status m-status-' + safe(cls) + '" aria-label="' + label + '" title="' + label + '">' + compact + '</span>';
   };
   const navItem = (action, icon, label) => '<button type="button" class="m-navitem" data-action="' + action + '">' + icon + '<span>' + label + '</span></button>';
   root.innerHTML = '<div class="m-shell">' +
