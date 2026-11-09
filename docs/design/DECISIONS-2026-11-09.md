@@ -56,6 +56,7 @@ These follow-up decisions supersede older descriptions or visual mockups:
 | [#9](https://github.com/jamalxcode/radio/pull/9) | Only one highlighted preset slot |
 | [#11](https://github.com/jamalxcode/radio/pull/11) | Debug pass: owner asked to fix bugs while keeping the interface as it is (details in the implementation notes) |
 | [#13](https://github.com/jamalxcode/radio/pull/13) | Automatic quiet station checks in the modern picker (owner noticed stations stayed "?") |
+| [#14](https://github.com/jamalxcode/radio/pull/14) | No classic radio flash on load (owner request: remove the old interface showing on refresh) |
 
 **Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
 

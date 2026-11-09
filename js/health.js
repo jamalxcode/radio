@@ -443,7 +443,7 @@ function testUrlsFor(stations) {
   return urls;
 }
 function autoTestVisible() {
-  if (!S.settings.autoTest) return;
+  if (!S.settings.autoTest || document.body.classList.contains('modern-ui')) return; // the modern picker checks its own rows
   const list = $('#list');
   const start = Math.floor(list.scrollTop / ROW);
   const end = Math.min(S.filtered.length, Math.ceil((list.scrollTop + listHeight()) / ROW));
