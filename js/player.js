@@ -47,8 +47,6 @@ function hlsMessage(d) {
   if (/^frag|^level/.test(d.details)) return 'Audio data failed to load';
   return d.details || 'Playback error';
 }
-const currentSourceUrl = () =>
-  (session && S.current && session.st.key === S.current.key ? session.url : S.current && orderedSources(S.current)[0].url);
 const hasBackup = () => session && session.idx < session.order.length - 1;
 
 function playStation(st, startUrl) {
@@ -56,15 +54,11 @@ function playStation(st, startUrl) {
   teardown();
   S.current = st;
   S.ui.lastKey = st.key;
-  const idx = S.filtered.findIndex(c => c.key === st.key);
-  if (idx >= 0) S.cursor = idx;
   saveUi();
   let order = orderedSources(st);
   if (startUrl) order = [order.find(s => s.url === startUrl), ...order.filter(s => s.url !== startUrl)].filter(Boolean);
   session = { st, order, idx: -1, retries: 0 };
   scheduleRender();
-  scrollToCurrent();
-  Radio.needle();
   setMediaSession(st);
   nextSource();
 }
@@ -80,7 +74,7 @@ function nextSource() {
   Object.assign(s, { url: src.url, t0: performance.now(), started: false, failed: false, recorded: false, stalls: 0, token, pausedAt: 0, behindMs: 0 });
   renderNow();
   Radio.setState('tuning');
-  showOverlay('<div class="spinner"></div>' + (s.reconnecting ? `Signal lost — reconnecting (${s.retries}/${RETRY_DELAYS.length})…`
+  showNote('<div class="spinner"></div>' + (s.reconnecting ? `Signal lost — reconnecting (${s.retries}/${RETRY_DELAYS.length})…`
     : s.relayNow ? 'Direct link failed — trying through the relay…' : s.idx ? `Trying backup link ${s.idx + 1} of ${s.order.length}…` : 'Tuning…'));
   clearTimeout(startTimer);
   startTimer = setTimeout(() => onTimeout(token), S.settings.timeoutSec * 1000);
@@ -151,8 +145,7 @@ function onTimeout(token) {
     return;
   }
   if (S.settings.autoSkip) return onPlayFail(`Didn’t start within ${S.settings.timeoutSec}s`);
-  showOverlay(`<b>⏳ Still tuning after ${S.settings.timeoutSec}s</b><div class="muted">This station is slow or off air right now.</div>`,
-    [['wait', 'Keep waiting'], ['next', 'Next station'], ['broken', 'Mark off air & skip']]);
+  showNote(`<b>⏳ Still tuning after ${S.settings.timeoutSec}s</b><div class="muted">This station is slow or off air right now.</div>`);
 }
 function onPlayFail(msg) {
   const s = session;
@@ -167,7 +160,7 @@ function onPlayFail(msg) {
     s.reconnecting = true;
     s.retries++;
     Radio.setState('tuning');
-    showOverlay(`<div class="spinner"></div>Signal lost — reconnecting (${s.retries}/${RETRY_DELAYS.length})…<div class="muted">${esc(msg)}</div>`);
+    showNote(`<div class="spinner"></div>Signal lost — reconnecting (${s.retries}/${RETRY_DELAYS.length})…<div class="muted">${esc(msg)}</div>`);
     const tok = s.token;
     setTimeout(() => { if (session === s && s.token === tok) { s.idx--; nextSource(); } }, RETRY_DELAYS[s.retries - 1]);
     return;
@@ -186,13 +179,12 @@ function onPlayFail(msg) {
   Radio.setState('nosignal');
   if (!s.started && nextSource()) return; // a backup link takes over
   if (S.settings.autoSkip && !s.started) {
-    showOverlay(`✖ ${esc(msg)}<div class="muted">Skipping to the next working station…</div>`);
+    showNote(`✖ ${esc(msg)}<div class="muted">Skipping to the next working station…</div>`);
     setTimeout(() => { if (s.token === playToken) step(1, true); }, 1500);
     return;
   }
   const tried = s.order.length > 1 ? ` (tried all ${s.order.length} links)` : '';
-  showOverlay(`<b>NO SIGNAL</b><div>Couldn’t play this station${tried}</div><div class="muted">${esc(msg)}</div>`,
-    [['next', 'Next station'], ['retry', 'Retry'], ['copy', 'Copy link for VLC']]);
+  showNote(`Couldn’t play this station${tried}: ${esc(msg)}`);
 }
 function leaveSession() {
   const s = session;
@@ -211,12 +203,12 @@ function stopPlayback() {
   leaveSession();
   playToken++;
   teardown();
-  hideOverlay();
+  clearNote();
   Radio.setState('stopped');
 }
 function togglePlay() {
   if (session && Radio.state !== 'stopped' && Radio.state !== 'nosignal') return stopPlayback();
-  const st = S.current || S.filtered[S.cursor] || S.filtered[0];
+  const st = S.current || S.filtered[0];
   if (st) playStation(st);
 }
 function pausePlayback() {
@@ -227,7 +219,7 @@ function pausePlayback() {
   s.pausedAt = Date.now();
   clearTimeout(stallTimer);
   NowPlaying.stop();
-  hideOverlay();
+  clearNote();
   Radio.setState('paused');
 }
 function resumePlayback() {
@@ -254,7 +246,7 @@ audio.addEventListener('playing', () => {
   const s = session;
   if (!s || s.token !== playToken) return;
   clearTimeout(stallTimer);
-  hideOverlay();
+  clearNote();
   Radio.setState('live');
   if (s.started) return; // recovered from buffering, or resumed after a pause
   s.started = true;
@@ -265,8 +257,6 @@ audio.addEventListener('playing', () => {
     setTimeout(() => { if (session === s && s.token === tok) s.retries = 0; }, 60000); // stayed up a minute: allow fresh retries later
   }
   addRecent(s.st);
-  // Folded phone: say once where the full radio (dial, sleep timer, details) is.
-  if (Sheet.phone.matches && !isCar() && !S.ui.miniHint) { S.ui.miniHint = true; saveUi(); toast('Tip: tap the player bar for the full radio, sleep timer and more'); }
   NowPlaying.start(s);
   clearTimeout(startTimer);
   const ms = performance.now() - s.t0;
@@ -305,11 +295,9 @@ audio.addEventListener('waiting', () => {
     saveH(h);
   }
   if (s.stalls >= 3) {
-    const acts = [['next', 'Next station'], ['rate-buffers', 'Mark as weak']];
-    if (hasBackup()) acts.unshift(['switch', 'Try backup link']);
-    showOverlay('<div class="spinner"></div>Dropping out again… this link keeps stalling.', acts);
+    showNote('<div class="spinner"></div>Dropping out again… this link keeps stalling.');
   } else {
-    showOverlay('<div class="spinner"></div>Buffering…');
+    showNote('<div class="spinner"></div>Buffering…');
   }
 });
 // Paused from outside (headset button, phone call, OS media controls): show it as paused.
@@ -360,10 +348,10 @@ if ('mediaSession' in navigator) {
   on('previoustrack', () => step(-1));
 }
 
-function showOverlay(html, actions = []) {
-  const el = $('#overlay');
-  el.innerHTML = html + (actions.length
-    ? `<div class="acts">${actions.map(([a, l]) => `<button type="button" data-act="${a}">${esc(l)}</button>`).join('')}</div>` : '');
-  el.classList.remove('hidden');
+// What's happening with the stream in words ("Trying backup link 2 of 3…"): the screen shows it under the status.
+function showNote(html) {
+  const text = new DOMParser().parseFromString(html.replace(/<[^>]+>/g, ' '), 'text/html').body.textContent;
+  S.note = text.replace(/\s+/g, ' ').trim();
+  scheduleRender();
 }
-function hideOverlay() { $('#overlay').classList.add('hidden'); }
+function clearNote() { S.note = ''; scheduleRender(); }

@@ -3,19 +3,17 @@
      core.js       storage, helpers, constants, app state
      lists.js      station lists: parsing, Radio Browser / SomaFM / M3U sources, the Add-list dialog
      health.js     what we know about each stream (badges) and the in-browser stream tester
-     guide.js      the station guide: virtual list, filters, search, Radio Browser browsing
-     radio.js      the radio itself: dial, needle, knobs, display, sleep timer, phone mini-player
      player.js     playback: engines, backup links, reconnecting, pause / mute, lock-screen controls
      nowplaying.js song / show titles and the "songs heard" log
-     car.js        small phones: the push-button car radio and the station-picker screen
-     ipod.js       the iPod look: click-wheel player, menus, Now Playing; station guide beside it on wide screens
-     app.js        station details, favorites, backup, settings, help, wiring, start-up */
+     share.js      share links for presets and lists
+     base.js       playback state, volume, sleep timer, presets, Radio Browser browsing, settings, backup, start-up
+     modern.js     the radio screen: now playing, presets, recently played, station picker */
 
 /* =========================================================================
    Storage — IndexedDB, so everything stays in this browser only.
    Stores: kv (settings, ui, list index, list contents, songs heard),
            health (per-stream test + play history, keyed by stream URL),
-           favs (favorite stations, keyed by station key)
+           favs (retired favorites; moved into presets once on start-up)
    ========================================================================= */
 const DB = (() => {
   let dbp;
@@ -78,19 +76,6 @@ function ago(t) {
   if (s < 86400) return Math.round(s / 3600) + ' h ago';
   return Math.round(s / 86400) + ' d ago';
 }
-/* A single line of text that slides sideways when it doesn't fit (song titles on the dial, the LCD, the iPod). */
-function fitLine(el, text) {
-  if (!el || el.dataset.t === text) return;
-  el.dataset.t = text;
-  el.innerHTML = `<span style="display:inline-block;white-space:nowrap">${esc(text)}</span>`;
-  el.classList.remove('scroll');
-  requestAnimationFrame(() => {
-    const sp = el.firstChild;
-    if (!sp) return;
-    const over = Math.max(sp.scrollWidth, Math.ceil(sp.getBoundingClientRect().width)) - el.clientWidth;
-    if (over > 4) { el.style.setProperty('--dx', `-${over + 12}px`); el.style.setProperty('--t', `${Math.max(6, Math.round(over / 22))}s`); el.classList.add('scroll'); }
-  });
-}
 let toastTimer;
 function toast(msg) {
   const el = $('#toast');
@@ -150,33 +135,32 @@ function countryName(cc) {
 }
 const countryFlag = cc => (/^[a-z]{2}$/.test(cc || '') ? [...(cc === 'uk' ? 'gb' : cc).toUpperCase()].map(c => String.fromCodePoint(0x1f1a5 + c.charCodeAt(0))).join('') : '');
 // Flag before a station's name (where it broadcasts from), as on video.sala.company.
-const flagHtml = cc => (countryFlag(cc) ? `<span class="flag" title="${esc(countryName(cc))}">${countryFlag(cc)}</span>` : '');
 const withFlag = (cc, text) => (countryFlag(cc) ? countryFlag(cc) + ' ' : '') + text;
 const userCountry = (navigator.language.match(/-([A-Z]{2})\b/i) || [])[1]?.toUpperCase() || 'US';
 
 /* =========================================================================
    State
    ========================================================================= */
-const DEFAULT_SETTINGS = { slowStartSec: 5, timeoutSec: 12, autoSkip: false, autoTest: true, concurrency: 6, fx: true, skin: 'radio' };
+const DEFAULT_SETTINGS = { slowStartSec: 5, timeoutSec: 12, autoSkip: false, autoTest: true, concurrency: 6 };
 const REFRESH_AFTER = 24 * 3600e3;   // re-download saved lists older than this
 const FRESH_FOR = 6 * 3600e3;        // test/play results newer than this aren't re-tested
 const S = {
   lists: [],            // [{ id, name, kind: rb|m3u|soma, query?, url?, genre?, count, addedAt, updatedAt }]
   stations: [],         // the current list: { key, name, logo, group, country, sources: [{ url, name, br, codec, hls, uuid }] }
   byKey: new Map(),
-  byUrl: new Map(),     // stream URL -> station (current list, browse results, favorites, recent)
+  byUrl: new Map(),     // stream URL -> station (current list, browse results, presets, recent)
   numByKey: new Map(),
-  browse: null,         // a temporary view instead of the list: { kind: 'rb' | 'all', label, stations, num, entries?, query? }
-  filtered: [],         // what the guide shows right now
+  browse: null,         // Radio Browser results shown instead of the list: { kind: 'rb', label, stations, num, entries?, query? }
+  filtered: [],         // what next / previous step through: the stations the picker shows
   health: new Map(),    // stream URL -> health record
   hosts: new Map(),     // server host -> { ok, blocked, dead } from recent tests
-  favs: new Map(),
   settings: { ...DEFAULT_SETTINGS },
-  ui: { currentId: null, search: '', scope: 'view', group: '', country: '', lang: '', status: 'all', sort: '', lastKey: '', volume: 0.8, muted: false, helpSeen: false },
+  ui: { currentId: null, lastKey: '', volume: 0.8, muted: false },
   recent: [],
-  cursor: -1,
   lit: new Map(),
   current: null,
   loading: '',
+  note: '',             // what's happening with the stream, in words ("Trying backup link 2 of 3…")
+  rev: 0,               // counts engine changes, so the screen redraws only when something changed
 };
 const saveUi = () => DB.put('kv', { ...S.ui }, 'ui');

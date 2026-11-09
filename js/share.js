@@ -1,6 +1,6 @@
 'use strict';
 /* =========================================================================
-   Share links: your favorites, or a list, carried inside a link (after the #), no account needed.
+   Share links: your presets, or a list, carried inside a link (after the #), no account needed.
    The link holds the stations themselves (compressed) or, for lists that come from a URL or
    Radio Browser, just where to get them. Opening the link offers to add them to this browser.
    ========================================================================= */
@@ -54,12 +54,12 @@ const Share = (() => {
     try { await navigator.clipboard.writeText(url); toast(`Link copied: ${what}`); }
     catch { prompt('Copy this link:', url); }
   }
-  async function shareFavorites() {
-    const favs = [...S.favs.values()];
-    if (!favs.length) return toast('No favorites to share yet');
-    const payload = await pack({ t: 'fav', m3u: toM3u(favs) });
-    if (payload.length > MAX_CHARS) return toast('Too many favorites for one link. Use Export backup instead.');
-    offer(link(payload), `${favs.length} favorite station${favs.length > 1 ? 's' : ''}`);
+  async function sharePresets() {
+    const sts = Presets.all().filter(Boolean);
+    if (!sts.length) return toast('No presets to share yet');
+    const payload = await pack({ t: 'fav', m3u: toM3u(sts) });
+    if (payload.length > MAX_CHARS) return toast('Too many stations for one link. Use Export backup instead.');
+    offer(link(payload), `${sts.length} preset station${sts.length > 1 ? 's' : ''}`);
   }
   async function shareList() {
     const p = S.lists.find(x => x.id === S.ui.currentId);
@@ -83,20 +83,14 @@ const Share = (() => {
     if (obj.t === 'fav' && obj.m3u) {
       const sts = mergeStations(parseM3U(obj.m3u));
       if (!sts.length) return toast('The link had no stations');
-      if (!confirm(`Add ${sts.length} shared favorite station${sts.length > 1 ? 's' : ''} to yours?`)) return;
-      let added = 0;
-      for (const st of sts) {
-        if (S.favs.has(st.key)) continue;
-        const f = favRecord(st); S.favs.set(st.key, f); DB.put('favs', f); added++;
-      }
-      indexUrls(sts, false);
-      toast(added ? `Added ${added} favorite${added > 1 ? 's' : ''} (Show: ★ Favorites)` : 'You already had all of them');
-      if (S.ui.status === 'fav') { rebuildGroups(); applyFilters(true); } else scheduleRender();
+      // Shared presets (or favorites from older links) arrive as a list of their own.
+      if (!confirm(`Add ${sts.length} shared station${sts.length > 1 ? 's' : ''} as a new list?`)) return;
+      try { await addList({ kind: 'm3u', name: 'Shared stations' }, parseM3U(obj.m3u)); } catch (e) { toast(e.message); }
     } else if (obj.t === 'list') {
       if (!confirm(`Add the shared list “${obj.name || 'Shared list'}”?`)) return;
       if (obj.m3u) { try { await addList({ kind: 'm3u', name: obj.name || 'Shared list' }, parseM3U(obj.m3u)); } catch (e) { toast(e.message); } }
       else loadWithSpinner({ kind: obj.kind, name: obj.name, query: obj.query, url: obj.url, genre: obj.genre });
     }
   }
-  return { shareFavorites, shareList, receive };
+  return { sharePresets, shareList, receive };
 })();

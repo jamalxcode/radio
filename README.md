@@ -1,14 +1,18 @@
 # radio.sala.company
 
-A web radio that runs entirely in the browser, live at **https://radio.sala.company** (GitHub Pages). It's styled after a 10-band shortwave portable, and it's the radio counterpart of M3U TV (video.sala.company).
+A web radio that runs entirely in the browser, live at **https://radio.sala.company** (GitHub Pages). It's the radio counterpart of M3U TV (video.sala.company).
 
-## Current adaptive radio interface
+## The radio screen
 
-The default interface is the **modern responsive radio**, deployed to the same GitHub Pages URL. It has a large Play/Pause control, actual connection status, Finder-style **Stations** picker opened by the antenna button, a separate hamburger navigation menu, a silver verified-stream indicator, 18 logo-backed presets and a compact two-row recent list. The station picker lists **countries, genres and stations alphabetically**. Selecting a station returns to the player; its **Back to Radio** arrow also closes the picker. On mobile, the browser appears as a sliding overlay.
+- **Now playing:** a large Play/Pause button, the station with its country and genre, the **song and artist** when the station sends them (tap the song for the song card), and the real connection status. While connecting or after a failure it says what's happening ("Trying backup link 2 of 3…", why a station couldn't play) with a Retry button.
+- **Sleep and volume:** one sleep selector (15 minutes to 3 hours, with a live countdown and **Sleep Off**); at zero the sound fades out and the radio turns off.
+- **Presets:** 18 logo-backed slots. Tap to play, long-press (or Shift+Enter) to save the station that's on. Only the slot you picked is highlighted, even if a station is saved twice.
+- **Recently played:** the last stations you listened to.
+- **Stations** (the antenna button, with a sweeping red scanner light): a Finder-style picker with Collections → Countries → Genres → Stations, all A–Z. Countries and genres with only 1–2 stations are merged into groups of six or more, with names shortened to fit. Collections also holds **Recently played** and **＋ Add list**. Stations on screen are checked quietly; a silver ✓ marks streams verified by a real test or play. **Worldwide** searches all of Radio Browser by name. Picking a station returns to the player; on phones the picker slides over the screen.
+- **Settings (⚙):** skip failed stations, quiet checks, advanced timings; refresh, share or remove the open list; share presets; backup export/import; clear test history; erase everything.
+- **Keyboard:** Space pause · M mute · N / P next and previous station · Esc closes the menu or picker. Media keys and lock-screen controls work too.
 
-Only **one preset** is highlighted: the selected slot, even if the same station is saved twice. Long-press a preset to save/replace. The single sleep selector displays a duration/countdown and includes **Sleep Off** to cancel. Existing song title/artist metadata is exposed through browser Media Session when supported by the station and browser; no native Android Auto or Apple CarPlay interface is claimed.
-
-For the historical shortwave look, visit [classic mode](https://radio.sala.company/?classic=1). The original pre-redesign snapshot is retained at `backup/pre-redesign-2026-11-09`. Read the [current design decisions](docs/design/DECISIONS-2026-11-09.md) and [implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md) for the full decisions/issue history and limitations. Old documentation below describes the retained classic interface and its underlying features.
+Favorites were folded into presets: on the first visit after the change, saved favorites move into empty preset slots. Read the [design decisions](docs/design/DECISIONS-2026-11-09.md) and [implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md) for the full history. The original pre-redesign snapshot is kept at `backup/pre-redesign-2026-11-09`.
 
 ## Station sources
 
@@ -23,11 +27,8 @@ For the historical shortwave look, visit [classic mode](https://radio.sala.compa
 
 ## Finding stations
 
-- **Search box scope:** *This view* filters what's shown, *All my lists* merges every list you have, and *Radio Browser* searches all of it by name.
-- **Chips:** Near me (from your browser's region), Trending, News, Talk, Jazz, Classical and others browse Radio Browser directly.
-- **Save as list:** puts browse results on the next free band.
-- **Filters:** country, genre, language (when the list says which languages its stations broadcast in; Radio Browser lists do), on air only, and sort.
-- **Flags:** each station name starts with the flag of the country it broadcasts from (a flags-only font fills in on Windows, which has no flag emoji).
+- **Picker search** filters the stations in view by name, country or genre; **Worldwide** (or Enter) searches all of Radio Browser by name. Results show as a collection of their own.
+- **Flags:** countries show their flag (a flags-only font fills in on Windows, which has no flag emoji).
 
 ## Stream testing (same approach as M3U TV)
 
@@ -46,36 +47,16 @@ For the historical shortwave look, visit [classic mode](https://radio.sala.compa
 
 - **Backup links:** a station's links are tried best first.
 - **Drops:** a stream that drops mid-listen is reconnected quietly up to 3 times, and only then are backup links tried.
-- **Pause / live:** pause keeps your place, a little behind the broadcast, and **● LIVE** jumps back to the live point. After a pause longer than a minute, resuming reconnects at the live point.
+- **Pause:** pause keeps your place, a little behind the broadcast. After a pause longer than a minute, resuming reconnects at the live point.
 - **Song and show titles:** read from the SomaFM API, HLS ID3 tags, ICY stream metadata, Icecast `status-json.xsl` and Shoutcast `/currentsong`.
-  - They show on the dial, in the phone mini-player and on the lock screen.
-  - **♪ Songs** keeps a history of everything you heard, with YouTube, Spotify and Apple Music search links.
+  - They show under the station name and on the lock screen. Tap the song for the song card: title, artist, album, YouTube / Spotify / Apple Music links, Copy, and what played before it.
+  - **All songs heard** (from the song card) keeps a history of everything you heard.
+- **Relay:** when a stream can't be played directly by the browser (plain-HTTP on this HTTPS page, or a server without CORS headers), the tester and the player try it once more through `radio-relay`, a Cloudflare Worker (`relay/relay.js`, deployed at radio-relay.jamal-akuna-matata.workers.dev) that passes the audio through unchanged and adds the headers. Direct always goes first. HLS streams aren't relayed.
 
-## Controls
+## More
 
-| On the radio | What it does |
-|---|---|
-| Band strip / BAND knob | Your station lists: FM = 1st, MW = 2nd, SW1–SW8 = the next eight |
-| TUNING knob / scale | Moves through the stations; tunes in when you stop. Click the scale to jump. |
-| ⏮ ⏸ ⏹ ⏭ under the dial | Previous · pause / play · stop · next |
-| 🔊 · ● LIVE · ☆ | Mute · back to live · favorite |
-| VOLUME knob | Volume |
-| POWER switch | Play / stop |
-| SENS DX / LOCAL | DX shows every station. LOCAL hides stations that are off air or blocked. |
-| ⏾ Sleep (with the play controls) | 30 minutes to 3 hours in 30-minute steps, with a live countdown; at zero the sound fades out and the radio turns off |
-| MEMORY · LIGHT | Favorite · dial lamp and effects |
-| TUNE light | Green = playing, amber = tuning, buffering or paused, red = no signal |
-
-- **Knobs:** tap the left or right half to step, drag them round, scroll on them, or use the arrow keys when focused.
-- **Keyboard:** ↑↓ move the guide · Enter plays · ←→ previous/next · Space pause · M mute · F favorite.
-- **Share links:** Settings → Share favorites / Share this list makes a link (after the `#`, so nothing is sent to any server) that carries your favorite stations, or a list, to another phone or person; opening it offers to add them. Big lists share their source instead of their contents.
-- **Works offline:** a small service worker (`sw.js`) keeps the app's own files in the browser, so the site opens instantly and still opens with no network, showing your lists, favorites and songs heard (streams need network). The page is fetched fresh whenever the network answers within 4 seconds, so updates arrive normally.
-- **Lists** are managed at the top of the station guide (pick, +, ⟳, 🗑); the header keeps brand, iPod look, songs, help and settings. The dial shows STATUS · SIGNAL · FORMAT · ON AIR · TIME; the link in use and the buffer are in the station details.
-- **Song on every screen:** the title a station sends shows on the shortwave dial, the car LCD, the phone bar and the iPod's Now Playing, sliding sideways when it's too long. Tap it for the song card: title, artist, album, YouTube / Spotify / Apple Music links, Copy, and what played before it on that station.
-- **Relay:** when a stream can't be played directly by the browser (plain-HTTP on this HTTPS page, or a server without CORS headers), the tester and the player try it once more through `radio-relay`, a Cloudflare Worker (`relay/relay.js`, deployed at radio-relay.jamal-akuna-matata.workers.dev) that passes the audio through unchanged and adds the headers. Direct always goes first; the dial's LINK cell says RELAY when it's in use. HLS streams aren't relayed.
-- **iPod look (the ◉ button, or Settings → Look):** a black click-wheel player that fills the screen. Turn the wheel to move the highlight (or the volume on Now Playing), press the centre to pick, MENU goes back (hold it for the main menu), ⏮ ⏭ change station, ▶❚❚ plays or pauses; tapping a row on the screen works too. Menus: Now Playing, Stations, Lists, Favorites, Recent, Search, Songs heard, Sleep, Settings. On a folded phone the iPod is the whole screen and Search opens the station picker; open the fold (or use a tablet or desktop) and the station guide becomes the left page with the iPod on the right, hinge in the middle.
-- **Small phones (under 600 px, e.g. a folded Galaxy Z Fold):** the radio becomes a 1950s push-button car radio. A chrome dial shows station names under a red needle (tap one, or swipe), an LCD shows the station, song and sleep countdown, and five piano keys are presets (tap an empty key to store the station that's on, hold a key to replace it). Below: previous · play/pause · next · SLEEP · mute · favorite, then VOL · STATIONS · TUNE. STATIONS opens a full-screen picker with search, chips, filters and the list; picking a station takes you back to the radio.
-- **Phones and small tablets (600–820 px):** the station guide fills the screen with a mini-player at the bottom (with sleep timer). Tap or swipe up the mini-player to open the radio.
+- **Share links:** Settings → Share presets / Share this list makes a link (after the `#`, so nothing is sent to any server) that carries your preset stations, or a list, to another phone or person; opening it offers to add them as a list. Big lists share their source instead of their contents.
+- **Works offline:** a small service worker (`sw.js`) keeps the app's own files in the browser, so the site opens instantly and still opens with no network, showing your lists, presets and songs heard (streams need network). The page is fetched fresh whenever the network answers within 4 seconds, so updates arrive normally.
 
 ## Code
 
@@ -86,15 +67,13 @@ Plain HTML, CSS and JS, with no build step. The scripts in `js/` share one globa
 | `core.js` | Storage, helpers, app state |
 | `lists.js` | List sources, parsing, the Add-list dialog |
 | `health.js` | Status badges and the stream tester |
-| `guide.js` | Station guide, filters, search and browsing |
-| `radio.js` | Dial, knobs, display, sleep timer, phone mini-player |
-| `player.js` | Playback, reconnecting, pause / mute / live, lock-screen controls |
+| `player.js` | Playback, reconnecting, pause / mute, lock-screen controls |
 | `nowplaying.js` | Song titles and the songs-heard log |
-| `car.js` | Small phones: the push-button car radio and the station picker |
-| `ipod.js` | The iPod look: click wheel, menus, Now Playing; two-page layout on wide screens |
-| `app.js` | Station details, favorites, backup, settings, wiring, start-up |
+| `share.js` | Share links for presets and lists |
+| `base.js` | Playback state, volume, sleep timer, presets, Radio Browser browsing, settings, backup, keyboard, start-up |
+| `modern.js` | The radio screen: now playing, presets, recently played, station picker |
 
-hls.js loads from jsDelivr only when an HLS station plays.
+`modern.css` styles the screen and its dialogs. hls.js loads from jsDelivr only when an HLS station plays.
 
 ## Deploy
 

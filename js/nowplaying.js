@@ -33,7 +33,6 @@ const NowPlaying = (() => {
     if (api.np) api.history = [{ ...api.np }, ...api.history].slice(0, 6);
     api.np = { text, artist: parts.artist, title: parts.title, album: tidy(info.album), art: info.art || '', at: Date.now(), source: info.source };
     Songs.add(api.np, session.st);
-    VFD.update();
     renderNow();
     setMediaSession(session.st);
   }

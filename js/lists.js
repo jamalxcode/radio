@@ -159,17 +159,8 @@ async function loadEntries(list) {
 }
 
 /* =========================================================================
-   Your saved lists (the BAND knob)
+   Your saved lists (the Collections column)
    ========================================================================= */
-function renderLists() {
-  const sel = $('#listSelect');
-  sel.innerHTML = S.lists.length
-    ? S.lists.map((p, i) => `<option value="${p.id}"${p.id === S.ui.currentId ? ' selected' : ''}>${esc(bandLabel(i))} · ${esc(p.name)} (${p.count})</option>`).join('')
-    : '<option value="">No lists yet</option>';
-  const cur = S.lists.find(p => p.id === S.ui.currentId);
-  $('#refreshListBtn').disabled = !canRefresh(cur);
-  $('#deleteListBtn').disabled = !cur;
-}
 const canRefresh = p => !!p && (p.kind !== 'm3u' || !!p.url);
 // Remember which station each stream URL belongs to (the tester and player look this up).
 function indexUrls(sts, overwrite = true) {
@@ -180,19 +171,10 @@ function setStations(sts) {
   S.byKey = new Map(sts.map(c => [c.key, c]));
   S.numByKey = new Map(sts.map((c, i) => [c.key, i + 1]));
   S.byUrl = new Map();
-  for (const f of S.favs.values()) for (const s of f.sources || []) S.byUrl.set(s.url, S.byKey.get(f.key) || f);
+  indexUrls(Presets.all().filter(Boolean), false);
   indexUrls(S.recent, false);
   indexUrls(sts);
   if (S.browse) indexUrls(S.browse.stations, false);
-  // Keep favorites' links up to date with the newest copy of the list.
-  for (const f of [...S.favs.values()]) {
-    const st = S.byKey.get(f.key);
-    if (st && JSON.stringify(st.sources) !== JSON.stringify(f.sources)) {
-      const nf = { ...favRecord(st), addedAt: f.addedAt };
-      S.favs.set(st.key, nf);
-      DB.put('favs', nf);
-    }
-  }
 }
 async function addList(meta, entries) {
   if (!entries) entries = await loadEntries(meta);
@@ -203,14 +185,11 @@ async function addList(meta, entries) {
   await DB.put('kv', entries, 'list:' + id);
   S.lists.push(list);
   await DB.put('kv', S.lists, 'lists');
-  allCache = null;
-  if (S.ui.status === 'fav' || S.ui.status === 'recent') S.ui.status = 'all';
   await selectList(id, sts);
-  toast(S.lists.length <= BANDS.length ? `Added ${sts.length} stations on band ${bandLabel(S.lists.length - 1)}` : `Added ${sts.length} stations`);
+  toast(`Added ${sts.length} stations`);
 }
 async function selectList(id, parsed) {
   S.ui.currentId = id;
-  S.ui.group = '';
   endBrowse(false);
   saveUi();
   const saved = !id || parsed ? null : (await DB.get('kv', 'list:' + id)) || [];
@@ -221,12 +200,6 @@ async function selectList(id, parsed) {
   const meta = S.lists.find(p => p.id === id);
   if (meta && meta.count !== S.stations.length) { meta.count = S.stations.length; DB.put('kv', S.lists, 'lists'); }
   if (S.current) S.current = S.byKey.get(S.current.key) || S.current;
-  renderLists();
-  Radio.bands();
-  Radio.syncDx();
-  $('#statusFilter').value = S.ui.status;
-  $('#sortSel').value = S.ui.sort || '';
-  rebuildGroups();
   applyFilters();
   backgroundRefresh(meta);
 }
@@ -235,7 +208,6 @@ async function saveEntries(p, entries, sts) {
   p.count = sts.length;
   p.updatedAt = Date.now();
   await DB.put('kv', S.lists, 'lists');
-  allCache = null;
 }
 const refreshing = new Set();
 async function refreshList(p = S.lists.find(x => x.id === S.ui.currentId), quiet = false) {
@@ -246,13 +218,12 @@ async function refreshList(p = S.lists.find(x => x.id === S.ui.currentId), quiet
     const sts = mergeStations(entries);
     if (!sts.length) throw new Error('No stations found.');
     await saveEntries(p, entries, sts);
-    Radio.bands();
     if (S.ui.currentId === p.id) {
       setStations(sts);
       if (S.current) S.current = S.byKey.get(S.current.key) || S.current;
-      renderLists();
-      if (!S.browse) { rebuildGroups(); applyFilters(true); }
+      if (!S.browse) applyFilters();
     }
+    scheduleRender();
     toast(`“${p.name}” updated: ${sts.length} stations`);
   } catch (e) {
     if (!quiet) toast(e.message); // offline or blocked: keep using the saved copy
@@ -265,17 +236,16 @@ function backgroundRefresh(p) {
 }
 async function deleteList() {
   const p = S.lists.find(x => x.id === S.ui.currentId);
-  if (!p || !confirm(`Remove the list “${p.name}”? Your favorites and ratings are kept.`)) return;
+  if (!p || !confirm(`Remove the list “${p.name}”? Your presets and ratings are kept.`)) return;
   await DB.del('kv', 'list:' + p.id);
   S.lists = S.lists.filter(x => x !== p);
   await DB.put('kv', S.lists, 'lists');
-  allCache = null;
   await selectList(S.lists[0]?.id || null);
 }
 async function loadWithSpinner(meta) {
   S.loading = `Loading ${meta.name || 'list'}…`;
   S.filtered = [];
-  renderList();
+  scheduleRender();
   try {
     await addList(meta);
   } catch (e) {

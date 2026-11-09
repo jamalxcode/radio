@@ -1,7 +1,57 @@
-/* Adaptive station-first interface. Original CSS is preserved for ?classic=1. */
+/* radio.sala.company — the radio screen (modern.js) and its dialogs. */
+/* Country flags: Windows has no flag emojis, so load a flags-only font (used only for flag characters) */
+@font-face{font-family:'Twemoji Country Flags';src:url('https://cdn.jsdelivr.net/npm/country-flag-emoji-polyfill@0.1.8/dist/TwemojiCountryFlags.woff2') format('woff2');unicode-range:U+1F1E6-1F1FF,U+1F3F4,U+E0062-E007F;font-display:swap}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#0e1927;color:#f3f7fc;font:14px/1.45 'Twemoji Country Flags',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.hidden{display:none!important}
+.muted{color:#bdcbd9}
+.small{font-size:12px}
+.spacer{flex:1}
+/* Dialogs: settings, add a list, songs heard, the song card */
+dialog{background:linear-gradient(145deg,#203549,#17293b);color:#f3f7fc;border:1px solid #6d8ca6;border-radius:18px;padding:20px;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;box-shadow:0 18px 60px #030b14c0}
+dialog::backdrop{background:#030b14b8}
+dialog.wide{width:min(680px,calc(100vw - 32px))}
+dialog h3{margin:6px 0 10px;font-size:18px;font-weight:750;color:#fff}
+dialog h4{margin:14px 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#afc5da}
+dialog label{display:block;margin:12px 0 4px;color:#bdcbd9}
+dialog label.check{display:flex;gap:9px;align-items:flex-start;color:#f3f7fc}
+dialog a{color:#8dd0f3}
+dialog button,dialog select,dialog input,dialog textarea,.filebtn{font:inherit;color:#f3f7fc;background:#172638;border:1px solid #5c7892;border-radius:10px;padding:8px 12px}
+dialog input[type=checkbox]{padding:0;margin-top:3px;accent-color:#8dd0f3}
+dialog input[type=text],dialog input[type=url],dialog input[type=search],dialog input[type=number],dialog textarea,dialog select{width:100%}
+dialog select option{background:#172638;color:#f3f7fc}
+dialog textarea{min-height:80px;font:12px/1.4 ui-monospace,Consolas,monospace}
+dialog button,.filebtn{cursor:pointer}
+dialog button:hover,.filebtn:hover{background:#2a4257;border-color:#a0c4dd}
+dialog button:disabled{opacity:.45;cursor:default}
+dialog button.primary{background:#8dd0f3;border-color:#8dd0f3;color:#0b1a28;font-weight:700}
+dialog button.danger{color:#ff8f8f}
+dialog :focus-visible{outline:3px solid #93d8ff;outline-offset:2px}
+dialog .adv{margin:14px 0 4px;border-top:1px solid #41556b;padding-top:6px}
+dialog .adv summary{cursor:pointer;color:#bdcbd9;font-weight:600;padding:4px 0}
+dialog .rbx{margin-top:6px}
+.filebtn{display:inline-block;margin:0!important}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.dlg-acts{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.err{color:#ff8f8f;min-height:1em;margin-top:8px}
+.sc-now{display:flex;flex-direction:column;gap:4px;padding:4px 0 12px}
+.sc-title{font-size:22px;line-height:1.2;overflow-wrap:anywhere}
+.sc-artist{font-size:16px}
+.sc-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.sc-links a{display:inline-block;padding:6px 12px;border:1px solid #8dd0f3;border-radius:20px;font-weight:700;text-decoration:none}
+.sc-links a:hover{background:#8dd0f3;color:#0b1a28}
+.songs{max-height:min(60vh,520px);overflow-y:auto;margin-top:10px;border-top:1px solid #41556b}
+.song-day{position:sticky;top:0;background:#1b2e41;padding:8px 0 4px;font:700 11px/1 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#afc5da}
+.song{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid #2c4256}
+.song-time{font-size:13px;color:#bdcbd9}
+.song-text{min-width:0;overflow-wrap:anywhere}
+.song-text small{display:block;color:#bdcbd9;font-size:12px;margin-top:2px}
+.song-links{display:flex;gap:8px;font-size:12px;white-space:nowrap}
+.songs .empty{padding:12px 0;color:#bdcbd9}
+@media (max-width:600px){.song{grid-template-columns:52px minmax(0,1fr)}.song-links{grid-column:2}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);max-width:calc(100vw - 32px)}
 body.modern-ui{--m-bg:#0e1927;--m-panel:#172638;--m-panel2:#203449;--m-border:#415a72;--m-ink:#f3f7fc;--m-muted:#bdcbd9;--m-silver:#cbd3dc;--m-blue:#8dd0f3;background:var(--m-bg)!important;color:var(--m-ink)!important;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body.modern-ui>.topbar,body.modern-ui>.layout{display:none!important}
-#modernApp{display:none}
 body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:hidden;color:var(--m-ink);background:radial-gradient(circle at 35% 20%,#23364c 0,#101d2c 56%,#0a1420 100%)}
 #modernApp *{box-sizing:border-box}
 #modernApp button,#modernApp select,#modernApp input{font:inherit}
@@ -46,8 +96,6 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
 #modernApp #mRetry{margin-left:auto;border:1px solid #dec4a9!important;padding:8px 12px!important;border-radius:9px!important}
 @keyframes mPulse{50%{opacity:.3;transform:scale(.75)}}
 #modernApp .m-player-tools{display:flex;align-items:center;gap:18px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
-#modernApp #mHeart{display:flex;align-items:center;gap:7px;font-size:13px!important;border:1px solid #738da2!important;border-radius:11px!important;padding:10px!important}
-#modernApp #mHeart.active{background:#38566e!important;color:#fff!important;border-color:#bed7ec!important}
 #modernApp .m-timer{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--m-muted)}
 #modernApp .m-ring{--progress:0%;height:45px;width:45px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(#9dd6f7 var(--progress),#455f74 var(--progress));position:relative}
 #modernApp .m-ring:before{content:"";position:absolute;inset:5px;border-radius:50%;background:#1b2f42}
@@ -81,9 +129,6 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
 #modernApp .m-browser-search{display:flex;gap:6px;padding:10px 13px}
 #modernApp .m-browser-search input{flex:1;min-width:0;background:#263b50;border:1px solid #668098;color:#fff;border-radius:10px;padding:10px 12px;font-size:13px}
 #modernApp #mSearchWorld{background:#36536b!important;border-radius:10px!important;padding:8px!important;font-size:11px!important}
-#modernApp .m-browser-tabs{display:flex;gap:4px;padding:5px 13px 12px}
-#modernApp .m-browser-tabs button{border-radius:8px!important;padding:8px!important;font-size:12px!important;color:#b9cbd9!important}
-#modernApp .m-browser-tabs button.selected{background:#3c5870!important;color:#fff!important}
 #modernApp .m-columns{display:flex;overflow:auto;flex:1;min-height:0;scrollbar-color:#6b849b transparent;border-block:1px solid #496077}
 #modernApp .m-column{min-width:155px;width:155px;flex:none;overflow:auto;border-right:1px solid #40566b}
 #modernApp .m-column-source{min-width:164px;width:164px}
@@ -102,7 +147,6 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
 #modernApp .m-fallback svg{width:24px;height:24px}
 #modernApp .m-st-text{min-width:0}
 #modernApp .m-st-text strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#modernApp .m-st-fav{font-size:22px!important;width:31px;color:#e2d6bd!important}
 #modernApp .m-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:0;color:#bdcbd9}
 #modernApp .m-status-good{color:#142333;background:linear-gradient(110deg,#a5b5c3,#eef3f7 50%,#a1b2c1);border:1px solid #d2dce5;padding:2px 5px;border-radius:6px;text-shadow:none}
 #modernApp .m-status-bad,#modernApp .m-status-blocked{color:#ffc29b}
@@ -163,9 +207,6 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
 }
 @media(prefers-reduced-motion:reduce){#modernApp *,#modernApp *:before{animation:none!important;transition:none!important}}
 
-#modernApp .m-quick{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:0 13px 12px;flex:none;scrollbar-width:thin}
-#modernApp .m-quick button{flex:none;background:#304961!important;border:1px solid #597993!important;border-radius:14px!important;padding:6px 10px!important;font-size:11px!important;white-space:nowrap}
-#modernApp .m-quick button:hover{background:#456782!important}
 
 /* Compact the station picker on folded-cover/mobile layouts.
    Make room for approximately 7-8 visible station choices on common phone heights
@@ -178,10 +219,6 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
   #modernApp .m-browser-search{padding:5px 10px;gap:5px}
   #modernApp .m-browser-search input{padding:7px 9px;font-size:12px;min-height:35px}
   #modernApp #mSearchWorld{padding:5px 8px!important;font-size:10px!important}
-  #modernApp .m-browser-tabs{padding:3px 10px 6px;gap:3px}
-  #modernApp .m-browser-tabs button{padding:5px 7px!important;font-size:11px!important}
-  #modernApp .m-quick{padding:0 10px 7px;gap:5px}
-  #modernApp .m-quick button{padding:4px 8px!important;font-size:10px!important}
   #modernApp .m-column h3{padding:8px 9px;font-size:12px}
   #modernApp .m-column>button{min-height:34px;padding:5px 8px!important;font-size:11px!important}
   #modernApp .m-st-select{padding:5px 6px!important;min-height:43px;gap:7px}
@@ -189,7 +226,6 @@ body.modern-ui #modernApp{display:block;height:100dvh;min-height:420px;overflow:
   #modernApp .m-st-text strong{font-size:11px}
   #modernApp .m-status{font-size:9px}
   #modernApp .m-status-good{padding:1px 4px}
-  #modernApp .m-st-fav{width:29px;font-size:19px!important}
   #modernApp .m-browser-footer{padding:6px 10px;gap:6px;font-size:10px}
   #modernApp #mTest{padding:5px 7px!important;font-size:10px!important}
 }
@@ -239,3 +275,17 @@ body.modern-ui .toast{z-index:60;bottom:calc(20px + env(safe-area-inset-bottom))
 /* Long-pressing a preset on iOS shouldn't pop the system callout. */
 #modernApp .m-preset{-webkit-touch-callout:none}
 #modernApp .m-column>button.m-merged .m-merge-names{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:inherit}
+/* The song on now, under the station: tap for the song card */
+#modernApp .m-now-song{display:block;max-width:100%;margin-top:6px;padding:0!important;text-align:left;color:#8dd0f3!important;font-size:14px!important;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#modernApp .m-now-song[hidden]{display:none}
+#modernApp .m-now-song:hover{text-decoration:underline}
+#modernApp .m-column>button.m-add-list{color:#8dd0f3!important;font-weight:700}
+/* Stations button: a red Knight Rider scanner light sweeping back and forth along its border */
+#modernApp .m-station-launch{position:relative;isolation:isolate;border-color:#5b2a2a!important}
+#modernApp .m-station-launch::before,#modernApp .m-station-launch::after{content:"";position:absolute;inset:-2px;border-radius:15px;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0 43%,#ff3b2f 47%,#ffd9d2 50%,#ff3b2f 53%,transparent 57% 100%) 0 0/250% 100% no-repeat;
+  animation:m-kitt 1.6s ease-in-out infinite alternate}
+#modernApp .m-station-launch::before{padding:2px;-webkit-mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);z-index:1}
+#modernApp .m-station-launch::after{filter:blur(9px);opacity:.75;z-index:-1}
+@keyframes m-kitt{from{background-position:80% 0}to{background-position:20% 0}}
+@media (prefers-reduced-motion:reduce){#modernApp .m-station-launch::before,#modernApp .m-station-launch::after{animation:none;background:#ff3b2f}#modernApp .m-station-launch::after{opacity:.35}}

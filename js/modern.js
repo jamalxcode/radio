@@ -1,31 +1,23 @@
 'use strict';
-/* Adaptive radio interface. Underlying player, tester, lists, storage and classic UI remain untouched.
-   Add ?classic=1 to return to the previous interface. */
+/* The radio screen: now playing, presets, recently played and the station picker.
+   Player, tester, lists and storage live in the other scripts (see core.js). */
 const Modern = (() => {
   const root = document.getElementById('modernApp');
-  if (!root || new URLSearchParams(location.search).has('classic')) return null;
-  document.body.classList.add('modern-ui');
+  if (!root) return null;
   let browserOpen = matchMedia('(min-width: 1050px)').matches;
   let navOpen = false, view = 'browse', country = '', genre = '', query = '';
   let renderSignature = '', recentSignature = '', presetSignature = '';
   let chosenPreset = -1; // exact slot tapped, even if the same station is saved twice
   let holdTimer = null, held = false, downKey = -1;
-  // The engine calls scheduleRender() whenever stations, health, favorites or tests change.
-  // Counting those calls lets the picker redraw only when something actually changed.
-  let changes = 0;
-  if (typeof scheduleRender === 'function') {
-    const engineRender = scheduleRender;
-    scheduleRender = function () { changes++; return engineRender.apply(this, arguments); }; // eslint-disable-line no-global-assign
-  }
+  // The picker redraws only when S.rev moves (the engine counts every change in scheduleRender).
   const $m = id => document.getElementById(id);
   const ico = (path, size = 20) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>';
   const antenna = ico('<path d="M12 20v-8m-4 8h8M12 8v1m-4-5a11 11 0 0 0-2 13m14 0a11 11 0 0 0-2-13M5 7a7 7 0 0 0 0 10m14 0a7 7 0 0 0 0-10"/><circle cx="12" cy="10" r="1.6"/>');
-  const heart = ico('<path d="M20.8 4.8a5.3 5.3 0 0 0-7.5 0L12 6.2l-1.3-1.4a5.3 5.3 0 1 0-7.5 7.5L12 21l8.8-8.7a5.3 5.3 0 0 0 0-7.5Z"/>');
 
   const safe = x => esc(String(x ?? ''));
   const image = (st, small = false) => st?.logo ? '<img loading="lazy" referrerpolicy="no-referrer" src="' + safe(st.logo) + '" alt="" onerror="this.style.display=\'none\'">' : '<span class="m-fallback">' + (small ? antenna : '♫') + '</span>';
   const stationFor = s => S.byKey.get(s.key) || s;
-  const source = () => view === 'favorites' ? [...S.favs.values()].map(stationFor) : view === 'recent' ? S.recent.map(stationFor) : (S.browse?.stations || S.stations);
+  const source = () => view === 'recent' ? S.recent.map(stationFor) : (S.browse?.stations || S.stations);
   const health = st => { try { return stationStatus(st); } catch (_) { return { cls: 'untested', label: 'New' }; } };
   const verified = st => st?.sources?.some(src => {
     const h=S.health.get(src.url);
@@ -46,25 +38,23 @@ const Modern = (() => {
   const navItem = (action, icon, label) => '<button type="button" class="m-navitem" data-action="' + action + '">' + icon + '<span>' + label + '</span></button>';
   root.innerHTML = '<div class="m-shell">' +
     '<aside class="m-nav" id="mNav"><div class="m-brand"><img src="favicon.svg" alt="" width="30" height="30"><span> SALA <b>RADIO</b></span></div>' +
-    navItem('home', '⌂', 'Home') + navItem('favorites', heart, 'Favorites') + navItem('recent', '◷', 'Recently Played') +
+    navItem('home', '⌂', 'Home') + navItem('recent', '◷', 'Recently Played') +
     navItem('stations', antenna, 'Station Browser') +
-    '<div class="m-navspacer"></div>' + navItem('settings', '⚙', 'Settings & backup') + navItem('classic', '◉', 'Classic radio') + '</aside>' +
+    '<div class="m-navspacer"></div>' + navItem('settings', '⚙', 'Settings & backup') + '</aside>' +
     '<section class="m-central"><header class="m-header"><div><button id="mNavToggle" aria-label="Toggle navigation" title="Navigation">☰</button><span class="m-brandtext">radio.sala.company</span></div>' +
     '<div class="m-head-actions"><button id="mStationToggle" class="m-station-launch" aria-expanded="false" title="Station picker">' + antenna + ' <span>Stations</span></button><button id="mSettings" aria-label="Settings">⚙</button></div></header>' +
     '<div class="m-center-scroll"><section class="m-player"><div class="m-eyebrow">NOW PLAYING <span id="mNowBadge"></span></div>' +
-    '<div class="m-now"><div class="m-now-logo" id="mNowLogo">♫</div><div class="m-now-labels"><h1 id="mNowName">Pick a station</h1><p id="mNowMeta">Use the antenna button to discover stations</p></div>' +
+    '<div class="m-now"><div class="m-now-logo" id="mNowLogo">♫</div><div class="m-now-labels"><h1 id="mNowName">Pick a station</h1><p id="mNowMeta">Use the antenna button to discover stations</p><button id="mNowSong" class="m-now-song" hidden title="Song card: links and what played before"></button></div>' +
     '<button id="mPlay" class="m-play" aria-label="Play or pause" title="Play / Pause">▶</button></div>' +
     '<div class="m-connection" id="mConnection" role="status" aria-live="polite"><span class="m-connection-dot"></span><div><strong id="mConnTitle">Ready</strong><small id="mConnSub">Choose a station to listen</small></div><button id="mRetry" hidden>Retry</button></div>' +
-    '<div class="m-player-tools"><button id="mHeart" aria-label="Add current station to favorites" aria-pressed="false">' + heart + ' <span>Favorite</span></button>' +
+    '<div class="m-player-tools">' +
     '<div class="m-timer"><select id="mSleep" aria-label="Sleep timer"><option value="0">Sleep Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">2 hours</option><option value="150">2½ hours</option><option value="180">3 hours</option></select></div>' +
     '<div class="m-volume"><label for="mVolume">Volume</label><input id="mVolume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume"></div></div></section>' +
-    '<section class="m-section"><div class="m-section-head"><h2>Favorite presets</h2><span>Long-press to save current station</span></div><div id="mPresets" class="m-presets"></div></section>' +
+    '<section class="m-section"><div class="m-section-head"><h2>Presets</h2><span>Long-press to save current station</span></div><div id="mPresets" class="m-presets"></div></section>' +
     '<section class="m-section"><div class="m-section-head"><h2>Recently played</h2><button data-action="recent">See all</button></div><div id="mRecent" class="m-recent"></div></section>' +
     '</div></section>' +
     '<aside class="m-browser" id="mBrowser"><header class="m-browser-head"><div><h2>Station picker</h2><p>Explore your entire radio collection</p></div><button id="mBrowserClose" class="m-back-radio" aria-label="Back to main radio screen" title="Back to Radio">← <span>Back to Radio</span></button></header>' +
     '<div class="m-browser-search"><input type="search" id="mSearch" placeholder="Search stations in this view…" aria-label="Search stations"><button id="mSearchWorld" title="Search Radio Browser worldwide">Worldwide</button></div>' +
-    '<div class="m-browser-tabs"><button data-view="browse">Discover</button><button data-view="favorites">♥ Favorites</button><button data-view="recent">Recent</button></div>' +
-    '<div class="m-quick"><button data-quick="trending">Trending</button><button data-quick="news">News</button><button data-quick="jazz">Jazz</button><button data-quick="classical">Classical</button><button data-quick="near">My country</button></div>' +
     '<div class="m-columns" id="mColumns" aria-label="Finder-style station browser"></div>' +
     '<footer class="m-browser-footer"><span class="m-silver-key">✓ Verified working</span><span class="m-failed-key">× Unavailable</span><button id="mTest">Check visible</button></footer></aside>' +
     '</div><div id="mBackdrop" class="m-backdrop"></div>';
@@ -95,7 +85,6 @@ const Modern = (() => {
   function setView(v) {
     view = v; country = ''; genre = '';
     $m('mSearch').value = ''; query = '';
-    if (v !== 'browse') endBrowse();
     openBrowser(true); openNav(false); drawBrowser();
   }
   const countryOf = st => st.country ? countryName(st.country) : 'Other';
@@ -125,13 +114,16 @@ const Modern = (() => {
     const genresSorted = [...genres].sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
     const items = all.filter(st => inCountry(st) && inGenre(st) && (!query || [st.name, st.group, st.country ? countryName(st.country) : '', groupsOf(st).join(' ')].join(' ').toLowerCase().includes(query)))
       .sort((a,b) => alpha.compare(a.name.trim().replace(/^[^\p{L}\p{N}]+/u, ''), b.name.trim().replace(/^[^\p{L}\p{N}]+/u, '')) || alpha.compare(a.name,b.name));
-    const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3><button data-list="__browse__" class="' + (S.browse ? 'selected' : '') + '">All in view <span>›</span></button>' +
-      S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
+    const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3>' +
+      (S.browse ? '<button data-list="__browse__" class="' + (view === 'browse' ? 'selected' : '') + '">' + safe('Search ' + S.browse.label) + ' <span>›</span></button>' : '') +
+      S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (view === 'browse' && !S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') +
+      '<button data-list="__recent__" class="' + (view === 'recent' ? 'selected' : '') + '">◷ Recently played <span>›</span></button>' +
+      '<button data-add-list class="m-add-list">＋ Add list</button></div>';
     const mergedButton = (attr, current, e, single) => e.keys.length === 1 ? single(e.keys[0], e.n) :
       '<button data-' + attr + '="' + safe(e.keys.join('|')) + '" class="m-merged' + (current===e.keys.join('|')?' selected':'') + '" title="' + safe(e.labels.join(', ')) + '" aria-label="' + safe(e.labels.join(', ') + ', ' + e.n + ' stations') + '" data-names="' + safe(JSON.stringify(e.labels)) + '"' + (attr==='country' ? ' data-codes="' + safe(e.keys.map(k => k==='__other__' ? 'Other' : k.toUpperCase()).join('·')) + '"' : '') + '><b class="m-merge-names">' + safe(e.labels.join(' · ')) + '</b> <small>' + e.n + '</small><span>›</span></button>';
     const ccColumn = '<div class="m-column"><h3>Countries <small>' + countries.size + '</small></h3><button data-country="" class="' + (!country?'selected':'') + '">All countries <span>›</span></button>' + mergeSmall(countriesSorted.map(([cc,n]) => ({key:cc,n,label:displayCountry(cc)}))).map(e => mergedButton('country', country, e, (cc,n) => '<button data-country="' + safe(cc) + '" class="' + (country===cc?'selected':'') + '">' + (cc==='__other__'?'':countryFlag(cc)+' ') + safe(cc==='__other__'?'Other':countryName(cc)) + ' <small>' + n + '</small><span>›</span></button>')).join('') + '</div>';
     const genreColumn = '<div class="m-column"><h3>Genres <small>' + genres.size + '</small></h3><button data-genre="" class="' + (!genre?'selected':'') + '">All genres <span>›</span></button>' + mergeSmall(genresSorted.map(([g,n]) => ({key:g,n,label:g}))).map(e => mergedButton('genre', genre, e, (g,n) => '<button data-genre="' + safe(g) + '" class="' + (genre===g?'selected':'') + '">' + safe(g) + ' <small>' + n + '</small><span>›</span></button>')).join('') + '</div>';
-    const stRows = items.slice(0, 350).map((st,i) => '<div class="m-st-row ' + (verified(st)?'m-verified':'') + '"><button data-st="' + i + '" class="m-st-select" title="' + safe(st.name) + '">' + image(st,true) + '<span class="m-st-text"><strong>' + safe(st.name) + '</strong>' + marker(st) + '</span></button><button data-fav-st="' + i + '" class="m-st-fav" aria-label="' + (S.favs.has(st.key)?'Remove from':'Add to') + ' favorites">' + (S.favs.has(st.key)?'♥':'♡') + '</button></div>').join('');
+    const stRows = items.slice(0, 350).map((st,i) => '<div class="m-st-row ' + (verified(st)?'m-verified':'') + '"><button data-st="' + i + '" class="m-st-select" title="' + safe(st.name) + '">' + image(st,true) + '<span class="m-st-text"><strong>' + safe(st.name) + '</strong>' + marker(st) + '</span></button></div>').join('');
     const stationColumn = '<div class="m-column m-column-stations"><h3>Stations <small>' + items.length + '</small></h3>' + (stRows || '<p class="m-empty">No stations match. Choose another collection or search worldwide.</p>') + (items.length>350?'<p class="m-more">Showing first 350. Narrow by country, genre or search.</p>':'') + '</div>';
     const holder=$m('mColumns');
     const horizontal=holder.scrollLeft;
@@ -140,7 +132,7 @@ const Modern = (() => {
     holder.scrollLeft=horizontal;
     [...holder.children].forEach((node,i)=>{node.scrollTop=vertical[i]||0;});
     holder._shown = items;
-    for (const b of root.querySelectorAll('[data-view]')) b.classList.toggle('selected', b.dataset.view===view);
+    S.filtered = items; // next / previous and auto-skip follow what the picker shows
     const active = root.querySelector('.m-column-stations');
     if (active && !root.dataset.columnsInitialized) { root.dataset.columnsInitialized='yes'; }
     fitMergedNames();
@@ -175,7 +167,7 @@ const Modern = (() => {
       if(b.dataset.codes&&el.scrollWidth>el.clientWidth&&/(^|·)\S{1,3}\.(·|$)/.test(el.textContent))el.textContent=b.dataset.codes;
     }
   }
-  // Quiet checks for the station rows on screen, like the classic guide does while you scroll
+  // Quiet checks for the station rows on screen, while you scroll
   // (Settings → auto-test). Already-checked and queued stations are skipped, so redraws don't loop.
   let autoTestTimer=0;
   function autoTestSoon(){clearTimeout(autoTestTimer);autoTestTimer=setTimeout(autoTestShown,500);}
@@ -196,7 +188,7 @@ const Modern = (() => {
     holder.scrollTo({left:offset,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   }
   function paintPresets(force=false) {
-    const presets = Car.presets();
+    const presets = Presets.all();
     // If the same station occupies several slots, highlight only the slot
     // the listener selected; when coming from another view, use the first match.
     const matches = presets.map((p,i) => p && S.current?.key===p.key ? i : -1).filter(i=>i>=0);
@@ -218,6 +210,11 @@ const Modern = (() => {
   }
   function paintLive() {
     const st=S.current, status=Radio.state;
+    // The song on now, when the station sends titles: "Artist — Title"; tap for the song card.
+    const np=st&&['live','buffering'].includes(status)?NowPlaying.current(st):null;
+    const song=np?(np.artist&&np.title?np.artist+' — '+np.title:np.text):'';
+    const songEl=$m('mNowSong');
+    if(songEl.textContent!==(song?'♪ '+song:'')){songEl.textContent=song?'♪ '+song:'';songEl.hidden=!song;}
     const name=st?.name||'Pick a station';
     if ($m('mNowName').textContent!==name) {
       $m('mNowName').textContent=name;
@@ -226,7 +223,9 @@ const Modern = (() => {
     }
     $m('mNowBadge').innerHTML=st?marker(st):'';
     const states={standby:['Ready','Choose a station to listen'],stopped:['Stopped','Tap Play to listen'],live:['Connected · On air','Audio playback confirmed'],buffering:['Buffering / reconnecting','Trying to restore the stream'],tuning:['Connecting…','Opening the selected stream'],paused:['Paused','Tap Play to resume'],nosignal:['Connection lost','Could not play this station']};
-    const [title,detail]=states[status]||states.standby;
+    const [title,generic]=states[status]||states.standby;
+    // While connecting or after a failure, say what's actually happening ("Trying backup link 2 of 3…").
+    const detail=['tuning','buffering','nosignal'].includes(status)&&S.note?S.note:generic;
     $m('mConnection').dataset.state=status;
     $m('mConnTitle').textContent=title;
     $m('mConnSub').textContent=detail;
@@ -236,16 +235,13 @@ const Modern = (() => {
     $m('mPlay').textContent=busy?'❚❚':'▶';
     $m('mPlay').setAttribute('aria-label', busy?'Pause':'Play');
     $m('mPlay').disabled=!st;
-    $m('mHeart').classList.toggle('active',!!st && S.favs.has(st.key));
-    $m('mHeart').setAttribute('aria-pressed',String(!!st&&S.favs.has(st.key)));
-    $m('mHeart').disabled=!st;
     $m('mVolume').value=Math.round((audio.volume||0)*100);
     // The native sleep selector is the sole visible control. Its selected
     // option becomes a live countdown, while the other durations stay intact.
     const select=$m('mSleep');
     const on=Sleep.at>0, left=Math.max(0,Sleep.at-Date.now());
     if(!on && select.value!=='0')select.value='0';
-    // A timer started from another view (classic radio, iPod): select the nearest duration at or above it.
+    // A timer started some other way (a restored session, a future control): select the nearest duration at or above it.
     // Only when a new timer starts (Sleep.at changes), so a chosen slot doesn't drift as it counts down.
     if(on && !Sleep.fading && document.activeElement!==select && select.dataset.at!==String(Sleep.at)){
       const mins=Math.ceil(left/60000), opts=[...select.options].map(o=>+o.value).filter(v=>v>0);
@@ -269,13 +265,13 @@ const Modern = (() => {
   function refresh() {
     paintLive();paintPresets();paintRecent();
     if(browserOpen){
-      const sig=[view,country,genre,query,S.ui.currentId,S.browse?.label,S.browse?.stations?.length,S.stations.length,S.favs.size,S.recent.length,S.health.size,T.done,T.active,changes,S.current?.key].join('|');
+      const sig=[view,country,genre,query,S.ui.currentId,S.browse?.label,S.browse?.stations?.length,S.stations.length,S.lists.length,S.recent.length,S.health.size,T.done,T.active,S.rev,S.current?.key].join('|');
       if(sig!==renderSignature){renderSignature=sig;drawBrowser();}
     }
   }
   function assign(i){
     if(!S.current)return toast('Play a station before assigning a preset');
-    const p=Car.presets().slice();p[i]=favRecord(S.current);Car.importPresets(p);
+    const p=Presets.all().slice();p[i]=favRecord(S.current);Presets.set(p);
     paintPresets(true);toast('Saved '+S.current.name+' to preset '+(i+1));
   }
   $m('mStationToggle').addEventListener('click',()=>openBrowser(!browserOpen));
@@ -284,29 +280,31 @@ const Modern = (() => {
   $m('mBrowserClose').addEventListener('click',()=>openBrowser(false));
   $m('mNavToggle').addEventListener('click',()=>openNav(!navOpen));
   $m('mBackdrop').addEventListener('click',()=>{openBrowser(false);openNav(false);});
-  $m('mSettings').addEventListener('click',()=>document.getElementById('settingsBtn').click());
+  $m('mSettings').addEventListener('click',openSettings);
+  $m('mNowSong').addEventListener('click',()=>openSongCard());
   $m('mPlay').addEventListener('click',()=>togglePause());
   $m('mRetry').addEventListener('click',()=>S.current&&playStation(S.current));
-  $m('mHeart').addEventListener('click',()=>{toggleFav(S.current);refresh();});
   $m('mSleep').addEventListener('change',e=>Sleep.set(+e.target.value));
   $m('mVolume').addEventListener('input',e=>setVolume(+e.target.value/100));
   $m('mSearch').addEventListener('input',e=>{query=e.target.value.toLowerCase().trim();drawBrowser();});
   $m('mSearch').addEventListener('keydown',e=>{if(e.key==='Enter'&&query.length>=2)$m('mSearchWorld').click();});
-  $m('mSearchWorld').addEventListener('click',()=>{const q=$m('mSearch').value.trim();if(q.length<2)return toast('Enter at least two letters to search worldwide');query='';country='';genre='';browseRb(rbNameQuery(q)).then(()=>drawBrowser());});
+  $m('mSearchWorld').addEventListener('click',()=>{const q=$m('mSearch').value.trim();if(q.length<2)return toast('Enter at least two letters to search worldwide');view='browse';query='';country='';genre='';browseRb(rbNameQuery(q)).then(()=>drawBrowser());});
   $m('mTest').addEventListener('click',()=>{const s=$m('mColumns')._shown||[];const urls=testUrlsFor(s.slice(0,25));if(urls.length)queueTests(urls);else toast('These stations are already checked');});
   root.addEventListener('click',e=>{
     const b=e.target.closest('button');
     if(!b)return;
-    if(b.dataset.action){const a=b.dataset.action;if(a==='settings')document.getElementById('settingsBtn').click();else if(a==='classic')location.href=location.pathname+'?classic=1';else if(a==='home'){openBrowser(false);openNav(false);}else if(a==='stations')setView('browse');else setView(a);return;}
-    if(b.dataset.view)return setView(b.dataset.view);
-    if(b.dataset.quick){view='browse';country='';genre='';query='';$m('mSearch').value='';return browseRb(chipQuery(b.dataset.quick)).then(()=>{drawBrowser();scrollColumns(3);});}
-    if(b.dataset.list!==undefined){if(b.dataset.list==='__browse__')return scrollColumns(1);chooseList(b.dataset.list);return scrollColumns(1);}
+    if(b.dataset.action){const a=b.dataset.action;if(a==='settings'){openNav(false);openSettings();}else if(a==='home'){openBrowser(false);openNav(false);}else if(a==='stations')setView('browse');else setView(a);return;}
+    if(b.dataset.addList!==undefined)return openAddDialog();
+    if(b.dataset.list!==undefined){
+      if(b.dataset.list==='__recent__'){setView('recent');return scrollColumns(1);}
+      if(b.dataset.list==='__browse__'){view='browse';country='';genre='';drawBrowser();return scrollColumns(1);}
+      chooseList(b.dataset.list);return scrollColumns(1);
+    }
     if(b.dataset.country!==undefined){country=b.dataset.country;genre='';drawBrowser();return scrollColumns(2);}
     if(b.dataset.genre!==undefined){genre=b.dataset.genre;drawBrowser();return scrollColumns(3);}
     if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);openBrowser(false);}return;}
-    if(b.dataset.favSt!==undefined){const st=$m('mColumns')._shown[+b.dataset.favSt];if(st)toggleFav(st);drawBrowser();return;}
     if(b.dataset.recent!==undefined){const r=S.recent[+b.dataset.recent];if(r)playStation(stationFor(r));return;}
-    if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const i=+b.dataset.preset,p=Car.presets()[i];if(p){chosenPreset=i;playStation(stationFor(p));paintPresets(true);}else toast('Long-press to assign the playing station');}
+    if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const i=+b.dataset.preset,p=Presets.all()[i];if(p){chosenPreset=i;playStation(stationFor(p));paintPresets(true);}else toast('Long-press to assign the playing station');}
   });
   const presetsEl=$m('mPresets');
   presetsEl.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-preset]');if(!b)return;downKey=+b.dataset.preset;held=false;clearTimeout(holdTimer);holdTimer=setTimeout(()=>{held=true;assign(downKey);navigator.vibrate?.(30)},650);});
