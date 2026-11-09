@@ -13,7 +13,7 @@ const Modern = (() => {
   const ico = (path, size = 20) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>';
   const antenna = ico('<path d="M12 20v-8m-4 8h8M12 8v1m-4-5a11 11 0 0 0-2 13m14 0a11 11 0 0 0-2-13M5 7a7 7 0 0 0 0 10m14 0a7 7 0 0 0 0-10"/><circle cx="12" cy="10" r="1.6"/>');
   const heart = ico('<path d="M20.8 4.8a5.3 5.3 0 0 0-7.5 0L12 6.2l-1.3-1.4a5.3 5.3 0 1 0-7.5 7.5L12 21l8.8-8.7a5.3 5.3 0 0 0 0-7.5Z"/>');
-  const moon = ico('<path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/>');
+
   const safe = x => esc(String(x ?? ''));
   const image = (st, small = false) => st?.logo ? '<img loading="lazy" referrerpolicy="no-referrer" src="' + safe(st.logo) + '" alt="" onerror="this.style.display=\'none\'">' : '<span class="m-fallback">' + (small ? antenna : '♫') + '</span>';
   const stationFor = s => S.byKey.get(s.key) || s;
@@ -48,7 +48,7 @@ const Modern = (() => {
     '<button id="mPlay" class="m-play" aria-label="Play or pause" title="Play / Pause">▶</button></div>' +
     '<div class="m-connection" id="mConnection" role="status" aria-live="polite"><span class="m-connection-dot"></span><div><strong id="mConnTitle">Ready</strong><small id="mConnSub">Choose a station to listen</small></div><button id="mRetry" hidden>Retry</button></div>' +
     '<div class="m-player-tools"><button id="mHeart" aria-label="Add current station to favorites" aria-pressed="false">' + heart + ' <span>Favorite</span></button>' +
-    '<div class="m-timer"><span class="m-ring" id="mRing"><span>' + moon + '</span></span><label for="mSleep">Sleep timer</label><select id="mSleep" aria-label="Sleep timer"><option value="0">Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">2 hours</option><option value="150">2½ hours</option><option value="180">3 hours</option></select><output id="mSleepTime">Off</output></div>' +
+    '<div class="m-timer"><select id="mSleep" aria-label="Sleep timer"><option value="0">Sleep timer</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">2 hours</option><option value="150">2½ hours</option><option value="180">3 hours</option></select></div>' +
     '<div class="m-volume"><label for="mVolume">Volume</label><input id="mVolume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume"></div></div></section>' +
     '<section class="m-section"><div class="m-section-head"><h2>Favorite presets</h2><span>Long-press to save current station</span></div><div id="mPresets" class="m-presets"></div></section>' +
     '<section class="m-section"><div class="m-section-head"><h2>Recently played</h2><button data-action="recent">See all</button></div><div id="mRecent" class="m-recent"></div></section>' +
@@ -60,6 +60,7 @@ const Modern = (() => {
     '<div class="m-columns" id="mColumns" aria-label="Finder-style station browser"></div>' +
     '<footer class="m-browser-footer"><span class="m-silver-key">✓ Verified working</span><span class="m-failed-key">× Unavailable</span><button id="mTest">Check visible</button></footer></aside>' +
     '</div><div id="mBackdrop" class="m-backdrop"></div>';
+  for(const option of $m('mSleep').options) option.dataset.originalLabel=option.textContent;
   function openBrowser(open) {
     browserOpen = open;
     root.classList.toggle('m-browser-open', open);
@@ -157,14 +158,21 @@ const Modern = (() => {
     $m('mHeart').setAttribute('aria-pressed',String(!!st&&S.favs.has(st.key)));
     $m('mHeart').disabled=!st;
     $m('mVolume').value=Math.round((audio.volume||0)*100);
-    const left=Math.max(0,Sleep.at-Date.now()), on=Sleep.at>0;
-    const min=Math.floor(left/60000),sec=Math.ceil(left%60000/1000);
-    $m('mSleepTime').textContent=!on?'Off':Sleep.fading?'Fading…':min+':'+String(sec%60).padStart(2,'0');
+    // The native sleep selector is the sole visible control. Its selected
+    // option becomes a live countdown, while the other durations stay intact.
     const select=$m('mSleep');
-    if (!on && select.value!=='0')select.value='0';
-    const max=+(select.value)||Math.ceil(left/60000)||1;
-    $m('mRing').style.setProperty('--progress',on?Math.max(0,Math.min(100,left/(max*60000)*100))+'%':'0%');
-    $m('mRing').classList.toggle('active',on);
+    const on=Sleep.at>0, left=Math.max(0,Sleep.at-Date.now());
+    if(!on && select.value!=='0')select.value='0';
+    for (const option of select.options) {
+      if(option.dataset.originalLabel && option.textContent!==option.dataset.originalLabel)
+        option.textContent=option.dataset.originalLabel;
+    }
+    if(on){
+      const minutes=Math.floor(left/60000),seconds=Math.ceil(left%60000/1000);
+      const display=Sleep.fading?'Sleep · Fading…':'Sleep · '+minutes+':'+String(seconds%60).padStart(2,'0');
+      const selected=select.selectedOptions[0];
+      if(selected && selected.textContent!==display)selected.textContent=display;
+    }
   }
   function refresh() {
     paintLive();paintPresets();paintRecent();
