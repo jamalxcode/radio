@@ -139,6 +139,21 @@ const Modern = (() => {
     for (const b of root.querySelectorAll('[data-view]')) b.classList.toggle('selected', b.dataset.view===view);
     const active = root.querySelector('.m-column-stations');
     if (active && !root.dataset.columnsInitialized) { root.dataset.columnsInitialized='yes'; }
+    autoTestSoon();
+  }
+  // Quiet checks for the station rows on screen, like the classic guide does while you scroll
+  // (Settings → auto-test). Already-checked and queued stations are skipped, so redraws don't loop.
+  let autoTestTimer=0;
+  function autoTestSoon(){clearTimeout(autoTestTimer);autoTestTimer=setTimeout(autoTestShown,500);}
+  function autoTestShown(){
+    if(!S.settings.autoTest||!browserOpen)return;
+    const holder=$m('mColumns'),box=holder.getBoundingClientRect(),shown=holder._shown||[];
+    const onScreen=[...holder.querySelectorAll('.m-column-stations [data-st]')].filter(b=>{
+      const r=b.getBoundingClientRect();
+      return r.bottom>box.top&&r.top<box.bottom&&r.right>box.left&&r.left<box.right;
+    }).map(b=>shown[+b.dataset.st]).filter(Boolean);
+    const urls=testUrlsFor(onScreen);
+    if(urls.length)queueTests(urls);
   }
   function scrollColumns(i){
     const holder=$m('mColumns'),column=holder.children[i];
@@ -230,6 +245,7 @@ const Modern = (() => {
     paintPresets(true);toast('Saved '+S.current.name+' to preset '+(i+1));
   }
   $m('mStationToggle').addEventListener('click',()=>openBrowser(!browserOpen));
+  $m('mColumns').addEventListener('scroll',autoTestSoon,{capture:true,passive:true});
   $m('mBrowserClose').addEventListener('click',()=>openBrowser(false));
   $m('mNavToggle').addEventListener('click',()=>openNav(!navOpen));
   $m('mBackdrop').addEventListener('click',()=>{openBrowser(false);openNav(false);});
