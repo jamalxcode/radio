@@ -19,6 +19,8 @@
 <link rel="preconnect" href="https://de1.api.radio-browser.info" crossorigin>
 </head>
 <body class="fx">
+<!-- Choose the interface before anything is drawn, so the classic radio never flashes on load (?classic=1 keeps it) -->
+<script>if(!new URLSearchParams(location.search).has('classic'))document.body.classList.add('modern-ui');</script>
 <div id="modernApp" aria-label="SALA Radio adaptive interface"></div>
 <header class="topbar">
   <div class="brand"><span class="brand-dot" aria-hidden="true"></span><img class="brand-icon" src="favicon.svg" width="26" height="26" alt=""><span class="brand-text">radio.sala.company</span></div>
@@ -501,7 +503,7 @@
 <div id="toast" class="toast hidden" role="status"></div>
 <script src="js/core.js?v=27"></script>
 <script src="js/lists.js?v=27"></script>
-<script src="js/health.js?v=27"></script>
+<script src="js/health.js?v=28"></script>
 <script src="js/guide.js?v=27"></script>
 <script src="js/radio.js?v=27"></script>
 <script src="js/player.js?v=27"></script>
@@ -510,7 +512,7 @@
 <script src="js/ipod.js?v=27"></script>
 <script src="js/share.js?v=27"></script>
 <script src="js/app.js?v=28"></script>
-<script src="js/modern.js?v=9"></script>
+<script src="js/modern.js?v=10"></script>
 <!-- Offline shell: the app's files are kept in the browser (sw.js), so it opens instantly and without network -->
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});

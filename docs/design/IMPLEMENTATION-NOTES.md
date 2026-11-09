@@ -43,6 +43,7 @@
 - #9: duplicate presets may share station keys; a selection index is tracked, so only one button gets `.active`. If playback came from outside presets, first matching preset is the fallback.
 - #11 (debug pass, no visual change): the classic first-visit help no longer opens over the modern UI; the classic keyboard handler no longer acts underneath it (arrows/Enter/Home/End/PageUp/PageDown stopped silently changing station or playing a hidden row, and page scrolling works); Escape closes the drawer, then the picker (overlay mode); while an overlay is open on narrow screens the screen behind it is `inert`; search also matches country names and genres; the play button shows Pause while tuning/buffering (a press pauses then); the sleep countdown rounds up (15 min shows 15:00, not 14:00) and the selector follows a timer started from classic/iPod; the picker only redraws on real engine changes (previously every 5 s while idle); toasts use modern wording and styling and sit above overlays.
 - #13 (no visual change): the station picker now runs the same quiet automatic checks as the classic guide (Settings → auto-test) for the station rows actually on screen, after each draw and while scrolling (vertical or across the columns). Previously the classic trigger watched the hidden classic list, so modern-picker stations stayed "?" unless "Check visible" was pressed. Already-checked and queued stations are skipped, so redraws don't re-test. Browser-tested: 15 on-screen rows of a 150-station list checked within 4 s, nothing off screen, no repeat on reopen.
+- #14 (no visual change): `body.modern-ui` is now set by a tiny inline script right after `<body>` instead of by `modern.js` at the end, so the classic transistor radio (and, on a first visit, its help dialog) no longer flashes while the scripts load (owner saw it on iPhone Duo Safari on refresh). The classic markup stays in the page, hidden, because the player, settings dialogs and `?classic=1` use it; the hidden classic list no longer runs its own auto-tests in modern mode.
 
 Relevant PR links are recorded in [the design decision log](DECISIONS-2026-11-09.md).
 
@@ -66,7 +67,7 @@ These were merged with owner authorization to publish and iterate, so they are *
 ## Current files / build rules
 - Pure HTML/CSS/JavaScript. Preserve no-framework architecture.
 - Modern assets are `js/modern.js` and `modern.css`, linked from `index.html`.
-- Current versions after PR #13: `modern.js?v=9`, `modern.css?v=7`, `js/app.js?v=28`, service-worker cache `radio-shell-v8`; increment as needed for future deploys.
+- Current versions after PR #14: `modern.js?v=10`, `js/health.js?v=28`, `modern.css?v=7`, `js/app.js?v=28`, service-worker cache `radio-shell-v9`; increment as needed for future deploys.
 - Existing service worker is registered by `index.html`. Revalidate cache update paths when introducing new dependencies.
 - Do not replace the classic engine or erase radio stations, saved favorites, station tests, imported lists, history or user data when doing UI work.
 
