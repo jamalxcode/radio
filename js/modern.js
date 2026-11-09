@@ -96,8 +96,13 @@ const Modern = (() => {
     const genreColumn = '<div class="m-column"><h3>Genres <small>' + genres.size + '</small></h3><button data-genre="" class="' + (!genre?'selected':'') + '">All genres <span>›</span></button>' + genresSorted.map(([g,n]) => '<button data-genre="' + safe(g) + '" class="' + (genre===g?'selected':'') + '">' + safe(g) + ' <small>' + n + '</small><span>›</span></button>').join('') + '</div>';
     const stRows = items.slice(0, 350).map((st,i) => '<div class="m-st-row ' + (verified(st)?'m-verified':'') + '"><button data-st="' + i + '" class="m-st-select" title="' + safe(st.name) + '">' + image(st,true) + '<span class="m-st-text"><strong>' + safe(st.name) + '</strong>' + marker(st) + '</span></button><button data-fav-st="' + i + '" class="m-st-fav" aria-label="' + (S.favs.has(st.key)?'Remove from':'Add to') + ' favorites">' + (S.favs.has(st.key)?'♥':'♡') + '</button></div>').join('');
     const stationColumn = '<div class="m-column m-column-stations"><h3>Stations <small>' + items.length + '</small></h3>' + (stRows || '<p class="m-empty">No stations match. Choose another collection or search worldwide.</p>') + (items.length>350?'<p class="m-more">Showing first 350. Narrow by country, genre or search.</p>':'') + '</div>';
-    $m('mColumns').innerHTML = listColumn + ccColumn + genreColumn + stationColumn;
-    $m('mColumns')._shown = items;
+    const holder=$m('mColumns');
+    const horizontal=holder.scrollLeft;
+    const vertical=[...holder.children].map(node=>node.scrollTop);
+    holder.innerHTML = listColumn + ccColumn + genreColumn + stationColumn;
+    holder.scrollLeft=horizontal;
+    [...holder.children].forEach((node,i)=>{node.scrollTop=vertical[i]||0;});
+    holder._shown = items;
     for (const b of root.querySelectorAll('[data-view]')) b.classList.toggle('selected', b.dataset.view===view);
     const active = root.querySelector('.m-column-stations');
     if (active && !root.dataset.columnsInitialized) { root.dataset.columnsInitialized='yes'; }
