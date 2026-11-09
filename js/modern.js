@@ -30,7 +30,10 @@ const Modern = (() => {
     let [symbol, label] = props[h.cls] || props.untested;
     if(checking){symbol='◌';label='Checking…';}
     const cls=checking?'checking':good?'good':h.cls==='good'?'untested':h.cls;
-    return '<span class="m-status m-status-' + safe(cls) + '" aria-label="' + label + '" title="' + label + '"><span aria-hidden="true">' + symbol + '</span> ' + label + '</span>';
+    // Keep every status on the station-name line. Verified stations get a tiny
+    // silver check badge, with the full meaning retained for AT and tooltips.
+    const compact = good ? '✓' : checking ? '◌' : ({ warn:'! Weak', bad:'×', blocked:'×', untested:'?' }[cls] || symbol);
+    return '<span class="m-status m-status-' + safe(cls) + '" aria-label="' + label + '" title="' + label + '">' + compact + '</span>';
   };
   const navItem = (action, icon, label) => '<button type="button" class="m-navitem" data-action="' + action + '">' + icon + '<span>' + label + '</span></button>';
   root.innerHTML = '<div class="m-shell">' +
@@ -88,7 +91,7 @@ const Modern = (() => {
       genres.set(g, (genres.get(g) || 0) + 1);
     }
     const countriesSorted = [...countries].sort((a,b) => b[1]-a[1]);
-    const genresSorted = [...genres].sort((a,b) => b[1]-a[1]).slice(0,160);
+    const genresSorted = [...genres].sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
     const items = all.filter(st => (!country || (st.country || '__other__') === country) && (!genre || (groupsOf(st)[0] || 'Other') === genre) && (!query || [st.name, st.group, st.country].join(' ').toLowerCase().includes(query)));
     const listColumn = '<div class="m-column m-column-source"><h3>Collections</h3><button data-list="__browse__" class="' + (S.browse ? 'selected' : '') + '">All in view <span>›</span></button>' +
       S.lists.map(l => '<button data-list="' + safe(l.id) + '" class="' + (!S.browse && S.ui.currentId === l.id ? 'selected' : '') + '">' + safe(l.name) + ' <span>›</span></button>').join('') + '</div>';
