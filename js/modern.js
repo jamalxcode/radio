@@ -147,7 +147,10 @@ const Modern = (() => {
     const horizontal=holder.scrollLeft;
     const vertical=[...holder.children].map(node=>node.scrollTop);
     holder.innerHTML = listColumn + ccColumn + genreColumn + stationColumn;
-    holder.scrollLeft=horizontal;
+    // A redraw in the middle of the slide to the next column (stations arriving, checks finishing)
+    // would otherwise stop it part way, leaving the stations off screen on phones and folds.
+    const goal=holder._goal;
+    holder.scrollLeft=goal&&Date.now()<goal.until?goal.left:horizontal;
     [...holder.children].forEach((node,i)=>{node.scrollTop=vertical[i]||0;});
     holder._shown = items;
     S.filtered = items; // next / previous and auto-skip follow what the picker shows
@@ -203,7 +206,8 @@ const Modern = (() => {
   function scrollColumns(i){
     const holder=$m('mColumns'),column=holder.children[i];
     if(!column)return;
-    const offset=column.offsetLeft-holder.children[0].offsetLeft;
+    const offset=Math.min(column.offsetLeft-holder.children[0].offsetLeft,holder.scrollWidth-holder.clientWidth);
+    holder._goal={left:offset,until:Date.now()+1500};
     holder.scrollTo({left:offset,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   }
   function paintPresets(force=false) {

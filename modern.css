@@ -298,7 +298,10 @@ body.modern-ui .toast{z-index:60;bottom:calc(20px + env(safe-area-inset-bottom))
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body.modern-ui{overscroll-behavior:none}
 #modernApp button,#modernApp a,#modernApp select,dialog button,dialog select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-#modernApp .m-center-scroll,#modernApp .m-columns,#modernApp .m-column,#modernApp .m-nav,dialog{overscroll-behavior:contain}
+#modernApp .m-center-scroll,#modernApp .m-columns,#modernApp .m-nav,dialog{overscroll-behavior:contain}
+/* Columns only contain up/down scrolling: a sideways swipe on a column must pass on to the row of columns,
+   or on phones and folds the stations column (names, the ✓ marks) can't be reached. */
+#modernApp .m-column{overscroll-behavior:auto contain}
 /* Everything sits inside the safe area on every side (camera cutouts, a side-mounted island or system bar,
    the home indicator); the background still fills the whole screen. */
 body.modern-ui #modernApp{height:100vh;height:100dvh;min-height:0;padding:var(--sa-t) var(--sa-r) var(--sa-b) var(--sa-l);box-sizing:border-box}
@@ -369,3 +372,13 @@ body.modern-ui .toast{bottom:calc(20px + var(--sa-b) + var(--kb));max-width:calc
 #modernApp.m-dual-h .m-backdrop,#modernApp.m-dual-v .m-backdrop{position:absolute;inset:0;z-index:20;background:#040b15ad;display:none}
 #modernApp.m-dual-h.m-nav-open .m-backdrop,#modernApp.m-dual-v.m-nav-open .m-backdrop{display:block}
 @media(prefers-reduced-motion:reduce){#modernApp.m-rail .m-browser,#modernApp.m-dual-h .m-nav,#modernApp.m-dual-v .m-nav{transition:none}}
+
+/* Narrow screens: the picker can't show all four columns, so the stations column fills what the genres column
+   leaves (choosing a country slides to genres + stations), and station names show in full. */
+@media(max-width:1049px){
+  #modernApp .m-columns{container-type:inline-size}
+  #modernApp .m-column-stations{width:clamp(244px,calc(100cqw - 155px),380px);min-width:0}
+}
+@media(max-width:620px){
+  #modernApp .m-column-stations{width:clamp(228px,calc(100cqw - 145px),380px)}
+}
