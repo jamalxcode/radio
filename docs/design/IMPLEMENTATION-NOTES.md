@@ -50,6 +50,8 @@
 
 Relevant PR links are recorded in [the design decision log](DECISIONS-2026-11-09.md).
 
+- 2026-11-11 (owner request, same as video.sala.company): **every device.** `js/modern.js` gains `layout()` (root classes `m-rail` for landscape ≤ 560 px tall, `m-dual-h` / `m-dual-v` from two `window.viewport.segments` with `--seg-first` / `--seg-hinge`), `overlayMode()` / `navOverlay()` per mode, `openBrowser(open, auto)` with `pickerChoice` so folding back restores your picker choice, keyboard overlap `--kb` from `visualViewport`, and session state in `sessionStorage['radio-screen']`. `modern.css` gains a "Devices" section: `#modernApp` padded by all four safe-area insets, rail and fold layouts, dialogs inside the safe area and above the keyboard, `(pointer: coarse)` 44 px minimums. Manifest: navy theme, maskable icon (`icon-maskable-512.png`); iOS meta and `interactive-widget` in `index.html`.
+
 ## Testing evidence vs outstanding verification
 **Static/code-level checks completed during the corresponding PRs:**
 - Modern JavaScript was syntax-validated; key CSS class selectors, updated HTML script/style links, and desired marker/sort/preset logic were inspected.
@@ -57,6 +59,8 @@ Relevant PR links are recorded in [the design decision log](DECISIONS-2026-11-09
 - Main and backup branch integrity were checked after changes.
 
 **Browser-tested for #11 (headless Chromium via Playwright, phone 390×844, fold 1100×800, desktop 1440×900, network to outside services blocked):** first visit, picker columns and A–Z order, search (incl. "united kingdom"), Escape on picker and drawer, arrow keys on the main screen, play/pause glyph while tuning, favorite toast, preset long-press save and single highlight, nav Favorites view, idle redraw count (0 in 11 s), inert background, sleep label/selector, Sleep Off; no console errors. Before/after screenshots matched apart from the toast.
+
+**Browser-tested 2026-11-11 (Chromium 153 with CDP safe-area and hinge emulation):** eight emulated devices (iPhone portrait/landscape with insets, a Duo-style outer display with a 52 px side island, an unfolded screen with a 20 px vertical hinge, a top/bottom fold, small Android, tablet, desktop), picker open and closed: no pane outside the safe area, nothing under a hinge, no sideways scroll, picker never over the rail, touch controls ≥ 44 px. Fold/rotate transitions while a local test station played (portrait → landscape → outer → unfolded → top/bottom → portrait → unfolded → landscape → portrait): audio never paused, station, search, filters and presets unchanged; folding back closed the picker again. Reload restored search and country filter. Settings dialog on a 390 px tall screen with and without a 180 px keyboard: visible, scrolling, Save in view. Smoke: pick a station (plays, picker closes), preset long-press, settings, menu, sleep. ESLint `no-undef` clean across all scripts. Harness traps: set the Playwright viewport before the CDP hinge override, and screenshot with CDP `Page.captureScreenshot` (Playwright's screenshot resets the hinge).
 
 **Not independently verified:**
 - GitHub Pages successful completion for each workflow run and live CDN/service-worker propagation.
@@ -70,7 +74,7 @@ These were merged with owner authorization to publish and iterate, so they are *
 ## Current files / build rules
 - Pure HTML/CSS/JavaScript. Preserve no-framework architecture.
 - Modern assets are `js/modern.js` and `modern.css`, linked from `index.html`.
-- Current versions after PR #16: all scripts and `modern.css` at `?v=30` (`js/modern.js?v=31`), service-worker cache `radio-shell-v12`; increment as needed for future deploys.
+- Current versions (2026-11-11): `modern.css?v=31`, `js/modern.js?v=32`, other scripts `?v=30`; service-worker cache `radio-shell-v13`; increment as needed for future deploys.
 - Existing service worker is registered by `index.html`. Revalidate cache update paths when introducing new dependencies.
 - Do not erase radio stations, presets, station tests, imported lists, history or user data when doing UI work.
 

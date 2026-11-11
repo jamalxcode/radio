@@ -50,9 +50,9 @@ All user data (lists, presets, test results, history, songs heard, settings) sta
 
 ## Conventions and gotchas
 
-- On each release bump the `?v=` query on changed assets in `index.html` (currently `modern.css?v=30`, `js/*.js?v=30`, `js/modern.js?v=31`) and `CACHE` in `sw.js` (currently `radio-shell-v12`). New app files must also be added to `SHELL` in `sw.js` and to the script list in load order.
+- On each release bump the `?v=` query on changed assets in `index.html` (currently `modern.css?v=31`, `js/*.js?v=30`, `js/modern.js?v=32`) and `CACHE` in `sw.js` (currently `radio-shell-v13`). New app files must also be added to `SHELL` in `sw.js` and to the script list in load order.
 - Keep the GoatCounter snippet at the end of `index.html` intact (endpoint `https://salacompany.goatcounter.com/count`, skipped on localhost, path prefixed with `location.host`).
 - Don't erase stations, presets, test results, imported lists, history or other user data during UI work; migrations should be one-time and additive (favorites -> presets is the precedent).
 - No framework, no build step; keep the global-script architecture.
-- Mobile/foldables matter: the picker and nav drawer overlay on phones via `#modernApp.m-browser-open` / `#modernApp.m-nav-open`. Check phone (~390px), fold and desktop widths.
+- Mobile/foldables matter: the picker and nav drawer overlay on phones via `#modernApp.m-browser-open` / `#modernApp.m-nav-open`; landscape phones / short wide screens get a vertical side rail (`m-rail`); folding screens with two viewport segments get one pane per screen (`m-dual-h` / `m-dual-v`, set by `layout()` in `js/modern.js`); everything sits inside `env(safe-area-inset-*)` on all four sides; touch controls are ≥ 44 px. Check phone (~390px), landscape, fold and desktop; the implementation notes describe emulating safe areas and hinges.
 - Rollback branch `backup/pre-redesign-2026-11-09` is immutable by convention (per the implementation notes); update `docs/design/` notes after significant changes.

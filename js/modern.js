@@ -4,7 +4,12 @@
 const Modern = (() => {
   const root = document.getElementById('modernApp');
   if (!root) return null;
-  let browserOpen = matchMedia('(min-width: 1050px)').matches;
+  const WIDE = '(min-width: 1050px)';
+  // Short, wide screens (phones in landscape, narrow outer displays): a vertical side rail replaces the top bar.
+  const RAIL = '(orientation: landscape) and (max-height: 560px) and (min-width: 560px)';
+  let dual = ''; // a folding screen split by a hinge: 'h' side by side, 'v' top and bottom, '' one screen
+  let browserOpen = matchMedia(WIDE).matches;
+  let pickerChoice = browserOpen; // the picker as you last left it (open or closed), apart from folds
   let navOpen = false, view = 'browse', country = '', genre = '', query = '';
   let renderSignature = '', recentSignature = '', presetSignature = '';
   let chosenPreset = -1; // exact slot tapped, even if the same station is saved twice
@@ -59,22 +64,29 @@ const Modern = (() => {
     '<footer class="m-browser-footer"><span class="m-silver-key">✓ Verified working</span><span class="m-failed-key">× Unavailable</span><button id="mTest">Check visible</button></footer></aside>' +
     '</div><div id="mBackdrop" class="m-backdrop"></div>';
   for(const option of $m('mSleep').options) option.dataset.originalLabel=option.textContent;
-  // On narrow screens the picker and the menu cover the radio: keep keyboard and screen-reader focus inside them.
-  const overlayMode = () => matchMedia('(max-width: 1049px)').matches;
+  // Layouts: one screen (narrow, wide, rail) or two screens either side of a hinge.
+  const railMode = () => !dual && matchMedia(RAIL).matches;
+  // The picker covers the radio (narrow and rail layouts) or sits beside it (wide, and folds: its own screen).
+  const overlayMode = () => !dual && (railMode() || !matchMedia(WIDE).matches);
+  // The menu is a drawer, except on wide screens and in the rail, where it's always there.
+  const navOverlay = () => !railMode() && (!!dual || !matchMedia(WIDE).matches);
+  // Whatever an overlay covers is inert: keyboard and screen-reader focus stay inside the overlay.
   function syncInert() {
     const central = root.querySelector('.m-central'), browser = $m('mBrowser'), nav = $m('mNav');
-    const narrow = overlayMode();
-    central.inert = narrow && (browserOpen || navOpen);
-    browser.inert = narrow && (!browserOpen || navOpen);
-    nav.inert = narrow && !navOpen;
+    central.inert = (overlayMode() && browserOpen) || (navOverlay() && navOpen);
+    browser.inert = (overlayMode() && !browserOpen) || (navOverlay() && navOpen);
+    nav.inert = navOverlay() && !navOpen;
   }
-  function openBrowser(open) {
+  // auto: opened or closed by a fold, not by you; after folding back the picker returns to your choice.
+  function openBrowser(open, auto = false) {
+    if (dual && !open) return; // on a fold the picker has its own screen
+    if (!auto) pickerChoice = open;
     browserOpen = open;
     syncInert();
     root.classList.toggle('m-browser-open', open);
     $m('mStationToggle').setAttribute('aria-expanded', String(open));
-    if (open) { drawBrowser(); if (matchMedia('(max-width: 1049px)').matches) $m('mBrowserClose').focus({preventScroll:true}); }
-    else $m('mStationToggle').focus({preventScroll:true});
+    if (open) { drawBrowser(); if (overlayMode()) $m('mBrowserClose').focus({preventScroll:true}); }
+    else if (!auto && overlayMode()) $m('mStationToggle').focus({preventScroll:true});
   }
   function openNav(open) {
     navOpen = open;
@@ -98,7 +110,7 @@ const Modern = (() => {
     if (!browserOpen) return;
     // Another list was opened (added, removed, imported, shared): show its stations, not the old filters or view.
     if (S.ui.currentId !== shownListId) {
-      if (shownListId !== undefined) { view = 'browse'; country = ''; genre = ''; query = ''; $m('mSearch').value = ''; }
+      if (shownListId) { view = 'browse'; country = ''; genre = ''; query = ''; $m('mSearch').value = ''; }
       shownListId = S.ui.currentId;
     }
     const all = source();
@@ -143,6 +155,7 @@ const Modern = (() => {
     if (active && !root.dataset.columnsInitialized) { root.dataset.columnsInitialized='yes'; }
     fitMergedNames();
     autoTestSoon();
+    restoreScroll();
   }
   // Countries/genres with only 1–2 stations are merged, A–Z, with the next small ones until the group
   // holds at least 6 stations, so these columns scroll less. Bigger entries stay as they are.
@@ -308,7 +321,7 @@ const Modern = (() => {
     }
     if(b.dataset.country!==undefined){country=b.dataset.country;genre='';drawBrowser();return scrollColumns(2);}
     if(b.dataset.genre!==undefined){genre=b.dataset.genre;drawBrowser();return scrollColumns(3);}
-    if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);openBrowser(false);}return;}
+    if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);if(!dual)openBrowser(false);}return;}
     if(b.dataset.recent!==undefined){const r=S.recent[+b.dataset.recent];if(r)playStation(stationFor(r));return;}
     if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const i=+b.dataset.preset,p=Presets.all()[i];if(p){chosenPreset=i;playStation(stationFor(p));paintPresets(true);}else toast('Long-press to assign the playing station');}
   });
@@ -317,7 +330,85 @@ const Modern = (() => {
   ['pointerup','pointercancel','pointerleave'].forEach(t=>presetsEl.addEventListener(t,()=>clearTimeout(holdTimer)));
   presetsEl.addEventListener('contextmenu',e=>{if(e.target.closest('[data-preset]'))e.preventDefault();});
   root.addEventListener('keydown',e=>{const b=e.target.closest('[data-preset]');if(!b)return;if(e.key==='Enter'&&e.shiftKey){e.preventDefault();assign(+b.dataset.preset);}});
-  window.addEventListener('resize',()=>{if(matchMedia('(min-width:1050px)').matches){openNav(false);} syncInert();});
+  /* ---------- devices: folds, rail, keyboard; nothing here reloads or interrupts the audio ---------- */
+  // Folding screens report two segments (Chrome/Edge: window.viewport.segments). Each pane gets its own
+  // screen and nothing is placed under the hinge.
+  function readSegments() {
+    const segs = window.viewport?.segments || window.visualViewport?.segments;
+    return segs && segs.length === 2 ? [...segs].sort((a, b) => a.x - b.x || a.y - b.y) : null;
+  }
+  function layout() {
+    const segs = readSegments();
+    const mode = segs ? (Math.abs(segs[0].y - segs[1].y) < 2 ? 'h' : 'v') : '';
+    if (mode !== dual) {
+      const was = dual;
+      dual = mode;
+      root.classList.toggle('m-dual-h', mode === 'h');
+      root.classList.toggle('m-dual-v', mode === 'v');
+      if (mode && !was) { openNav(false); openBrowser(true, true); }
+      // Folded back to one screen: the picker goes back to how you last left it.
+      if (!mode && was) openBrowser(pickerChoice, true);
+    }
+    if (segs) {
+      const shell = root.querySelector('.m-shell').getBoundingClientRect(), [a, b] = segs;
+      const first = mode === 'h' ? a.x + a.width - shell.left : a.y + a.height - shell.top;
+      const hinge = mode === 'h' ? b.x - (a.x + a.width) : b.y - (a.y + a.height);
+      root.style.setProperty('--seg-first', Math.max(0, Math.round(first)) + 'px');
+      root.style.setProperty('--seg-hinge', Math.max(0, Math.round(hinge)) + 'px');
+    }
+    const rail = railMode();
+    if (root.classList.contains('m-rail') !== rail) root.classList.toggle('m-rail', rail);
+    if (!navOverlay()) openNav(false);
+    syncInert();
+    if (browserOpen) fitMergedNames();
+  }
+  addEventListener('resize', layout);
+  addEventListener('orientationchange', layout);
+  window.viewport?.addEventListener?.('segmentschange', layout);
+  for (const q of [WIDE, RAIL, '(horizontal-viewport-segments: 2)', '(vertical-viewport-segments: 2)']) matchMedia(q).addEventListener?.('change', layout);
+  navigator.devicePosture?.addEventListener?.('change', layout); // folded / continuous / half-open
+  // The on-screen keyboard: how much of the page it covers (iOS doesn't shrink the page for it),
+  // so dialogs and the toast stay above it.
+  const vv = window.visualViewport;
+  function keyboardInset() {
+    const kb = vv ? Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)) : 0;
+    document.documentElement.style.setProperty('--kb', kb + 'px');
+  }
+  vv?.addEventListener('resize', keyboardInset);
+  vv?.addEventListener('scroll', keyboardInset);
+  // Keep what you were doing if the page reloads (some phones reload a tab after folding or in the background):
+  // the picker's collection, filters, search and scroll, and the page scroll. Worldwide searches aren't kept.
+  const SAVE_KEY = 'radio-screen';
+  function saveState() {
+    try {
+      const cols = [...$m('mColumns').children].map(c => c.scrollTop);
+      sessionStorage.setItem(SAVE_KEY, JSON.stringify({ view: view === 'recent' ? 'recent' : 'browse', country, genre, query, browserOpen: pickerChoice,
+        left: $m('mColumns').scrollLeft, cols, page: root.querySelector('.m-center-scroll').scrollTop }));
+    } catch (_) { /* private mode or storage blocked */ }
+  }
+  let restore = null;
+  try { restore = JSON.parse(sessionStorage.getItem(SAVE_KEY) || 'null'); } catch (_) { restore = null; }
+  if (restore) {
+    view = restore.view === 'recent' ? 'recent' : 'browse';
+    country = restore.country || ''; genre = restore.genre || ''; query = restore.query || '';
+    $m('mSearch').value = query;
+    if (typeof restore.browserOpen === 'boolean') pickerChoice = browserOpen = restore.browserOpen || matchMedia(WIDE).matches;
+  }
+  // Scroll positions come back once the stations are there to scroll.
+  function restoreScroll() {
+    if (!restore || !($m('mColumns')._shown || []).length) return;
+    const r = restore;
+    restore = null;
+    requestAnimationFrame(() => {
+      const holder = $m('mColumns');
+      holder.scrollLeft = r.left || 0;
+      [...holder.children].forEach((c, i) => { c.scrollTop = r.cols?.[i] || 0; });
+      root.querySelector('.m-center-scroll').scrollTop = r.page || 0;
+    });
+  }
+  addEventListener('pagehide', saveState);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) saveState(); });
+  setInterval(saveState, 5000);
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape')return;
     if(navOpen){e.preventDefault();openNav(false);$m('mNavToggle').focus({preventScroll:true});}
@@ -325,7 +416,8 @@ const Modern = (() => {
   });
   root.classList.toggle('m-browser-open',browserOpen);
   $m('mStationToggle').setAttribute('aria-expanded',String(browserOpen));
-  syncInert();
+  layout();
+  keyboardInset();
   setInterval(refresh,900);
   refresh();
   return {refresh,openBrowser};

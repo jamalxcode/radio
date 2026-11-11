@@ -289,3 +289,83 @@ body.modern-ui .toast{z-index:60;bottom:calc(20px + env(safe-area-inset-bottom))
 #modernApp .m-station-launch::after{filter:blur(9px);opacity:.75;z-index:-1}
 @keyframes m-kitt{from{background-position:80% 0}to{background-position:20% 0}}
 @media (prefers-reduced-motion:reduce){#modernApp .m-station-launch::before,#modernApp .m-station-launch::after{animation:none;background:#ff3b2f}#modernApp .m-station-launch::after{opacity:.35}}
+
+/* =====================================================================================
+   Devices: notches and Dynamic Islands (any side), folds and hinges, landscape rail,
+   on-screen keyboard, touch sizes. Layout changes are CSS only, so the audio never stops.
+   ===================================================================================== */
+:root{--sa-t:env(safe-area-inset-top,0px);--sa-r:env(safe-area-inset-right,0px);--sa-b:env(safe-area-inset-bottom,0px);--sa-l:env(safe-area-inset-left,0px);--kb:0px}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body.modern-ui{overscroll-behavior:none}
+#modernApp button,#modernApp a,#modernApp select,dialog button,dialog select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#modernApp .m-center-scroll,#modernApp .m-columns,#modernApp .m-column,#modernApp .m-nav,dialog{overscroll-behavior:contain}
+/* Everything sits inside the safe area on every side (camera cutouts, a side-mounted island or system bar,
+   the home indicator); the background still fills the whole screen. */
+body.modern-ui #modernApp{height:100vh;height:100dvh;min-height:0;padding:var(--sa-t) var(--sa-r) var(--sa-b) var(--sa-l);box-sizing:border-box}
+#modernApp .m-shell{position:relative}
+/* Dialogs: centred inside the safe area and above the keyboard, scrolling inside if they're tall */
+dialog{position:fixed;inset:calc(12px + var(--sa-t)) calc(12px + var(--sa-r)) calc(12px + var(--sa-b) + var(--kb)) calc(12px + var(--sa-l));margin:auto;
+  width:min(520px,calc(100vw - 24px - var(--sa-l) - var(--sa-r)));max-height:calc(100dvh - 24px - var(--sa-t) - var(--sa-b) - var(--kb));height:fit-content}
+dialog.wide{width:min(680px,calc(100vw - 24px - var(--sa-l) - var(--sa-r)))}
+dialog .dlg-acts{position:sticky;bottom:-20px;background:linear-gradient(transparent,#17293b 30%);padding:12px 0 4px;margin-bottom:-4px}
+body.modern-ui .toast{bottom:calc(20px + var(--sa-b) + var(--kb));max-width:calc(100vw - 32px - var(--sa-l) - var(--sa-r))}
+
+/* Touch screens: every control at least 44 px, as Apple and Android recommend */
+@media (pointer:coarse){
+  #modernApp .m-column>button{min-height:44px}
+  #modernApp .m-st-select{min-height:46px}
+  #modernApp .m-browser-search input{min-height:44px;font-size:16px} /* 16 px stops iOS zooming in on focus */
+  #modernApp #mSearchWorld,#modernApp #mTest,#modernApp #mRetry,#modernApp .m-recent button,#modernApp .m-section-head button{min-height:44px}
+  #modernApp .m-timer #mSleep,#modernApp .m-station-launch{min-height:44px}
+  #modernApp #mNavToggle,#modernApp #mSettings{min-width:44px;min-height:44px}
+  #modernApp .m-now-song{min-height:44px;display:flex;align-items:center}
+  #modernApp .m-now-song[hidden]{display:none}
+  #modernApp .m-volume{display:none} /* touch devices: the device's own volume buttons */
+  dialog input,dialog select,dialog textarea{font-size:16px}
+  dialog button,.filebtn{min-height:44px}
+}
+
+/* ---------- Side rail: phones in landscape and short wide displays ----------
+   The menu becomes a vertical toolbar (with Stations and Settings); now playing and the presets sit side by side. */
+#modernApp.m-rail .m-shell{display:grid!important;grid-template-columns:76px minmax(0,1fr);grid-template-rows:100%}
+#modernApp.m-rail .m-nav{position:static!important;transform:none!important;width:auto!important;padding:10px 6px!important;align-items:center;gap:4px;box-shadow:none}
+#modernApp.m-rail .m-nav .m-brand{margin:2px 0 10px}
+#modernApp.m-rail .m-nav .m-brand span,#modernApp.m-rail .m-nav .m-navitem>span{display:none!important}
+#modernApp.m-rail .m-nav .m-navitem{width:58px;min-height:48px;justify-content:center;padding:8px!important;font-size:22px!important}
+#modernApp.m-rail .m-nav .m-navitem[data-action="stations"]{color:#fff!important;background:#304d64!important;border:1px solid #c9554b!important;box-shadow:0 0 12px #ff3b2f66}
+#modernApp.m-rail .m-header{display:none}
+#modernApp.m-rail .m-central{height:100%;grid-column:2}
+#modernApp.m-rail .m-center-scroll{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;padding:10px 12px;gap:12px}
+#modernApp.m-rail .m-center-scroll>.m-section:last-child{grid-column:1 / -1}
+#modernApp.m-rail .m-player,#modernApp.m-rail .m-section{padding:12px;border-radius:16px}
+#modernApp.m-rail .m-now{padding:10px 0 10px}
+#modernApp.m-rail .m-now-logo{width:52px;height:52px;border-radius:12px}
+#modernApp.m-rail .m-now h1{font-size:19px}
+#modernApp.m-rail .m-play{width:54px;height:54px}
+#modernApp.m-rail .m-presets{gap:5px}
+#modernApp.m-rail .m-preset{min-height:64px;padding:8px 2px 4px!important}
+#modernApp.m-rail .m-preset img{width:26px;height:26px}
+#modernApp.m-rail .m-browser{position:absolute;right:0;top:0;bottom:0;z-index:25;width:min(680px,calc(100% - 76px));transform:translateX(105%);visibility:visible;pointer-events:auto}
+#modernApp.m-rail.m-browser-open .m-browser{transform:none}
+#modernApp.m-rail .m-backdrop{position:absolute;inset:0 0 0 76px;z-index:20;background:#040b15ad;display:none}
+#modernApp.m-rail.m-browser-open .m-backdrop{display:block}
+
+/* ---------- Folding screens: two panes either side of the hinge, nothing under it ----------
+   Side by side: the radio on the first screen, the station picker always open on the second.
+   Top and bottom: the radio on the top screen, picker on the bottom. The menu opens as a drawer on the first screen. */
+#modernApp.m-dual-h .m-shell{display:grid!important;grid-template-columns:var(--seg-first) var(--seg-hinge) minmax(0,1fr);grid-template-rows:100%}
+#modernApp.m-dual-v .m-shell{display:grid!important;grid-template-rows:var(--seg-first) var(--seg-hinge) minmax(0,1fr);grid-template-columns:100%}
+#modernApp.m-dual-h .m-central{grid-column:1;grid-row:1;height:100%;min-width:0}
+#modernApp.m-dual-v .m-central{grid-row:1;grid-column:1;height:100%;min-height:0}
+#modernApp.m-dual-h .m-browser,#modernApp.m-dual-v .m-browser{position:static!important;transform:none!important;width:auto!important;visibility:visible!important;pointer-events:auto!important;overflow:visible!important;box-shadow:none;min-height:0;min-width:0}
+#modernApp.m-dual-h .m-browser{grid-column:3;grid-row:1;border-left:0}
+#modernApp.m-dual-v .m-browser{grid-row:3;grid-column:1;border-left:0;border-top:1px solid var(--m-border)}
+#modernApp.m-dual-h #mBrowserClose,#modernApp.m-dual-v #mBrowserClose,#modernApp.m-dual-h #mStationToggle,#modernApp.m-dual-v #mStationToggle{display:none}
+#modernApp.m-dual-h .m-nav,#modernApp.m-dual-v .m-nav{position:absolute!important;inset:0 auto 0 0;width:min(270px,75%);z-index:31;transform:translateX(-101%);display:flex;align-items:stretch;padding:25px 16px}
+#modernApp.m-dual-h .m-nav .m-brand span,#modernApp.m-dual-v .m-nav .m-brand span,#modernApp.m-dual-h .m-nav .m-navitem span,#modernApp.m-dual-v .m-nav .m-navitem span{display:inline}
+#modernApp.m-dual-h .m-nav .m-navitem,#modernApp.m-dual-v .m-nav .m-navitem{width:auto;justify-content:flex-start;font-size:15px!important}
+#modernApp.m-dual-h.m-nav-open .m-nav,#modernApp.m-dual-v.m-nav-open .m-nav{transform:translateX(0)}
+#modernApp.m-dual-h #mNavToggle,#modernApp.m-dual-v #mNavToggle{display:inline-block}
+#modernApp.m-dual-h .m-backdrop,#modernApp.m-dual-v .m-backdrop{position:absolute;inset:0;z-index:20;background:#040b15ad;display:none}
+#modernApp.m-dual-h.m-nav-open .m-backdrop,#modernApp.m-dual-v.m-nav-open .m-backdrop{display:block}
+@media(prefers-reduced-motion:reduce){#modernApp.m-rail .m-browser,#modernApp.m-dual-h .m-nav,#modernApp.m-dual-v .m-nav{transition:none}}

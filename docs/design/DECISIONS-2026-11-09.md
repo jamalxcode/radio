@@ -42,6 +42,17 @@ These follow-up decisions supersede older descriptions or visual mockups:
 - **Sleep:** one dropdown showing duration, or running countdown, with **Sleep Off** to cancel.
 - **Existing player + data:** underlying engine, lists, stream tests and playback state, recent history and saved presets remain reused. (Classic fallback `?classic=1` existed until #16, when the owner had the classic interface removed and favorites folded into presets.)
 
+## 3a. iPhone Duo and every other device (2026-11-11)
+The owner set ten requirements for video.sala.company and asked for the same here: iPhone Duo folded and unfolded plus phones, tablets, foldables and desktops; adapt to all sizes, orientations and fold transitions; respect the Duo's vertical Dynamic Island, side-mounted system UI and asymmetric safe areas; side navigation / vertical toolbars on the outer display; controls clear of gestures, edges and the fold; state and playback kept through folding and rotation; dialogs and keyboards fully visible; touch, mouse, keyboard and accessibility; Safari, Chrome, Android and installed apps; the same features everywhere.
+- **Safe areas on every side:** the whole screen sits inside `env(safe-area-inset-*)` top, right, bottom and left independently (cutouts, a side island or system bar, the home indicator).
+- **Side rail on short, wide screens** (landscape and height ≤ 560 px): the menu becomes a vertical toolbar (Home, Recently Played, Stations, Settings), the top bar goes away, now playing and the presets sit side by side, and the picker slides in beside the rail.
+- **Folding screens** (two `window.viewport.segments`): the radio on one screen, the station picker always open on the other (side by side, or top/bottom when half-folded), nothing under the hinge; the menu is a drawer on the first screen. Folding back returns the picker to how you left it.
+- **Nothing reloads or interrupts the audio** on a fold, rotation or resize (CSS-only layouts). The picker's collection, country, genre, search and scroll and the page scroll are saved for the session and come back after a reload (Worldwide searches aren't kept).
+- **Dialogs and toasts** stay inside the safe area and above the on-screen keyboard (`visualViewport`); dialog buttons stay visible.
+- **Touch:** ≥ 44 px controls, 16 px inputs (no iOS zoom), no double-tap delay, no volume slider on touch screens. `inert` behind overlays, `aria-live` toasts, reduced motion respected.
+- **Installable app:** manifest updated to the navy theme with a maskable icon; iOS home-screen meta; `interactive-widget=resizes-content`.
+- The same device layer as video.sala.company (see its `docs/design/DECISIONS.md` §9); the iPhone Duo itself can't be emulated exactly. If Safari on the Duo doesn't report its hinge as screen segments, the unfolded Duo gets the normal wide layout, still inside the safe areas.
+
 ## 4. Implementation and deployment log
 | PR | Decision implemented |
 | --- | --- |
@@ -60,6 +71,7 @@ These follow-up decisions supersede older descriptions or visual mockups:
 | [#15](https://github.com/jamalxcode/radio/pull/15) | Merge 1–2-station countries/genres into groups of 6+ with abbreviated names (owner request: shorter lists) |
 | [#16](https://github.com/jamalxcode/radio/pull/16) | Classic interface removed entirely (no `?classic=1`); favorites folded into presets; picker tabs and chips removed; song + artist shown; Knight Rider scanner on the Stations button (owner requests) |
 | [#17](https://github.com/jamalxcode/radio/pull/17) | Picker shows a newly opened list's stations, dropping old filters (owner question about new lists) |
+| direct to `main`, 2026-11-11 | Every device: safe areas on all sides, side rail, folding screens, keyboard-aware dialogs, touch sizes, session state, installable-app polish (owner request, applied the same as video.sala.company) |
 
 **Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
 

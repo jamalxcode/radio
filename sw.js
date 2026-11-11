@@ -4,8 +4,8 @@
      page (index.html)   network first, cached copy when offline
      app files           cached copy first, refreshed in the background
      player libraries    cached once from the CDN */
-const CACHE = 'radio-shell-v12';
-const SHELL = ['./', 'index.html', 'modern.css', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'manifest.webmanifest',
+const CACHE = 'radio-shell-v13';
+const SHELL = ['./', 'index.html', 'modern.css', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
   'js/core.js', 'js/lists.js', 'js/health.js', 'js/player.js', 'js/nowplaying.js', 'js/share.js', 'js/base.js', 'js/modern.js'];
 const LIBS = /^https:\/\/cdn\.jsdelivr\.net\/npm\/(hls\.js|country-flag-emoji-polyfill)/;
 
