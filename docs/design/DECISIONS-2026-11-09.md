@@ -1,5 +1,5 @@
 # radio.sala.company — Current design decisions and discussion record
-**Updated:** 2026-11-09  
+**Updated:** 2026-11-11  
 **Status:** IMPLEMENTED AND MERGED TO `main` (the GitHub Pages production source). Actual rollout completion and real-device verification are separate checks.  
 **Live URL:** https://radio.sala.company  
 **Repository:** https://github.com/jamalxcode/radio  
@@ -48,6 +48,7 @@ The owner set ten requirements for video.sala.company and asked for the same her
 - **Side rail on short, wide screens** (landscape and height ≤ 560 px): the menu becomes a vertical toolbar (Home, Recently Played, Stations, Settings), the top bar goes away, now playing and the presets sit side by side, and the picker slides in beside the rail.
 - **Folding screens** (two `window.viewport.segments`): the radio on one screen, the station picker always open on the other (side by side, or top/bottom when half-folded), nothing under the hinge; the menu is a drawer on the first screen. Folding back returns the picker to how you left it.
 - **Nothing reloads or interrupts the audio** on a fold, rotation or resize (CSS-only layouts). The picker's collection, country, genre, search and scroll and the page scroll are saved for the session and come back after a reload (Worldwide searches aren't kept).
+- **Station picker on phones and folds (owner report, Samsung Galaxy Fold):** the four columns are wider than a phone, so they must always be reachable by a sideways swipe that starts anywhere on them, including on a column's list. Choosing a collection, country or genre slides to the next columns and must finish even if the picker redraws meanwhile. On screens up to 1049 px wide the Stations column fills the space beside Genres (228–380 px), so after choosing a country you see Genres, full station names and the ✓ / × marks together. Confirmed working by the owner on the Fold.
 - **Dialogs and toasts** stay inside the safe area and above the on-screen keyboard (`visualViewport`); dialog buttons stay visible.
 - **Touch:** ≥ 44 px controls, 16 px inputs (no iOS zoom), no double-tap delay, no volume slider on touch screens. `inert` behind overlays, `aria-live` toasts, reduced motion respected.
 - **Installable app:** manifest updated to the navy theme with a maskable icon; iOS home-screen meta; `interactive-widget=resizes-content`.
@@ -71,12 +72,13 @@ The owner set ten requirements for video.sala.company and asked for the same her
 | [#15](https://github.com/jamalxcode/radio/pull/15) | Merge 1–2-station countries/genres into groups of 6+ with abbreviated names (owner request: shorter lists) |
 | [#16](https://github.com/jamalxcode/radio/pull/16) | Classic interface removed entirely (no `?classic=1`); favorites folded into presets; picker tabs and chips removed; song + artist shown; Knight Rider scanner on the Stations button (owner requests) |
 | [#17](https://github.com/jamalxcode/radio/pull/17) | Picker shows a newly opened list's stations, dropping old filters (owner question about new lists) |
+| direct to `main`, 2026-11-11, `304c860` | Station picker reachable on phones and folds: sideways swipes on the columns scroll the row, the slide after a tap isn't cut short by redraws, wider Stations column on narrow screens (owner report from a Galaxy Fold; owner confirmed the fix on the device) |
 | direct to `main`, 2026-11-11 | Every device: safe areas on all sides, side rail, folding screens, keyboard-aware dialogs, touch sizes, session state, installable-app polish (owner request, applied the same as video.sala.company) |
 
 **Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
 
 ## 5. Known limitations and checks still needed
-- Static JavaScript syntax, expected source structure and selected test logic were checked in the course of implementation. **There is no claim that the full UI has been browser/device-tested** on the actual iPhone Duo, Samsung Fold, desktop Safari or all stream types.
+- Static JavaScript syntax, expected source structure and selected test logic were checked in the course of implementation. **There is no claim that the full UI has been browser/device-tested** on the actual iPhone Duo, Samsung Fold, desktop Safari or all stream types. One exception: the owner confirmed on a Samsung Galaxy Fold (2026-11-11) that the station picker scrolls sideways to the Stations column with full names and ✓ marks.
 - GitHub Pages is configured to deploy on pushes to `main`, but merge success alone is not proof a particular deployment run completed. Check GitHub Actions and the live URL after changes.
 - Browser cache / service-worker cache may delay visible changes; `modern.js` and `modern.css` query-version increments were applied as fixes shipped.
 - Metadata may be unavailable from some stations because of missing ICY/HLS data or server CORS; no guarantee of Android Auto / CarPlay dashboard text without native integration, which the owner declined.
