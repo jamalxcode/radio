@@ -13,7 +13,7 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 - **Every device:** phones, tablets, foldables (including the iPhone Duo, folded and unfolded) and desktops. The layout keeps clear of notches, Dynamic Islands and side system bars on any edge; landscape phones and narrow outer displays get a vertical side rail; on a folding screen the radio and the station picker each get their own screen, nothing under the hinge. Folding, rotating or resizing never interrupts the audio, and your place in the picker survives a reload. Installable as an app.
 - **Keyboard:** Space pause · M mute · N / P next and previous station · Esc closes the menu or picker. Media keys and lock-screen controls work too.
 
-Favorites were folded into presets: on the first visit after the change, saved favorites move into empty preset slots. Read the [design decisions](docs/design/DECISIONS-2026-11-09.md) and [implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md) for the full history. The original pre-redesign snapshot is kept at `backup/pre-redesign-2026-11-09`.
+Favorites were folded into presets: on the first visit after the change, saved favorites move into empty preset slots. Read the [design decisions](docs/design/DECISIONS-2026-11-09.md) and [implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md) for the full history, and [docs/design/conversations](docs/design/conversations/) for the owner conversations behind recent changes. The original pre-redesign snapshot is kept at `backup/pre-redesign-2026-11-09`.
 
 ## Station sources
 

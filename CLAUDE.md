@@ -39,7 +39,7 @@ The scripts in `js/` are classic scripts sharing one global scope, loaded in ord
 - `sw.js`: offline shell. Page network-first (4 s timeout), same-origin app files stale-while-revalidate, hls.js/flag polyfill cache-first; streams, Radio Browser and the relay are never cached.
 - `relay/relay.js`: Cloudflare Worker `radio-relay` that passes through audio for plain-HTTP/no-CORS streams (origin-restricted to radio.sala.company and localhost, private hosts blocked, no caching). Deployed separately to Cloudflare, not by Pages. The player always tries direct first; HLS is not relayed.
 - `lists/sources.json`: lists to mirror; `lists/curated.json`: committed curated catalogue (fallback when sources are down). `lists/*.m3u` and `lists/index.json` are generated and gitignored.
-- `docs/design/`: decision log, implementation notes (read before larger changes), architecture diagram.
+- `docs/design/`: decision log, implementation notes (read before larger changes), architecture diagram, `conversations/` (dated summaries of owner conversations behind changes).
 
 All user data (lists, presets, test results, history, songs heard, settings) stays in the browser's IndexedDB.
 
