@@ -73,7 +73,7 @@ The owner set ten requirements for video.sala.company and asked for the same her
 | [#16](https://github.com/jamalxcode/radio/pull/16) | Classic interface removed entirely (no `?classic=1`); favorites folded into presets; picker tabs and chips removed; song + artist shown; Knight Rider scanner on the Stations button (owner requests) |
 | [#17](https://github.com/jamalxcode/radio/pull/17) | Picker shows a newly opened list's stations, dropping old filters (owner question about new lists) |
 | direct to `main`, 2026-11-11, `304c860` | Station picker reachable on phones and folds: sideways swipes on the columns scroll the row, the slide after a tap isn't cut short by redraws, wider Stations column on narrow screens (owner report from a Galaxy Fold; owner confirmed the fix on the device; [conversation record](conversations/2026-11-11-fold-station-picker.md)) |
-| direct to `main`, 2026-11-11 | Every device: safe areas on all sides, side rail, folding screens, keyboard-aware dialogs, touch sizes, session state, installable-app polish (owner request, applied the same as video.sala.company) |
+| direct to `main`, 2026-11-11 | Every device: safe areas on all sides, side rail, folding screens, keyboard-aware dialogs, touch sizes, session state, installable-app polish (owner request, applied the same as video.sala.company; [conversation record](conversations/2026-11-09-to-11-12-video-session.md)) |
 
 **Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
 
