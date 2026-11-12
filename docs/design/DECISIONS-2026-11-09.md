@@ -1,6 +1,7 @@
 # radio.sala.company — Current design decisions and discussion record
-**Updated:** 2026-11-11  
-**Status:** IMPLEMENTED AND MERGED TO `main` (the GitHub Pages production source). Actual rollout completion and real-device verification are separate checks.  
+**Updated:** 2026-11-12  
+**Status:** IMPLEMENTED AND MERGED TO `main` (the GitHub Pages production source). Actual rollout completion and real-device verification are separate checks; the only real-device confirmation so far is the station picker on a Samsung Galaxy Fold (2026-11-11).  
+**Latest functional release:** `304c860` (station picker on phones and folds), 2026-11-11; later commits are documentation only.  
 **Live URL:** https://radio.sala.company  
 **Repository:** https://github.com/jamalxcode/radio  
 **Source of truth:** `main` at the latest merged commit, plus this decision record.  
@@ -19,6 +20,8 @@ The agreed constraints are:
 - A separate Favorites heart, **18 presets in three rows of six**, actual station logos when possible, 650 ms long press to save/replace a preset and a compact two-row Recently Played area. Preserve storage and original audio engine.
 - Cover-screen and unfolded/desktop responsive layout, readable labels, touch targets, focus indication and reduced-motion preferences.
 
+*§1 records the original goals as agreed on 2026-11-09. Later owner requests changed some of them: the Favorites heart and the Classic Radio menu entry are gone (#16, favorites folded into presets), and the picker's discovery tabs and chips were removed (#16). §3 describes what ships now.*
+
 ## 2. Later decisions, now incorporated into current behavior
 These follow-up decisions supersede older descriptions or visual mockups:
 1. **More visible rows on mobile.** Compact the picker heading, search, shortcuts, tabs and station entries to fit approximately **7–8 station choices** on common phone cover-screen heights rather than five. The actual number varies with viewport dimensions.
@@ -34,8 +37,9 @@ These follow-up decisions supersede older descriptions or visual mockups:
 11. **Song title and artist.** Existing stream metadata detection and browser Media Session support are sufficient for now. No deeper/native Android Auto or Apple CarPlay work requested. Metadata depends on what stations expose, and lock-screen/browser support does **not** guarantee dashboard integration.
 
 ## 3. Current UI behavior (modern mode)
-- **Central radio:** station logo/name, live connection status and an explicit play/pause control; favorites; single sleep selector; 18 saved preset slots; two-row recent stations.
-- **Browser:** Collections, Countries, Genres and Stations; searchable, browsable worldwide and by discovery shortcuts. The first 350 matching stations render to limit excessive DOM work.
+- **Central radio:** station logo/name, song and artist when the station sends them, live connection status and an explicit play/pause control; single sleep selector; 18 saved preset slots (favorites were folded into presets in #16); two-row recent stations.
+- **Browser:** Collections (including Recently played and ＋ Add list), Countries, Genres and Stations; search within the view, or **Worldwide** across Radio Browser. Countries and genres with 1–2 stations are merged into groups of six or more (#15). The first 350 matching stations render to limit excessive DOM work. On phones and folds the columns scroll sideways from anywhere on them, a tap slides to the next columns, and the Stations column fills the space beside Genres (2026-11-11).
+- **Menu (hamburger):** Home, Recently Played, Station Browser, Settings & backup.
 - **Browser entry:** tap antenna **Stations**. **Exit:** select a station, tap Back to Radio, or close the overlay. General navigation uses a separate hamburger.
 - **Verified indicator:** compact inline check on station title line with silver treatment; accessibility label/tooltip expands the meaning.
 - **Presets:** one selected highlight maximum. Long press (650 ms) overwrites a slot with the current station; keyboard Shift+Enter is supported as a save alternative.
@@ -75,7 +79,7 @@ The owner set ten requirements for video.sala.company and asked for the same her
 | direct to `main`, 2026-11-11, `304c860` | Station picker reachable on phones and folds: sideways swipes on the columns scroll the row, the slide after a tap isn't cut short by redraws, wider Stations column on narrow screens (owner report from a Galaxy Fold; owner confirmed the fix on the device; [conversation record](conversations/2026-11-11-fold-station-picker.md)) |
 | direct to `main`, 2026-11-11 | Every device: safe areas on all sides, side rail, folding screens, keyboard-aware dialogs, touch sizes, session state, installable-app polish (owner request, applied the same as video.sala.company; [conversation record](conversations/2026-11-09-to-11-12-video-session.md)) |
 
-**Latest functional release before this documentation update:** merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9). Keep this commit as the baseline for investigating changes introduced after these discussions.
+**Latest functional release:** `304c860` (2026-11-11, station picker on phones and folds); `130e7db`, `759c013`, `d9afc3d` and later commits on 2026-11-11/12 are documentation only. The earlier baseline used when these discussions began was merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9).
 
 ## 5. Known limitations and checks still needed
 - Static JavaScript syntax, expected source structure and selected test logic were checked in the course of implementation. **There is no claim that the full UI has been browser/device-tested** on the actual iPhone Duo, Samsung Fold, desktop Safari or all stream types. One exception: the owner confirmed on a Samsung Galaxy Fold (2026-11-11) that the station picker scrolls sideways to the Stations column with full names and ✓ marks.

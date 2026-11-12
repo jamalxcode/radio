@@ -25,3 +25,7 @@ Tested at 390, 476 and 700 px: sideways wheel over a column reaches the end of t
 - Owner: **"it works now on the fold"** — first real-device confirmation recorded in the design docs.
 - Owner asked to update all documentation: README (picker behaviour on phones/folds), CLAUDE.md (the `overscroll-behavior` rule and the testing pitfall), design decisions and implementation notes (`130e7db`).
 - Owner asked to put the latest code, design decisions and this conversation on GitHub: this file.
+- Owner, next day: update all design decisions, the conversation record and the README. The design records were brought fully up to date: stale pre-#16 lines (Favorites heart, Classic menu entry, discovery shortcuts, `car.js`, "latest release PR #9") corrected, the current menu and picker behaviour described, and the latest functional release recorded as `304c860`.
+
+## Related
+- The same Fold problem existed on video.sala.company; another session applied the same fix there. Its record for this repo is [2026-11-09-to-11-12-video-session.md](2026-11-09-to-11-12-video-session.md).

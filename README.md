@@ -15,6 +15,14 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 
 Favorites were folded into presets: on the first visit after the change, saved favorites move into empty preset slots. Read the [design decisions](docs/design/DECISIONS-2026-11-09.md) and [implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md) for the full history, and [docs/design/conversations](docs/design/conversations/) for the owner conversations behind recent changes. The original pre-redesign snapshot is kept at `backup/pre-redesign-2026-11-09`.
 
+## Design records
+
+- [Design decisions](docs/design/DECISIONS-2026-11-09.md): goals, every owner decision since the redesign, and the release log.
+- [Implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md): how each change was built and tested, current asset versions, rollback.
+- Owner conversations behind recent changes ([docs/design/conversations](docs/design/conversations/)):
+  - [2026-11-09 to 11-12, from the video.sala.company session](docs/design/conversations/2026-11-09-to-11-12-video-session.md): radio as the model for video, the every-device layer.
+  - [2026-11-11, station picker on the Galaxy Fold](docs/design/conversations/2026-11-11-fold-station-picker.md): sideways swipes reach the stations column; confirmed on the device.
+
 ## Station sources
 
 | Source | How it loads |

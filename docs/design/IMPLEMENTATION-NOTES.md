@@ -1,7 +1,7 @@
 # Adaptive radio — Current implementation and release notes
-**Updated:** 2026-11-11  
+**Updated:** 2026-11-12  
 **Production source:** `main` / GitHub Pages for https://radio.sala.company  
-**Latest functional implementation:** PR #9, merge `b5626722608b3933fd982c221181413b7235a078`  
+**Latest functional implementation:** `304c860` (2026-11-11, #18 station picker on phones and folds; later commits are docs only). Earlier baseline: PR #9, merge `b5626722608b3933fd982c221181413b7235a078`  
 **Historical pre-redesign baseline:** `54979958ec71aa0701abc8c5092c241ce1097abe`  
 **Permanent rollback branch:** `backup/pre-redesign-2026-11-09`  
 **Decision log:** [DECISIONS-2026-11-09.md](DECISIONS-2026-11-09.md)
@@ -10,7 +10,7 @@
 - `index.html` loads `modern.css` and `js/modern.js` after the existing site/player dependencies. The original radio engine and UI are preserved.
 - `js/modern.js` creates the application shell and calls `Radio`, `S`, `Presets`, `Sleep`, `NowPlaying`, history, health/test and playback facilities from the other scripts (`js/base.js` since #16; there is no classic interface or `?classic=1` any more).
 - `modern.css` owns the modern layout, 3×6 preset grid, silver health styling, four-column Finder browser, foldable/phone drawer rules, and simplified sleep selector.
-- The underlying `js/player.js`, `js/nowplaying.js`, `js/car.js`, `js/health.js`, storage and stream sources were not rewritten as part of these UI refinements.
+- The underlying `js/player.js`, `js/nowplaying.js`, `js/health.js`, storage and stream sources were not rewritten as part of these UI refinements (`js/car.js` and the other classic scripts were deleted in #16).
 - The `sw.js` offline shell precaches modern assets; `index.html` advances asset-query versions for browser cache invalidation.
 - `.github/workflows/pages.yml` builds/deploys on pushes to `main`; merges trigger the workflow, but completion should be checked in GitHub Actions.
 
@@ -19,13 +19,13 @@
 | --- | --- |
 | Player | Large play/pause and actual connection state; no decorative oscilloscope/tuner or Next/Previous buttons in modern UI |
 | Open picker | Antenna **Stations** button |
-| General menu | Distinct top-left hamburger; opens Home/Favorites/Recent/Settings/Classic |
+| General menu | Distinct top-left hamburger (a vertical side rail on landscape phones); opens Home / Recently Played / Station Browser / Settings & backup |
 | Station browser | Collections → Countries → Genres → Stations; on phones/folds a sideways swipe anywhere on the columns moves between them, choosing a collection/country/genre slides to the next columns, and the Stations column fills the space beside Genres (228–380 px) on screens ≤ 1049 px |
 | Sorting | Countries by displayed name, Genres alphabetically, Stations alphabetically (natural and leading-punctuation tolerant); all after relevant filters |
 | Station selection | Starts chosen station and returns to main player; large Back to Radio arrow also closes picker |
 | On mobile | Overlay station browser and nav drawer use root-class CSS selectors `#modernApp.m-browser-open` and `#modernApp.m-nav-open`; compact spacing aims for 7–8 visible station entries, depending on screen |
 | Working status | Verified silver check **inline** with station title, sourced from prior probe/playback; nonworking/unknown status distinct |
-| Favorites | Heart; remains independent from preset slots |
+| Favorites | Removed in #16; saved favorites moved once into empty preset slots |
 | Presets | 18 positions, 3 rows of 6; long press 650 ms to assign; single tap plays; only the chosen slot highlights, even for duplicated station keys |
 | Recent | Two-row compact history |
 | Sleep | One duration selector with 15,30,45,60,90,120,150,180 minutes and **Sleep Off**; active choice shows running time and fading state |
