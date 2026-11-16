@@ -328,6 +328,12 @@ async function init() {
     const n = Presets.fill(oldFavs.sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0)));
     if (n) toast(`Your ${n} favorite station${n > 1 ? 's are' : ' is'} now in your presets`);
   }
+  // Skipping stations that won't play became the default: once, switch it on for settings saved before then.
+  if (!S.ui.autoSkipDefault) {
+    S.ui.autoSkipDefault = true;
+    saveUi();
+    if (!S.settings.autoSkip) { S.settings.autoSkip = true; DB.put('kv', S.settings, 'settings'); }
+  }
   const vol = Number(S.ui.volume ?? 0.8);
   audio.muted = !!S.ui.muted;
   setVolume(Number.isFinite(vol) ? vol : 0.8);

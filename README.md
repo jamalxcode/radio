@@ -6,10 +6,10 @@ A web radio that runs entirely in the browser, live at **https://radio.sala.comp
 
 - **Now playing:** a large Play/Pause button, the station with its country and genre, the **song and artist** when the station sends them (tap the song for the song card), and the real connection status. While connecting or after a failure it says what's happening ("Trying backup link 2 of 3…", why a station couldn't play) with a Retry button.
 - **Sleep and volume:** one sleep selector (15 minutes to 3 hours, with a live countdown and **Sleep Off**); at zero the sound fades out and the radio turns off.
-- **Presets:** 18 logo-backed slots. Tap to play, long-press (or Shift+Enter) to save the station that's on. Only the slot you picked is highlighted, even if a station is saved twice.
+- **Presets:** 18 logo-backed slots. Tap a saved preset to play it. To save the station that's on, tap **☆ Save to presets** under its name (first empty slot; it then shows **★ Preset N**) or tap an empty slot. Long-press (or Shift+Enter) a preset to replace it. Only the slot you picked is highlighted, even if a station is saved twice.
 - **Recently played:** the last stations you listened to.
 - **Stations** (the antenna button, with a sweeping red scanner light): a Finder-style picker with Collections → Countries → Genres → Stations, all A–Z. Countries and genres with only 1–2 stations are merged into groups of six or more, with names shortened to fit. Collections also holds **Recently played** and **＋ Add list**. Stations on screen are checked quietly; a silver ✓ marks streams verified by a real test or play. **Worldwide** searches all of Radio Browser by name. Picking a station returns to the player; on phones the picker slides over the screen. On phones and folds the columns don't all fit: swipe sideways anywhere on them to move between columns, and choosing a collection, country or genre slides to the next columns by itself. On narrow screens the Stations column fills the space beside Genres, so full station names and their ✓ marks show.
-- **Settings (⚙):** skip failed stations, quiet checks, advanced timings; refresh, share or remove the open list; share presets; backup export/import; clear test history; erase everything.
+- **Settings (⚙):** skip failed stations (on by default), quiet checks, advanced timings; refresh, share or remove the open list; share presets; backup export/import; clear test history; erase everything.
 - **Every device:** phones, tablets, foldables (including the iPhone Duo, folded and unfolded) and desktops. The layout keeps clear of notches, Dynamic Islands and side system bars on any edge; landscape phones and narrow outer displays get a vertical side rail; on a folding screen the radio and the station picker each get their own screen, nothing under the hinge. Folding, rotating or resizing never interrupts the audio, and your place in the picker survives a reload. Installable as an app.
 - **Keyboard:** Space pause · M mute · N / P next and previous station · Esc closes the menu or picker. Media keys and lock-screen controls work too.
 
@@ -22,6 +22,7 @@ Favorites were folded into presets: on the first visit after the change, saved f
 - Owner conversations behind recent changes ([docs/design/conversations](docs/design/conversations/)):
   - [2026-11-09 to 11-12, from the video.sala.company session](docs/design/conversations/2026-11-09-to-11-12-video-session.md): radio as the model for video, the every-device layer.
   - [2026-11-11, station picker on the Galaxy Fold](docs/design/conversations/2026-11-11-fold-station-picker.md): sideways swipes reach the stations column; confirmed on the device.
+  - [2026-11-16, critique; easier presets and dead stations](docs/design/conversations/2026-11-16-ux-critique-presets-dead-stations.md): a UX critique of the site, then tap-to-save presets and skipping stations that won't play.
 
 ## Station sources
 
@@ -47,7 +48,7 @@ Favorites were folded into presets: on the first visit after the change, saved f
 - **HLS:** a live segment's download speed is checked against its bitrate.
 - **Servers that block web pages (CORS):** they aren't written off. A muted `<audio>` element checks whether audio actually starts, which also catches CDNs that cut off plain reads.
 - **Plain-HTTP streams:** these are tried over HTTPS, and marked **Blocked** if that fails.
-- **Skipping and backups:** dead servers are skipped. When a link fails, the station's backup links are tested next.
+- **Skipping and backups:** dead servers are skipped. When a link fails, the station's backup links are tested next. When a whole station won't play, the screen says why in plain words and moves on to the next working station after 3 seconds; **Stay** keeps you on it (then **Retry**). Skipping stops after 5 stations in a row fail, which usually means the connection is down. Turn it off in Settings.
 - **Real plays and ratings:** start time, failures and dropouts from real plays are recorded. Your own ratings override test results.
 - **One set of status words everywhere:** On air · Weak · Off air · Blocked · New.
 - **Where results live:** IndexedDB, in your browser only. Results are re-checked after 6 hours, and lists refresh after 24 hours.

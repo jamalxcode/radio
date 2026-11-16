@@ -382,3 +382,12 @@ body.modern-ui .toast{bottom:calc(20px + var(--sa-b) + var(--kb));max-width:calc
 @media(max-width:620px){
   #modernApp .m-column-stations{width:clamp(228px,calc(100cqw - 145px),380px)}
 }
+
+/* Save to presets, under the station name: a clear tap target instead of a hidden long-press. */
+#modernApp .m-save-preset{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:5px 11px!important;border:1px solid #6f8ca4!important;border-radius:999px!important;background:#263c50!important;color:#e9f3fb!important;font-size:12px!important;font-weight:650}
+#modernApp .m-save-preset:hover{background:#33506a!important}
+#modernApp .m-save-preset.saved{border-color:#d4dce4!important;color:#fff!important}
+#modernApp .m-save-preset[hidden]{display:none}
+@media (pointer:coarse){#modernApp .m-save-preset{min-height:44px}}
+#modernApp .m-preset.m-flash{animation:mFlash 1.1s ease}
+@keyframes mFlash{0%,60%{box-shadow:0 0 0 3px #a6dfff;border-color:#a6dfff!important}}

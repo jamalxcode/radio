@@ -1,7 +1,7 @@
 # radio.sala.company — Current design decisions and discussion record
-**Updated:** 2026-11-12  
+**Updated:** 2026-11-16  
 **Status:** IMPLEMENTED AND MERGED TO `main` (the GitHub Pages production source). Actual rollout completion and real-device verification are separate checks; the only real-device confirmation so far is the station picker on a Samsung Galaxy Fold (2026-11-11).  
-**Latest functional release:** `304c860` (station picker on phones and folds), 2026-11-11; later commits are documentation only.  
+**Latest functional release:** 2026-11-16, easier presets and skipping stations that won't play (see §3b and the log).  
 **Live URL:** https://radio.sala.company  
 **Repository:** https://github.com/jamalxcode/radio  
 **Source of truth:** `main` at the latest merged commit, plus this decision record.  
@@ -58,6 +58,11 @@ The owner set ten requirements for video.sala.company and asked for the same her
 - **Installable app:** manifest updated to the navy theme with a maskable icon; iOS home-screen meta; `interactive-widget=resizes-content`.
 - The same device layer as video.sala.company (see its `docs/design/DECISIONS.md` §9); the iPhone Duo itself can't be emulated exactly. If Safari on the Duo doesn't report its hinge as screen segments, the unfolded Duo gets the normal wide layout, still inside the safe areas.
 
+## 3b. Easier presets and stations that won't play (2026-11-16)
+After a UX critique ([conversation record](conversations/2026-11-16-ux-critique-presets-dead-stations.md)) the owner chose two of its points:
+- **Saving a preset is visible, not hidden behind a long-press.** A **☆ Save to presets** button sits under the playing station's name and saves it to the first empty slot; once saved it reads **★ Preset N** (tapping it then points to that preset). Tapping an empty slot while a station is on saves it there; with nothing on, a toast explains. Long-press (or Shift+Enter) still replaces a saved preset. Duplicates stay allowed, as before (#9).
+- **A station that won't play is not a dead end.** Skipping to the next working station is now the **default** (Settings can turn it off; settings saved before this were switched on once). The screen says why in plain words (off air or unsupported format; didn't answer within N seconds; server unreachable; server stopped the stream) and "Trying the next station…"; for 3 seconds the button reads **Stay** to remain on it, then **Retry**. After a skip a toast names the station skipped. Skipping stops after **5 stations in a row** fail, with a hint to check the connection. The status title is "Can't play this station" instead of "Connection lost", which was wrong for stations that never started. The failed station keeps its × in the picker.
+
 ## 4. Implementation and deployment log
 | PR | Decision implemented |
 | --- | --- |
@@ -76,10 +81,11 @@ The owner set ten requirements for video.sala.company and asked for the same her
 | [#15](https://github.com/jamalxcode/radio/pull/15) | Merge 1–2-station countries/genres into groups of 6+ with abbreviated names (owner request: shorter lists) |
 | [#16](https://github.com/jamalxcode/radio/pull/16) | Classic interface removed entirely (no `?classic=1`); favorites folded into presets; picker tabs and chips removed; song + artist shown; Knight Rider scanner on the Stations button (owner requests) |
 | [#17](https://github.com/jamalxcode/radio/pull/17) | Picker shows a newly opened list's stations, dropping old filters (owner question about new lists) |
+| 2026-11-16 | Easier presets (☆ Save to presets button, tap an empty slot to save) and stations that won't play (skip by default with Stay, plain-words reasons, stop after 5 in a row) (owner chose points 3 and 4 of a UX critique; [conversation record](conversations/2026-11-16-ux-critique-presets-dead-stations.md)) |
 | direct to `main`, 2026-11-11, `304c860` | Station picker reachable on phones and folds: sideways swipes on the columns scroll the row, the slide after a tap isn't cut short by redraws, wider Stations column on narrow screens (owner report from a Galaxy Fold; owner confirmed the fix on the device; [conversation record](conversations/2026-11-11-fold-station-picker.md)) |
 | direct to `main`, 2026-11-11 | Every device: safe areas on all sides, side rail, folding screens, keyboard-aware dialogs, touch sizes, session state, installable-app polish (owner request, applied the same as video.sala.company; [conversation record](conversations/2026-11-09-to-11-12-video-session.md)) |
 
-**Latest functional release:** `304c860` (2026-11-11, station picker on phones and folds); `130e7db`, `759c013`, `d9afc3d` and later commits on 2026-11-11/12 are documentation only. The earlier baseline used when these discussions began was merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9).
+**Latest functional release:** 2026-11-16 (§3b). Before it: `304c860` (2026-11-11, station picker on phones and folds); `130e7db`, `759c013`, `d9afc3d`, `06925b2` were documentation only. The earlier baseline used when these discussions began was merge commit `b5626722608b3933fd982c221181413b7235a078` (PR #9).
 
 ## 5. Known limitations and checks still needed
 - Static JavaScript syntax, expected source structure and selected test logic were checked in the course of implementation. **There is no claim that the full UI has been browser/device-tested** on the actual iPhone Duo, Samsung Fold, desktop Safari or all stream types. One exception: the owner confirmed on a Samsung Galaxy Fold (2026-11-11) that the station picker scrolls sideways to the Stations column with full names and ✓ marks.

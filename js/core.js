@@ -141,7 +141,7 @@ const userCountry = (navigator.language.match(/-([A-Z]{2})\b/i) || [])[1]?.toUpp
 /* =========================================================================
    State
    ========================================================================= */
-const DEFAULT_SETTINGS = { slowStartSec: 5, timeoutSec: 12, autoSkip: false, autoTest: true, concurrency: 6 };
+const DEFAULT_SETTINGS = { slowStartSec: 5, timeoutSec: 12, autoSkip: true, autoTest: true, concurrency: 6 };
 const REFRESH_AFTER = 24 * 3600e3;   // re-download saved lists older than this
 const FRESH_FOR = 6 * 3600e3;        // test/play results newer than this aren't re-tested
 const S = {

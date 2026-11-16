@@ -50,6 +50,8 @@ function hlsMessage(d) {
 const hasBackup = () => session && session.idx < session.order.length - 1;
 
 function playStation(st, startUrl) {
+  cancelSkip();
+  if (!autoSkipping) autoSkips = 0; // you chose this station: start a fresh run of skips
   leaveSession();
   teardown();
   S.current = st;
@@ -178,13 +180,52 @@ function onPlayFail(msg) {
   teardown();
   Radio.setState('nosignal');
   if (!s.started && nextSource()) return; // a backup link takes over
+  const tried = s.order.length > 1 ? ` Tried all ${s.order.length} of its links.` : '';
+  S.failNote = plainFail(msg) + tried;
   if (S.settings.autoSkip && !s.started) {
-    showNote(`✖ ${esc(msg)}<div class="muted">Skipping to the next working station…</div>`);
-    setTimeout(() => { if (s.token === playToken) step(1, true); }, 1500);
+    if (autoSkips >= AUTO_SKIP_MAX) {
+      autoSkips = 0;
+      showNote(`${S.failNote} Stopped skipping: ${AUTO_SKIP_MAX} stations in a row didn’t play. Check your connection, or pick another station.`);
+      return;
+    }
+    // Move on by itself after a moment; the screen offers "Stay" until then.
+    showNote(`${S.failNote} Trying the next station…`);
+    const name = s.st.name;
+    S.skipPending = setTimeout(() => {
+      S.skipPending = 0;
+      if (s.token !== playToken) return;
+      autoSkips++;
+      toast(`Skipped ${name}: it isn’t playing right now`);
+      autoSkipping = true;
+      try { step(1, true); } finally { autoSkipping = false; }
+    }, AUTO_SKIP_DELAY);
+    scheduleRender();
     return;
   }
-  const tried = s.order.length > 1 ? ` (tried all ${s.order.length} links)` : '';
-  showNote(`Couldn’t play this station${tried}: ${esc(msg)}`);
+  showNote(S.failNote);
+}
+// Skipping a station that won't play: at most AUTO_SKIP_MAX in a row, each after AUTO_SKIP_DELAY ms.
+const AUTO_SKIP_MAX = 5, AUTO_SKIP_DELAY = 3000;
+let autoSkips = 0, autoSkipping = false;
+function cancelSkip() {
+  if (!S.skipPending) return false;
+  clearTimeout(S.skipPending);
+  S.skipPending = 0;
+  scheduleRender();
+  return true;
+}
+// "Stay": keep this station on screen (with Retry) instead of skipping it.
+function stayOnStation() {
+  if (cancelSkip()) showNote(S.failNote || 'This station isn’t playing right now.');
+}
+// Why a station didn't play, in plain words (the technical reason stays in the test history).
+function plainFail(msg) {
+  const m = String(msg || '').toLowerCase();
+  if (/format|decode|not supported|no supported/.test(m)) return 'This station is off air, or uses a format this browser can’t play.';
+  if (/didn.t (start|reconnect)/.test(m)) return `This station didn’t answer within ${S.settings.timeoutSec} seconds. It may be off air.`;
+  if (/network|fetch|http|cors|blocked|mixed/.test(m)) return 'Couldn’t reach this station’s server. It may be down, or blocking web players.';
+  if (/ended|hung up|closed/.test(m)) return 'The station’s server stopped the stream.';
+  return 'This station isn’t playing right now.';
 }
 function leaveSession() {
   const s = session;
@@ -250,6 +291,7 @@ audio.addEventListener('playing', () => {
   Radio.setState('live');
   if (s.started) return; // recovered from buffering, or resumed after a pause
   s.started = true;
+  autoSkips = 0;
   s.liveAt = s.reconnecting ? s.liveAt || Date.now() : Date.now();
   if (s.reconnecting) {
     s.reconnecting = false;

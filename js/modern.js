@@ -49,13 +49,13 @@ const Modern = (() => {
     '<section class="m-central"><header class="m-header"><div><button id="mNavToggle" aria-label="Toggle navigation" title="Navigation">☰</button><span class="m-brandtext">radio.sala.company</span></div>' +
     '<div class="m-head-actions"><button id="mStationToggle" class="m-station-launch" aria-expanded="false" title="Station picker">' + antenna + ' <span>Stations</span></button><button id="mSettings" aria-label="Settings">⚙</button></div></header>' +
     '<div class="m-center-scroll"><section class="m-player"><div class="m-eyebrow">NOW PLAYING <span id="mNowBadge"></span></div>' +
-    '<div class="m-now"><div class="m-now-logo" id="mNowLogo">♫</div><div class="m-now-labels"><h1 id="mNowName">Pick a station</h1><p id="mNowMeta">Use the antenna button to discover stations</p><button id="mNowSong" class="m-now-song" hidden title="Song card: links and what played before"></button></div>' +
+    '<div class="m-now"><div class="m-now-logo" id="mNowLogo">♫</div><div class="m-now-labels"><h1 id="mNowName">Pick a station</h1><p id="mNowMeta">Use the antenna button to discover stations</p><button id="mNowSong" class="m-now-song" hidden title="Song card: links and what played before"></button><button id="mSavePreset" class="m-save-preset" hidden></button></div>' +
     '<button id="mPlay" class="m-play" aria-label="Play or pause" title="Play / Pause">▶</button></div>' +
     '<div class="m-connection" id="mConnection" role="status" aria-live="polite"><span class="m-connection-dot"></span><div><strong id="mConnTitle">Ready</strong><small id="mConnSub">Choose a station to listen</small></div><button id="mRetry" hidden>Retry</button></div>' +
     '<div class="m-player-tools">' +
     '<div class="m-timer"><select id="mSleep" aria-label="Sleep timer"><option value="0">Sleep Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">2 hours</option><option value="150">2½ hours</option><option value="180">3 hours</option></select></div>' +
     '<div class="m-volume"><label for="mVolume">Volume</label><input id="mVolume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume"></div></div></section>' +
-    '<section class="m-section"><div class="m-section-head"><h2>Presets</h2><span>Long-press to save current station</span></div><div id="mPresets" class="m-presets"></div></section>' +
+    '<section class="m-section"><div class="m-section-head"><h2>Presets</h2><span>Tap an empty slot to save · long-press to replace</span></div><div id="mPresets" class="m-presets"></div></section>' +
     '<section class="m-section"><div class="m-section-head"><h2>Recently played</h2><button data-action="recent">See all</button></div><div id="mRecent" class="m-recent"></div></section>' +
     '</div></section>' +
     '<aside class="m-browser" id="mBrowser"><header class="m-browser-head"><div><h2>Station picker</h2><p>Explore your entire radio collection</p></div><button id="mBrowserClose" class="m-back-radio" aria-label="Back to main radio screen" title="Back to Radio">← <span>Back to Radio</span></button></header>' +
@@ -221,7 +221,7 @@ const Modern = (() => {
     presetSignature=sig;
     $m('mPresets').innerHTML = Array.from({length:18},(_,i)=>{
       const p=presets[i], active=i===activeIndex;
-      return '<button class="m-preset' +(active?' active':'')+'" data-preset="'+i+'" title="'+safe(p?p.name+' · long-press to replace':'Long-press to save current station')+'" aria-label="Preset '+(i+1)+(p?' '+safe(p.name):' empty')+'; long-press or Shift Enter to assign">' +
+      return '<button class="m-preset' +(active?' active':'')+'" data-preset="'+i+'" title="'+safe(p?p.name+' · long-press to replace':'Tap to save the playing station here')+'" aria-label="Preset '+(i+1)+(p?' '+safe(p.name)+'; long-press or Shift Enter to replace with the playing station':' empty; tap to save the playing station')+'">' +
         '<span class="m-preset-number">'+(i+1)+'</span>'+(p?image(p,true):'<span class="m-preset-add">＋</span>')+'<span class="m-preset-label">'+safe(p?.name||'Save')+'</span></button>';
     }).join('');
   }
@@ -245,7 +245,13 @@ const Modern = (() => {
       $m('mNowMeta').textContent=st?[countryOf(st),groupsOf(st).slice(0,2).join(', ')].filter(Boolean).join(' · '):'Tap Stations to discover something new';
     }
     $m('mNowBadge').innerHTML=st?marker(st):'';
-    const states={standby:['Ready','Choose a station to listen'],stopped:['Stopped','Tap Play to listen'],live:['Connected · On air','Audio playback confirmed'],buffering:['Buffering / reconnecting','Trying to restore the stream'],tuning:['Connecting…','Opening the selected stream'],paused:['Paused','Tap Play to resume'],nosignal:['Connection lost','Could not play this station']};
+    // Save to presets, right under the station: shows which preset it is once saved.
+    const saveEl=$m('mSavePreset'),slot=st?Presets.all().findIndex(p=>p?.key===st.key):-1;
+    const saveText=slot>=0?'★ Preset '+(slot+1):'☆ Save to presets';
+    saveEl.hidden=!st;
+    if(saveEl.textContent!==saveText){saveEl.textContent=saveText;saveEl.classList.toggle('saved',slot>=0);
+      saveEl.setAttribute('aria-label',slot>=0?st.name+' is preset '+(slot+1):'Save '+(st?.name||'this station')+' to the first empty preset');}
+    const states={standby:['Ready','Choose a station to listen'],stopped:['Stopped','Tap Play to listen'],live:['Connected · On air','Audio playback confirmed'],buffering:['Buffering / reconnecting','Trying to restore the stream'],tuning:['Connecting…','Opening the selected stream'],paused:['Paused','Tap Play to resume'],nosignal:['Can’t play this station','This station isn’t playing right now']};
     const [title,generic]=states[status]||states.standby;
     // While connecting or after a failure, say what's actually happening ("Trying backup link 2 of 3…").
     const detail=['tuning','buffering','nosignal'].includes(status)&&S.note?S.note:generic;
@@ -253,6 +259,9 @@ const Modern = (() => {
     $m('mConnTitle').textContent=title;
     $m('mConnSub').textContent=detail;
     $m('mRetry').hidden=status!=='nosignal';
+    // While a skip to the next station is pending, the button keeps you here instead.
+    const retryText=S.skipPending?'Stay':'Retry';
+    if($m('mRetry').textContent!==retryText){$m('mRetry').textContent=retryText;$m('mRetry').title=S.skipPending?'Stay on this station instead of skipping it':'Try this station again';}
     // While connecting or buffering a press stops the attempt, so it shows pause too.
     const busy=['live','tuning','buffering'].includes(status);
     $m('mPlay').textContent=busy?'❚❚':'▶';
@@ -306,7 +315,16 @@ const Modern = (() => {
   $m('mSettings').addEventListener('click',openSettings);
   $m('mNowSong').addEventListener('click',()=>openSongCard());
   $m('mPlay').addEventListener('click',()=>togglePause());
-  $m('mRetry').addEventListener('click',()=>S.current&&playStation(S.current));
+  $m('mRetry').addEventListener('click',()=>{if(S.skipPending)stayOnStation();else if(S.current)playStation(S.current);});
+  $m('mSavePreset').addEventListener('click',()=>{
+    if(!S.current)return;
+    const all=Presets.all(),slot=all.findIndex(p=>p?.key===S.current.key);
+    if(slot>=0){flashPreset(slot);return toast(S.current.name+' is preset '+(slot+1)+'. Long-press a preset to replace it.');}
+    const empty=Array.from({length:PRESET_SLOTS},(_,k)=>k).find(k=>!all[k]);
+    if(empty===undefined)return toast('All '+PRESET_SLOTS+' presets are full. Long-press one to replace it.');
+    assign(empty);flashPreset(empty);
+  });
+  function flashPreset(i){const b=$m('mPresets').querySelector('[data-preset="'+i+'"]');if(!b)return;b.classList.remove('m-flash');void b.offsetWidth;b.classList.add('m-flash');b.scrollIntoView({block:'nearest',behavior:'smooth'});}
   $m('mSleep').addEventListener('change',e=>Sleep.set(+e.target.value));
   $m('mVolume').addEventListener('input',e=>setVolume(+e.target.value/100));
   $m('mSearch').addEventListener('input',e=>{query=e.target.value.toLowerCase().trim();drawBrowser();});
@@ -327,7 +345,7 @@ const Modern = (() => {
     if(b.dataset.genre!==undefined){genre=b.dataset.genre;drawBrowser();return scrollColumns(3);}
     if(b.dataset.st!==undefined){const st=$m('mColumns')._shown[+b.dataset.st];if(st){playStation(st);if(!dual)openBrowser(false);}return;}
     if(b.dataset.recent!==undefined){const r=S.recent[+b.dataset.recent];if(r)playStation(stationFor(r));return;}
-    if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const i=+b.dataset.preset,p=Presets.all()[i];if(p){chosenPreset=i;playStation(stationFor(p));paintPresets(true);}else toast('Long-press to assign the playing station');}
+    if(b.dataset.preset!==undefined){clearTimeout(holdTimer);if(held){held=false;return;}const i=+b.dataset.preset,p=Presets.all()[i];if(p){chosenPreset=i;playStation(stationFor(p));paintPresets(true);}else if(S.current){assign(i);flashPreset(i);}else toast('Play a station first, then tap an empty preset to save it');}
   });
   const presetsEl=$m('mPresets');
   presetsEl.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-preset]');if(!b)return;downKey=+b.dataset.preset;held=false;clearTimeout(holdTimer);holdTimer=setTimeout(()=>{held=true;assign(downKey);navigator.vibrate?.(30)},650);});
