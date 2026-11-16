@@ -33,3 +33,7 @@ Tested in Chromium on a phone-sized screen with 12 unplayable local stations: ev
 **Owner** (Fold screenshot of the picker, France selected): "The station text is jumping to the right and back in a jerky manner, fix it."
 - Cause: a logo that failed to load was hidden, so its station name slid left by the logo's width. The picker redraws on every check result, recreating the broken image (name pushed right) until it failed again (name back left), over and over while stations were checked. The France Bleu rows in the screenshot are ones with broken logos.
 - Fix: failed logos are remembered and replaced by the antenna icon in the same-sized slot, so names stay put. Measured before/after with 14 test stations during checks: names moved 9 ↔ 43 px across 13 redraws before, not at all after. Pushed straight to `main`.
+
+## Saving the knowledge
+**Owner:** "save to repo design ideas, lessons learned, convo and business rules and interface rules"
+- Added [DESIGN-IDEAS.md](../DESIGN-IDEAS.md) (the critique's unbuilt points, most important first, plus two follow-ups from the preset/skip work), [LESSONS-LEARNED.md](../LESSONS-LEARNED.md) (the Fold scroll bugs, the jumping names, headless-testing limits, process), [BUSINESS-RULES.md](../BUSINESS-RULES.md) and [INTERFACE-RULES.md](../INTERFACE-RULES.md) (numbered rules drawn from the code and earlier decisions), and this section. Linked from the README, CLAUDE.md and the decision log.

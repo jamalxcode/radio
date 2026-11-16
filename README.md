@@ -19,6 +19,10 @@ Favorites were folded into presets: on the first visit after the change, saved f
 
 - [Design decisions](docs/design/DECISIONS-2026-11-09.md): goals, every owner decision since the redesign, and the release log.
 - [Implementation and testing notes](docs/design/IMPLEMENTATION-NOTES.md): how each change was built and tested, current asset versions, rollback.
+- [Business rules](docs/design/BUSINESS-RULES.md): what the radio does, as numbered rules (data, sources, testing, playback, presets, picker, deploy).
+- [Interface rules](docs/design/INTERFACE-RULES.md): how the screen must look and behave on every device; check changes against it.
+- [Lessons learned](docs/design/LESSONS-LEARNED.md): bugs that taught something, and testing and process tips.
+- [Design ideas](docs/design/DESIGN-IDEAS.md): improvements not built yet, most important first.
 - Owner conversations behind recent changes ([docs/design/conversations](docs/design/conversations/)):
   - [2026-11-09 to 11-12, from the video.sala.company session](docs/design/conversations/2026-11-09-to-11-12-video-session.md): radio as the model for video, the every-device layer.
   - [2026-11-11, station picker on the Galaxy Fold](docs/design/conversations/2026-11-11-fold-station-picker.md): sideways swipes reach the stations column; confirmed on the device.
