@@ -47,6 +47,7 @@ All user data (lists, presets, test results, history, songs heard, settings) sta
 
 - `.github/workflows/pages.yml` ("Deploy site") runs on push to `main`, daily at 04:17 UTC, and on dispatch. It runs both data scripts (`continue-on-error`), then uploads the repo root and deploys with GitHub Pages Actions (Pages source must be GitHub Actions). Generated lists only exist in the published site, never in git. Pushing to `main` deploys live.
 - Custom domain `radio.sala.company` via `CNAME`; `.nojekyll` present.
+- **Owner preference: always commit and push straight to `main`** (no feature branches or pull requests). Pushing deploys live, so test first.
 
 ## Conventions and gotchas
 
