@@ -27,4 +27,9 @@ Claude ran the latest `main` locally in headless Chromium at phone (390 px), Fol
 - For 3 seconds the button reads **Stay** (stay on this station, then **Retry**); after the skip a toast names the station skipped.
 - After 5 stations in a row fail, skipping stops with a hint to check the connection.
 
-Tested in Chromium on a phone-sized screen with 12 unplayable local stations: every step above behaved as described, with no page errors. Pushed to the `claude/beautiful-pascal-6ha09c` branch; merging to `main` (which deploys live) was left for the owner to approve.
+Tested in Chromium on a phone-sized screen with 12 unplayable local stations: every step above behaved as described, with no page errors. Pushed to a branch first; the owner then said: **"yes merge, always merge to main, no more branch nonsense"**. Merged to `main` (`dc865be`), and CLAUDE.md now says to push straight to `main`.
+
+## Jerky station names
+**Owner** (Fold screenshot of the picker, France selected): "The station text is jumping to the right and back in a jerky manner, fix it."
+- Cause: a logo that failed to load was hidden, so its station name slid left by the logo's width. The picker redraws on every check result, recreating the broken image (name pushed right) until it failed again (name back left), over and over while stations were checked. The France Bleu rows in the screenshot are ones with broken logos.
+- Fix: failed logos are remembered and replaced by the antenna icon in the same-sized slot, so names stay put. Measured before/after with 14 test stations during checks: names moved 9 ↔ 43 px across 13 redraws before, not at all after. Pushed straight to `main`.

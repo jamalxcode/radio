@@ -20,7 +20,12 @@ const Modern = (() => {
   const antenna = ico('<path d="M12 20v-8m-4 8h8M12 8v1m-4-5a11 11 0 0 0-2 13m14 0a11 11 0 0 0-2-13M5 7a7 7 0 0 0 0 10m14 0a7 7 0 0 0 0-10"/><circle cx="12" cy="10" r="1.6"/>');
 
   const safe = x => esc(String(x ?? ''));
-  const image = (st, small = false) => st?.logo ? '<img loading="lazy" referrerpolicy="no-referrer" src="' + safe(st.logo) + '" alt="" onerror="this.style.display=\'none\'">' : '<span class="m-fallback">' + (small ? antenna : '♫') + '</span>';
+  // A logo that fails is remembered and replaced by the fallback icon in the same-sized slot, so redraws
+  // (several a second while stations are checked) don't keep re-trying it and shifting the names beside it.
+  const badLogos = new Set();
+  const fallbackIcon = small => '<span class="m-fallback">' + (small ? antenna : '♫') + '</span>';
+  window.logoFailed = img => { badLogos.add(img.getAttribute('src')); img.outerHTML = fallbackIcon(img.dataset.small === '1'); };
+  const image = (st, small = false) => st?.logo && !badLogos.has(st.logo) ? '<img loading="lazy" referrerpolicy="no-referrer" src="' + safe(st.logo) + '" alt=""' + (small ? ' data-small="1"' : '') + ' onerror="logoFailed(this)">' : fallbackIcon(small);
   const stationFor = s => S.byKey.get(s.key) || s;
   const source = () => view === 'recent' ? S.recent.map(stationFor) : (S.browse?.stations || S.stations);
   const health = st => { try { return stationStatus(st); } catch (_) { return { cls: 'untested', label: 'New' }; } };
